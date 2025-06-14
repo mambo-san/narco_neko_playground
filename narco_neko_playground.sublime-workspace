@@ -180,13 +180,118 @@
 	"buffers":
 	[
 		{
-			"file": "app.py",
+			"file": "templates/make_it_rain.html",
 			"settings":
 			{
-				"buffer_size": 2043,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"buffer_size": 5700,
+				"line_ending": "Windows"
 			}
+		},
+		{
+			"contents": "",
+			"file": "runtime.txt",
+			"file_size": 0,
+			"file_write_time": 133943481086343784,
+			"settings":
+			{
+				"buffer_size": 0,
+				"encoding": "UTF-8",
+				"line_ending": "Windows",
+				"name": "runtime.txt"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"insert",
+					{
+						"characters": "runt"
+					},
+					"BAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAAAAAAAAAAAMAAAAAAAAABAAAAAAAAAAAAAAA",
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvw"
+				],
+				[
+					2,
+					1,
+					"insert",
+					{
+						"characters": "ime.txt"
+					},
+					"BwAAAAQAAAAAAAAABQAAAAAAAAAAAAAABQAAAAAAAAAGAAAAAAAAAAAAAAAGAAAAAAAAAAcAAAAAAAAAAAAAAAcAAAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAJAAAAAAAAAAAAAAAJAAAAAAAAAAoAAAAAAAAAAAAAAAoAAAAAAAAACwAAAAAAAAAAAAAA",
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAQAAAAAAAAABAAAAAAAAAAAAAAAAADwvw"
+				],
+				[
+					5,
+					1,
+					"left_delete",
+					null,
+					"AQAAAAAAAAAAAAAAAAAAAAAAAAALAAAAcnVudGltZS50eHQ",
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAACwAAAAAAAAAAAAAAAADwvw"
+				],
+				[
+					6,
+					1,
+					"insert",
+					{
+						"characters": "python"
+					},
+					"BgAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAAAAAAAAAAAMAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAFAAAAAAAAAAAAAAAFAAAAAAAAAAYAAAAAAAAAAAAAAA",
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvw"
+				],
+				[
+					7,
+					1,
+					"insert",
+					{
+						"characters": " "
+					},
+					"AQAAAAYAAAAAAAAABwAAAAAAAAAAAAAA",
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAYAAAAAAAAABgAAAAAAAAAAAAAAAADwvw"
+				],
+				[
+					8,
+					1,
+					"left_delete",
+					null,
+					"AQAAAAYAAAAAAAAABgAAAAAAAAABAAAAIA",
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAcAAAAAAAAABwAAAAAAAAAAAAAAAADwvw"
+				],
+				[
+					13,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAADQAAAAAAAAAGAAAAcHl0aG9u",
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAABgAAAAAAAAAAAAAAAADwvw"
+				],
+				[
+					31,
+					1,
+					"left_delete",
+					null,
+					"AQAAAAAAAAAAAAAAAAAAAAAAAAANAAAAcHl0aG9uLTMuMTEuOQ",
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAA0AAAAAAAAAAAAAAAAAAAAAAAAAAADwvw"
+				],
+				[
+					5,
+					1,
+					"insert",
+					{
+						"characters": "terminus"
+					},
+					"CAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAAAAAAAAAAAMAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAFAAAAAAAAAAAAAAAFAAAAAAAAAAYAAAAAAAAAAAAAAAYAAAAAAAAABwAAAAAAAAAAAAAABwAAAAAAAAAIAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					10,
+					1,
+					"left_delete",
+					null,
+					"AQAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAdGVybWludXM",
+					"AQAAAAAAAAABAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAPC/"
+				]
+			]
 		}
 	],
 	"build_system": "",
@@ -201,19 +306,31 @@
 		"selected_items":
 		[
 			[
+				"termi",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"terminu",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
 				"ter",
 				"Terminus: Open Default Shell in Panel"
 			],
 			[
-				"terminal",
-				"Terminus: Open Default Shell in Panel"
+				"toggle",
+				"Terminus: Toggle Panel"
+			],
+			[
+				"term",
+				"Terminus: Open Default Shell in Tab (View)"
 			],
 			[
 				"termin",
 				"Terminus: Open Default Shell in Tab (View)"
 			],
 			[
-				"termi",
+				"terminal",
 				"Terminus: Open Default Shell in Panel"
 			],
 			[
@@ -229,20 +346,12 @@
 				"Jekyll: New draft from template"
 			],
 			[
-				"terminu",
-				"Terminus: Open Default Shell in Panel"
-			],
-			[
 				"shell",
 				"Terminus: Open Default Shell in Panel"
 			],
 			[
 				"newpost",
 				"Jekyll: New post from template"
-			],
-			[
-				"term",
-				"Terminus: Open Default Shell in Tab (View)"
 			],
 			[
 				"new post",
@@ -445,7 +554,7 @@
 	},
 	"console":
 	{
-		"height": 0.0,
+		"height": 130.0,
 		"history":
 		[
 		]
@@ -459,8 +568,16 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground"
+	],
 	"file_history":
 	[
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/app.py",
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/narco_neko_playground.sublime-project",
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/venv/Scripts/activate.bat",
+		"/C/Users/takum/Desktop/visualize_energy/narco_neko_playground/app.py",
 		"/C/Users/takum/Desktop/visualize_energy/narco_neko_playground/flask_energy_dashboard.py",
 		"/C/Users/takum/Desktop/visualize_energy/flask_energy_dashboard.py",
 		"/C/Users/takum/Projects/flask_tutorial/hello.py",
@@ -601,6 +718,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"energy",
+			"home"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -624,27 +743,57 @@
 			[
 				{
 					"buffer": 0,
-					"file": "app.py",
-					"selected": true,
+					"file": "templates/make_it_rain.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2043,
+						"buffer_size": 5700,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								449,
-								449
+								4635,
+								4637
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "runtime.txt",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"auto_name": "runtime.txt",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -690,7 +839,14 @@
 	"menu_visible": true,
 	"output.Terminus":
 	{
-		"height": 130.0,
+		"height": 465.0,
+		"history":
+		[
+		]
+	},
+	"output.exec":
+	{
+		"height": 279.0,
 		"history":
 		[
 		]

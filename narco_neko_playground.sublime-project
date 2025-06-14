@@ -1,7 +1,4 @@
 {
-	"folders":
-	[
-	],
 	"build_systems":
 	[
 		{
@@ -11,4 +8,10 @@
 			"shell_cmd": "\"python\" -u \"$file\""
 		}
 	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	]
 }

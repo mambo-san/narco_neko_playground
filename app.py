@@ -36,7 +36,7 @@ def exempt_internal():
 
 @app.route('/')
 def welcome():
-    return render_template('home.html')
+    return render_template('index.html')
 
 @app.route('/make-it-rain')
 def make_it_rain():
