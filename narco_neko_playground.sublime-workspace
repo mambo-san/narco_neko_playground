@@ -1,0 +1,760 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"m",
+				"main"
+			],
+			[
+				"blue",
+				"blueprint"
+			],
+			[
+				"acc",
+				"account_page"
+			],
+			[
+				"accou",
+				"account_report"
+			],
+			[
+				"ex",
+				"example_blueprint_1"
+			],
+			[
+				"var",
+				"var_sub"
+			],
+			[
+				"example_blue",
+				"example_blueprint_1"
+			],
+			[
+				"__",
+				"__name__"
+			],
+			[
+				"im",
+				"ifmain"
+			],
+			[
+				"update",
+				"update_whereclause"
+			],
+			[
+				"task",
+				"task_to_udpate"
+			],
+			[
+				"cont",
+				"content"
+			],
+			[
+				"try",
+				"try"
+			],
+			[
+				"metho",
+				"methods"
+			],
+			[
+				"get_or",
+				"get_or_404"
+			],
+			[
+				"ord",
+				"order_by"
+			],
+			[
+				"T",
+				"Todo"
+			],
+			[
+				"method",
+				"method=\"POST"
+			],
+			[
+				"tr",
+				"tr>"
+			],
+			[
+				"content",
+				"content\"><"
+			],
+			[
+				"div",
+				"div class=\""
+			],
+			[
+				"utc",
+				"utcnow"
+			],
+			[
+				"imp",
+				"import datetime"
+			],
+			[
+				"dat",
+				"datetime"
+			],
+			[
+				"defa",
+				"default"
+			],
+			[
+				"db",
+				"db.DateTime, nullable=False"
+			],
+			[
+				"nu",
+				"nullable=False,nullable="
+			],
+			[
+				"SQLa",
+				"SQLAlchemy"
+			],
+			[
+				"Intege",
+				"Integer, primary_key=True)"
+			],
+			[
+				"SQ",
+				"SQLALCHEMY_DATABASE_URI"
+			],
+			[
+				"sql",
+				"sqlalchemy"
+			],
+			[
+				"flask_sql",
+				"flask_sql import"
+			],
+			[
+				"sq",
+				"sqlalchemy"
+			],
+			[
+				"lin",
+				"link rel=\"stylesheet\" href=\""
+			],
+			[
+				"sa",
+				"sans-serif"
+			],
+			[
+				"font-",
+				"font-family"
+			],
+			[
+				"ru",
+				"run"
+			],
+			[
+				"pands",
+				"pandas"
+			],
+			[
+				"fla",
+				"flask import"
+			],
+			[
+				"ec",
+				"escape"
+			],
+			[
+				"type",
+				"type(subpath)"
+			],
+			[
+				"rou",
+				"route(\"/"
+			],
+			[
+				"r",
+				"route(\"/"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "app.py",
+			"settings":
+			{
+				"buffer_size": 2043,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"ter",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"terminal",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"termin",
+				"Terminus: Open Default Shell in Tab (View)"
+			],
+			[
+				"termi",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"jeky",
+				"Jekyll: Promote draft to post"
+			],
+			[
+				"terminus",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"temp",
+				"Jekyll: New draft from template"
+			],
+			[
+				"terminu",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"shell",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"newpost",
+				"Jekyll: New post from template"
+			],
+			[
+				"term",
+				"Terminus: Open Default Shell in Tab (View)"
+			],
+			[
+				"new post",
+				"Jekyll: New post from template"
+			],
+			[
+				"new",
+				"Jekyll: New post"
+			],
+			[
+				"newpo",
+				"Jekyll: New post from template"
+			],
+			[
+				"jekyle",
+				"Jekyll: New post from template"
+			],
+			[
+				"draft",
+				"Jekyll: New draft from template"
+			],
+			[
+				"promote",
+				"Jekyll: Promote draft to post"
+			],
+			[
+				"termini",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"power",
+				"Set Syntax: PowerShell"
+			],
+			[
+				"jekyll",
+				"Jekyll: Promote draft to post"
+			],
+			[
+				"terminauis",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"post",
+				"Jekyll: Promote draft to post"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"spell",
+				"Google Spell Check"
+			],
+			[
+				"g",
+				"Google Spell Check"
+			],
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"terminuls",
+				"Terminus: List Shells"
+			],
+			[
+				"termnius",
+				"Terminus: List Shells"
+			],
+			[
+				"te",
+				"Terminus: Toggle Panel"
+			],
+			[
+				"set",
+				"Set Syntax: Python"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"inde",
+				"Indentation: Detect"
+			],
+			[
+				"html",
+				"Set Syntax: HTML (Jinja2)"
+			],
+			[
+				"set py",
+				"Set Syntax: Python"
+			],
+			[
+				"sensy",
+				"Set Syntax: Python"
+			],
+			[
+				"setpo",
+				"Set Syntax: PowerShell"
+			],
+			[
+				"set syntax: po",
+				"Set Syntax: PowerShell"
+			],
+			[
+				"pack",
+				"Package Control: Install Package"
+			],
+			[
+				"sublime",
+				"Sublime Merge: File History"
+			],
+			[
+				"debug",
+				"Package Control: Disable Debug Mode"
+			],
+			[
+				"break",
+				"Python Breakpoints: Toggle"
+			],
+			[
+				"setsyntax: py",
+				"Set Syntax: Python"
+			],
+			[
+				"htm",
+				"Set Syntax: HTML (Jinja2)"
+			],
+			[
+				"ji",
+				"Set Syntax: Jinja2"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"css",
+				"Set Syntax: CSS"
+			],
+			[
+				"jina",
+				"Set Syntax: Jinja2"
+			],
+			[
+				"open",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"virtual",
+				"Build With: Python + Virtualenv"
+			],
+			[
+				"vir",
+				"Build With: Python + Virtualenv"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"venv",
+				"Build With: Python + Virtualenv"
+			],
+			[
+				"pa",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"",
+				"Bookmarks: Select All"
+			],
+			[
+				"package con",
+				"Package Control: Remove Package"
+			],
+			[
+				"python",
+				"Build With: Python + Virtualenv"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Local Dependency"
+			],
+			[
+				"powershe",
+				"Set Syntax: PowerShell"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/takum/Desktop/visualize_energy/narco_neko_playground/flask_energy_dashboard.py",
+		"/C/Users/takum/Desktop/visualize_energy/flask_energy_dashboard.py",
+		"/C/Users/takum/Projects/flask_tutorial/hello.py",
+		"/C/Users/takum/Desktop/visualize_energy/visualize_energy/README.md",
+		"/C/Program Files (x86)/Steam/steamapps/common/The Binding of Isaac Rebirth/mods/external item descriptions_836319872/eid_config.lua",
+		"/C/Users/takum/Desktop/Random_Notes/おうちさがし",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2024-08-26-2024-09-02.markdown",
+		"/C/Program Files (x86)/Steam/steamapps/common/Sid Meier's Civilization V/civilizationv_403694_crash_2022_1_14T8_19_55C0.mdmp",
+		"/C/Users/takum/Downloads/お誕生日おめでとう！",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/Gemfile",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2024-09-06-2024-09-06.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2024-11-16-2024-11-15.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/.git/COMMIT_EDITMSG",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_drafts/2024-11-15.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_config.yml",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2024-09-20-2024-09-20.markdown",
+		"/C/Users/takum/Desktop/GameDev/life_of_an_NPC/.git/COMMIT_EDITMSG",
+		"/C/Users/takum/Desktop/GameDev/life_of_an_NPC/src/dialogs.json",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2024-09-05-2024-09-05.markdown",
+		"/C/Users/takum/Desktop/life_of_npc/index.html",
+		"/C/Users/takum/Desktop/life_of_npc/index.pck",
+		"/C/Users/takum/Desktop/life_of_npc/index.js",
+		"/C/Users/takum/Desktop/GameDev/the_shroom_guy/src/dialogs.json",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_drafts/2024-09-06.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/asset/recording/2024_09/pickup_animation.gif",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2024-08-09-2024-08-09.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2024-08-03-2024-08-03.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2024-08-05-2024-08-04.markdown",
+		"/C/Users/takum/AppData/Local/Temp/e48b3d65-4e87-4bcf-885a-2e47d93b1591_area_2d_starter.zip.591/area_2d_starter/World.gd",
+		"/C/Users/takum/AppData/Local/Temp/8f09499d-48b4-44ae-8bb5-74ef9b61f9c3_area_2d_starter.zip.9c3/area_2d_starter/Ball.gd",
+		"/C/Users/takum/AppData/Local/Temp/28e64e18-17a1-46d2-be0f-eeb3ef4e1a1d_area_2d_starter.zip.a1d/area_2d_starter/Ball.tscn",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/asset/recording/2024_09/tilemap_packed.png",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_templates/post_template.md",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_data/navigation.yml",
+		"/C/Users/takum/AppData/Roaming/Sublime Text/Packages/User/Shortcut_Insert_date.py",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_drafts/2024-08-04.markdown",
+		"/C/Users/takum/Downloads/2014_08_denver_city.jpg",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2023-10-03-2023-10-03.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_drafts/2024-08-03.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2024-07-26-2024-07-26.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2023-08-30-2023-08-30.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_posts/2023-09-03-2023-09-03.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_includes/analytics.html",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_includes/head.html",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_drafts/2024-07-26.markdown",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/README.md",
+		"/C/Users/takum/AppData/Roaming/Sublime Text/Packages/User/Jekyll.sublime-settings",
+		"/C/Users/takum/Desktop/NekoNarkoDairy/mambo-san.github.io/_drafts/idontknow.markdown",
+		"/C/Users/takum/AppData/Roaming/Sublime Text/Packages/Jekyll/Jekyll.sublime-settings",
+		"/C/Users/takum/AppData/Roaming/Sublime Text/Packages/User/Anaconda.sublime-settings",
+		"/C/Users/takum/Desktop/Jupyter Notebook.ps1",
+		"/C/Users/takum/Projects/flask_tutorial/templates/base.html",
+		"/C/Users/takum/Downloads/dd_crash",
+		"/C/Users/takum/Projects/MyJupyterProjects/Utilization_analysis/2021_ADMIN_LEAVE_TRAIN.csv",
+		"/C/Users/takum/AppData/Roaming/Sublime Text/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/templates/index.html",
+		"/C/Users/takum/Downloads/Annnual_worklog_visualization.ipynb.html",
+		"/C/Users/takum/.ssh/known_hosts",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/.git/COMMIT_EDITMSG",
+		"/C/Users/takum/Projects/flask_tutorial/.git/COMMIT_EDITMSG",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/app.py",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/psow_rep/psow_report.py",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/static/css/main.css",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/test.py",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/account_project/account_report.py",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/account_project/static/project_summary.txt",
+		"/C/Users/takum/Projects/flask_tutorial/templates/update.html",
+		"/C/Users/takum/Projects/flask_tutorial/templates/index.html",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/account_project/templates/account_project/base.html",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/mini_projects/account_report.py",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/Flask-Blueprint-tutorial.sublime-project",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/README.md",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/example_blueprint.py",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/env/Scripts/activate_this.py",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/env/Scripts/pip.exe",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/env/pyvenv.cfg",
+		"/C/Users/takum/Projects/Flask-Blueprint-tutorial/account/__init__.py",
+		"/C/Users/takum/Projects/po-tools/project/__init__.py",
+		"/C/Users/takum/Projects/po-tools/project/account/__init__.py",
+		"/C/Users/takum/Projects/po-tools/project/settings.py",
+		"/C/Users/takum/Projects/po-tools/app.py",
+		"/C/Users/takum/Projects/po-tools/po-tools.sublime-project",
+		"/C/Users/takum/Projects/po-tools/conf/test_config.py",
+		"/C/Users/takum/Projects/po-tools/conf/dev_config.py",
+		"/C/Users/takum/AppData/Roaming/Sublime Text/Packages/Anaconda/Anaconda.sublime-settings",
+		"/C/Users/takum/Projects/flask_tutorial/flask_tutorial.sublime-project",
+		"/C/Users/takum/AppData/Roaming/Sublime Text/Packages/Python Breakpoints/Default (Windows).sublime-keymap",
+		"/C/Users/takum/Projects/flask_tutorial/static/css/main.css",
+		"/C/Users/takum/Projects/flask_tutorial/test.py",
+		"/C/Users/takum/Projects/flask_tutorial/env/Scripts/activate_this.py",
+		"/C/Users/takum/Projects/flask_tutorial/.gitignore",
+		"/C/Users/takum/AppData/Roaming/Sublime Text/Packages/Anaconda/Default (Windows).sublime-keymap",
+		"/C/Users/takum/AppData/Roaming/Sublime Text/Packages/User/JSON.sublime-settings",
+		"/C/Users/takum/Projects/flask_tutorial/requirements.txt",
+		"/C/Users/takum/flask_tutorial/templates/update.html",
+		"/C/Users/takum/flask_tutorial/templates/base.html",
+		"/C/Users/takum/flask_tutorial/env/Lib/site-packages/flask_sqlalchemy/model.py",
+		"/C/Users/takum/flask_tutorial/test.py",
+		"/C/Users/takum/flask_tutorial/static/css/main.css",
+		"/C/Users/takum/flask_tutorial/templates/index.html",
+		"/C/Users/takum/flask_tutorial/flask_tutorial.sublime-project",
+		"/C/Users/takum/flask_tutorial/hello.py",
+		"/C/Users/takum/AppData/Roaming/Sublime Text 3/Packages/User/Virtualenv.sublime-settings",
+		"/C/Users/takum/AppData/Roaming/Sublime Text 3/Packages/project_venv_repls.py",
+		"/C/Users/takum/AppData/Roaming/Sublime Text 3/Packages/Virtualenv/Virtualenv.sublime-settings",
+		"/C/Users/takum/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/takum/AppData/Roaming/Sublime Text 3/Packages/User/Package Control.sublime-settings",
+		"/C/Users/takum/AppData/Roaming/Sublime Text 3/Packages/Virtualenv/README.md",
+		"/C/Users/takum/flask_tutorial/venv/Scripts/activate",
+		"/C/Users/takum/AppData/Roaming/Sublime Text 3/Packages/User/SublimeREPL.sublime-settings",
+		"/C/Users/takum/AppData/Roaming/Sublime Text 3/Packages/SublimeREPL/SublimeREPL.sublime-settings",
+		"/C/Users/takum/flask_tutorial/test_url.py",
+		"/C/Users/takum/flask_tutorial/start_flask.ps1",
+		"/C/Users/takum/flask_tutorial/venv/Lib/site-packages/flask/app.py",
+		"/C/Users/takum/flask_tutorial/venv/Lib/site-packages/flask/helpers.py",
+		"/C/Users/takum/Downloads/agaricus-lepiota.names",
+		"/C/Users/takum/PythonEditorWrapper_1c8cb8e0-e6bb-4332-b355-5b73f05ffae1/PythonEditorWrapper.PY",
+		"/C/Users/takum/MyJupyterProject/Guided Project_1 Exploring Hacker News Posts/hacker_news.csv",
+		"/C/Users/takum/MyJupyterProject/Project_ Learn and Install Jupyter Notebook/googleplaystore.csv",
+		"/C/Users/takum/MyJupyterProject/Project_ Learn and Install Jupyter Notebook/AppleStore.csv",
+		"/C/Users/takum/Downloads/Guided Project_ Profitable App Profiles for the App Store and Google Play Markets/Basics.ipynb",
+		"/C/Users/takum/Downloads/AppleStore.csv",
+		"/C/Users/takum/Downloads/test.py"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "app.py",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2043,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								449,
+								449
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 50.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.Terminus":
+	{
+		"height": 130.0,
+		"history":
+		[
+		]
+	},
+	"output.find_results":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"pinned_build_system": "Anaconda Python Builder",
+	"project": "narco_neko_playground.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\Users\\takum\\flask_tutorial\\flask_tutorial.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 35.2,
+		"last_filter": "activate",
+		"selected_items":
+		[
+			[
+				"activate",
+				"activate"
+			]
+		],
+		"width": 592.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 323.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
