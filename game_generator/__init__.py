@@ -1,0 +1,1 @@
+from .routes import game_generator_bp

@@ -180,24 +180,99 @@
 	"buffers":
 	[
 		{
-			"file": "templates/make_it_rain.html",
+			"file": "app.py",
 			"settings":
 			{
-				"buffer_size": 5700,
-				"line_ending": "Windows"
-			}
+				"buffer_size": 1934,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					48,
+					1,
+					"insert",
+					{
+						"characters": "10"
+					},
+					"AgAAAGQFAAAAAAAAZQUAAAAAAAACAAAAMjVlBQAAAAAAAGYFAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAZgUAAAAAAABkBQAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					52,
+					3,
+					"left_delete",
+					null,
+					"AwAAAG0FAAAAAAAAbQUAAAAAAAABAAAAeWwFAAAAAAAAbAUAAAAAAAABAAAAYWsFAAAAAAAAawUAAAAAAAABAAAAZA",
+					"AQAAAAAAAAABAAAAbgUAAAAAAABuBQAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					53,
+					1,
+					"insert",
+					{
+						"characters": "1"
+					},
+					"AQAAAGsFAAAAAAAAbAUAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAawUAAAAAAABrBQAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					54,
+					1,
+					"insert",
+					{
+						"characters": " hour"
+					},
+					"BQAAAGwFAAAAAAAAbQUAAAAAAAAAAAAAbQUAAAAAAABuBQAAAAAAAAAAAABuBQAAAAAAAG8FAAAAAAAAAAAAAG8FAAAAAAAAcAUAAAAAAAAAAAAAcAUAAAAAAABxBQAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAbAUAAAAAAABsBQAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					68,
+					2,
+					"left_delete",
+					null,
+					"AgAAAAUDAAAAAAAABQMAAAAAAABxAAAAbGltaXRlciA9IExpbWl0ZXIoCiAgICBnZXRfcmVtb3RlX2FkZHJlc3MsCiAgICBhcHA9YXBwLAogICAgZGVmYXVsdF9saW1pdHM9WyIxMDAgcGVyIGhvdXIiXSAgIyBmYWxsYmFjayBkZWZhdWx0CikEAwAAAAAAAAQDAAAAAAAAAQAAAAo",
+					"AQAAAAAAAAABAAAAdgMAAAAAAAAFAwAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					75,
+					1,
+					"insert",
+					{
+						"characters": "0"
+					},
+					"AQAAAPcCAAAAAAAA+AIAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAA9wIAAAAAAAD3AgAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					80,
+					1,
+					"insert",
+					{
+						"characters": "0"
+					},
+					"AQAAAPkCAAAAAAAA+gIAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAA+QIAAAAAAAD5AgAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					330,
+					1,
+					"right_delete",
+					null,
+					"AQAAAFsGAAAAAAAAWwYAAAAAAAABAAAACg",
+					"AQAAAAAAAAABAAAAWwYAAAAAAABbBgAAAAAAAAAAAAAAAPC/"
+				]
+			]
 		},
 		{
-			"contents": "",
-			"file": "runtime.txt",
-			"file_size": 0,
-			"file_write_time": 133943481086343784,
+			"file": ".env",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 247,
 				"encoding": "UTF-8",
 				"line_ending": "Windows",
-				"name": "runtime.txt"
+				"name": ".env"
 			},
 			"undo_stack":
 			[
@@ -206,91 +281,176 @@
 					1,
 					"insert",
 					{
-						"characters": "runt"
+						"characters": ".evn"
 					},
 					"BAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAAAAAAAAAAAMAAAAAAAAABAAAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvw"
+					"AQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/"
 				],
 				[
 					2,
+					2,
+					"left_delete",
+					null,
+					"AgAAAAMAAAAAAAAAAwAAAAAAAAABAAAAbgIAAAAAAAAAAgAAAAAAAAABAAAAdg",
+					"AQAAAAAAAAABAAAABAAAAAAAAAAEAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					3,
 					1,
 					"insert",
 					{
-						"characters": "ime.txt"
+						"characters": "nv"
 					},
-					"BwAAAAQAAAAAAAAABQAAAAAAAAAAAAAABQAAAAAAAAAGAAAAAAAAAAAAAAAGAAAAAAAAAAcAAAAAAAAAAAAAAAcAAAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAJAAAAAAAAAAAAAAAJAAAAAAAAAAoAAAAAAAAAAAAAAAoAAAAAAAAACwAAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAQAAAAAAAAABAAAAAAAAAAAAAAAAADwvw"
+					"AgAAAAIAAAAAAAAAAwAAAAAAAAAAAAAAAwAAAAAAAAAEAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAAgAAAAAAAAACAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					4,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AQAAAAQAAAAAAAAABQAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAABAAAAAAAAAAEAAAAAAAAAAAAAAAAAPC/"
 				],
 				[
 					5,
 					1,
 					"left_delete",
 					null,
-					"AQAAAAAAAAAAAAAAAAAAAAAAAAALAAAAcnVudGltZS50eHQ",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAACwAAAAAAAAAAAAAAAADwvw"
+					"AQAAAAQAAAAAAAAABAAAAAAAAAABAAAACg",
+					"AQAAAAAAAAABAAAABQAAAAAAAAAFAAAAAAAAAAAAAAAAAPC/"
 				],
 				[
-					6,
-					1,
-					"insert",
-					{
-						"characters": "python"
-					},
-					"BgAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAAAAAAAAAAAMAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAFAAAAAAAAAAAAAAAFAAAAAAAAAAYAAAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					7,
-					1,
-					"insert",
-					{
-						"characters": " "
-					},
-					"AQAAAAYAAAAAAAAABwAAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAYAAAAAAAAABgAAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					8,
+					9,
 					1,
 					"left_delete",
 					null,
-					"AQAAAAYAAAAAAAAABgAAAAAAAAABAAAAIA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAcAAAAAAAAABwAAAAAAAAAAAAAAAADwvw"
+					"AQAAAAAAAAAAAAAAAAAAAAAAAAAEAAAALmVudg",
+					"AQAAAAAAAAABAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/"
 				],
 				[
 					13,
 					1,
 					"paste",
 					null,
-					"AQAAAAAAAAAAAAAADQAAAAAAAAAGAAAAcHl0aG9u",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAABgAAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					31,
-					1,
-					"left_delete",
-					null,
-					"AQAAAAAAAAAAAAAAAAAAAAAAAAANAAAAcHl0aG9uLTMuMTEuOQ",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAA0AAAAAAAAAAAAAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					5,
-					1,
-					"insert",
-					{
-						"characters": "terminus"
-					},
-					"CAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAAAAAAAAAAAMAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAFAAAAAAAAAAAAAAAFAAAAAAAAAAYAAAAAAAAAAAAAAAYAAAAAAAAABwAAAAAAAAAAAAAABwAAAAAAAAAIAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA",
 					"AQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/"
 				],
 				[
-					10,
+					14,
+					1,
+					"insert",
+					{
+						"characters": "="
+					},
+					"AQAAABAAAAAAAAAAEQAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAEAAAAAAAAAAQAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					17,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AQAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+				],
+				[
+					19,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAACQAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+				],
+				[
+					20,
+					1,
+					"insert",
+					{
+						"characters": "=development"
+					},
+					"DAAAAAkAAAAAAAAACgAAAAAAAAAAAAAACgAAAAAAAAALAAAAAAAAAAAAAAALAAAAAAAAAAwAAAAAAAAAAAAAAAwAAAAAAAAADQAAAAAAAAAAAAAADQAAAAAAAAAOAAAAAAAAAAAAAAAOAAAAAAAAAA8AAAAAAAAAAAAAAA8AAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAARAAAAAAAAAAAAAAARAAAAAAAAABIAAAAAAAAAAAAAABIAAAAAAAAAEwAAAAAAAAAAAAAAEwAAAAAAAAAUAAAAAAAAAAAAAAAUAAAAAAAAABUAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAACQAAAAAAAAAJAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					24,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AQAAACcAAAAAAAAAKAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAJwAAAAAAAAAnAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					25,
+					1,
+					"paste",
+					null,
+					"AQAAACgAAAAAAAAAMgAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAKAAAAAAAAAAoAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					26,
+					1,
+					"insert",
+					{
+						"characters": "=-"
+					},
+					"AgAAADIAAAAAAAAAMwAAAAAAAAAAAAAAMwAAAAAAAAA0AAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAMgAAAAAAAAAyAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					27,
 					1,
 					"left_delete",
 					null,
-					"AQAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAdGVybWludXM",
-					"AQAAAAAAAAABAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAPC/"
+					"AQAAADMAAAAAAAAAMwAAAAAAAAABAAAALQ",
+					"AQAAAAAAAAABAAAANAAAAAAAAAA0AAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					41,
+					1,
+					"paste",
+					null,
+					"AQAAADMAAAAAAAAA1wAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAMwAAAAAAAAAzAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					56,
+					1,
+					"paste",
+					null,
+					"AQAAACcAAAAAAAAARwAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAJwAAAAAAAAAnAAAAAAAAAAAAAAAAAPC/"
 				]
+			]
+		},
+		{
+			"file": "requirements.txt",
+			"redo_stack":
+			[
+				[
+					4,
+					1,
+					"paste",
+					null,
+					"AQAAAJkBAAAAAAAAmQEAAAAAAAAQAAAAcmVxdWlyZW1lbnRzLnR4dA",
+					"AQAAAAAAAAABAAAAqQEAAAAAAACpAQAAAAAAAAAAAAAAAPC/"
+				]
+			],
+			"settings":
+			{
+				"buffer_size": 409,
+				"encoding": "UTF-16 LE with BOM",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
 			]
 		}
 	],
@@ -310,11 +470,15 @@
 				"Terminus: Open Default Shell in Panel"
 			],
 			[
-				"terminu",
+				"ter",
 				"Terminus: Open Default Shell in Panel"
 			],
 			[
-				"ter",
+				"termin",
+				"Terminus: Open Default Shell in Tab (View)"
+			],
+			[
+				"terminu",
 				"Terminus: Open Default Shell in Panel"
 			],
 			[
@@ -323,10 +487,6 @@
 			],
 			[
 				"term",
-				"Terminus: Open Default Shell in Tab (View)"
-			],
-			[
-				"termin",
 				"Terminus: Open Default Shell in Tab (View)"
 			],
 			[
@@ -570,10 +730,17 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground"
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground",
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/static",
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/templates",
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/venv"
 	],
 	"file_history":
 	[
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/.git/COMMIT_EDITMSG",
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/.gitignore",
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/templates/make_it_rain.html",
+		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/runtime.txt",
 		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/app.py",
 		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/narco_neko_playground.sublime-project",
 		"/C/Users/takum/Desktop/NekoNarkoPlayground/narco_neko_playground/venv/Scripts/activate.bat",
@@ -697,14 +864,11 @@
 		"/C/Users/takum/PythonEditorWrapper_1c8cb8e0-e6bb-4332-b355-5b73f05ffae1/PythonEditorWrapper.PY",
 		"/C/Users/takum/MyJupyterProject/Guided Project_1 Exploring Hacker News Posts/hacker_news.csv",
 		"/C/Users/takum/MyJupyterProject/Project_ Learn and Install Jupyter Notebook/googleplaystore.csv",
-		"/C/Users/takum/MyJupyterProject/Project_ Learn and Install Jupyter Notebook/AppleStore.csv",
-		"/C/Users/takum/Downloads/Guided Project_ Profitable App Profiles for the App Store and Google Play Markets/Basics.ipynb",
-		"/C/Users/takum/Downloads/AppleStore.csv",
-		"/C/Users/takum/Downloads/test.py"
+		"/C/Users/takum/MyJupyterProject/Project_ Learn and Install Jupyter Notebook/AppleStore.csv"
 	],
 	"find":
 	{
-		"height": 27.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -743,63 +907,92 @@
 			[
 				{
 					"buffer": 0,
-					"file": "templates/make_it_rain.html",
+					"file": "app.py",
+					"selected": true,
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5700,
+						"buffer_size": 1934,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4635,
-								4637
+								1627,
+								1627
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"syntax": "Packages/Python/Python.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 594.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"stack_multiselect": false,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "runtime.txt",
-					"selected": true,
+					"file": ".env",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 247,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								247,
+								247
 							]
 						],
 						"settings":
 						{
-							"auto_name": "runtime.txt",
+							"auto_name": ".env",
 							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "requirements.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 409,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								409,
+								409
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"stack_multiselect": false,
 					"type": "text"
 				}
@@ -840,6 +1033,13 @@
 	"output.Terminus":
 	{
 		"height": 465.0,
+		"history":
+		[
+		]
+	},
+	"output.Terminus 2":
+	{
+		"height": 312.0,
 		"history":
 		[
 		]

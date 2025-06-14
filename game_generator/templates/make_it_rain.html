@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Make it Rain</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body, html {
             margin: 0;
@@ -29,6 +30,7 @@
             opacity: 0;
             transition: opacity 1s, background 0.3s;
             pointer-events: none;
+            z-index: 2;
         }
 
         #nextBtn.revealed {
@@ -42,20 +44,25 @@
             from { transform: translate(-50%, -50%) scale(1); }
             to   { transform: translate(-50%, -50%) scale(1.1); }
         }
+
+        @media (max-width: 600px) {
+            #nextBtn {
+                font-size: 18px;
+                padding: 12px 24px;
+            }
+        }
     </style>
 </head>
 <body>
 <canvas id="rainCanvas"></canvas>
-<button id="nextBtn" disabled onclick="location.href='{{ url_for('ai_game_generator') }}'">Next Project</button>
+<button id="nextBtn" disabled onclick="location.href='{{ url_for('game_generator.ai_game_generator') }}'">Next Project</button>
 
 <script>
 const canvas = document.getElementById('rainCanvas');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
-let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
-let cloud = { x: canvas.width / 2, y: 100 };
+let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+let cloud = { x: window.innerWidth / 2, y: 100 };
 let isMouseDown = false;
 let raindrops = [];
 
@@ -65,29 +72,55 @@ const fontSize = 48;
 ctx.font = `${fontSize}px sans-serif`;
 ctx.textBaseline = "top";
 
-// Centered text positioning
-let startX = (canvas.width - ctx.measureText(phrase).width) / 2;
-let startY = canvas.height * 0.7;
+let startX, startY;
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    startX = (canvas.width - ctx.measureText(phrase).width) / 2;
+    startY = canvas.height * 0.7;
 
-for (let i = 0; i < phrase.length; i++) {
-    const char = phrase[i];
-    const width = ctx.measureText(char).width;
-    letters.push({
-        char,
-        x: startX,
-        y: startY,
-        width,
-        height: fontSize,
-        revealed: false
-    });
-    startX += width;
+    letters.length = 0;
+    for (let i = 0; i < phrase.length; i++) {
+        const char = phrase[i];
+        const width = ctx.measureText(char).width;
+        letters.push({
+            char,
+            x: startX,
+            y: startY,
+            width,
+            height: fontSize,
+            revealed: false
+        });
+        startX += width;
+    }
 }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
+// Mouse events
 document.addEventListener('mousedown', () => isMouseDown = true);
 document.addEventListener('mouseup', () => isMouseDown = false);
 document.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
+});
+
+// Touch support
+canvas.addEventListener('touchstart', (e) => {
+    isMouseDown = true;
+    const touch = e.touches[0];
+    mouse.x = touch.clientX;
+    mouse.y = touch.clientY;
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    mouse.x = touch.clientX;
+    mouse.y = touch.clientY;
+}, { passive: false });
+
+canvas.addEventListener('touchend', () => {
+    isMouseDown = false;
 });
 
 function drawMountain() {
@@ -162,39 +195,30 @@ function drawLetters() {
     });
 
     if (allRevealed) {
-    hue += 2;
-    const btn = document.getElementById("nextBtn");
-    btn.classList.add("revealed");
-    btn.disabled = false;
+        hue += 2;
+        const btn = document.getElementById("nextBtn");
+        btn.classList.add("revealed");
+        btn.disabled = false;
 
-    // Notify server ONCE
-    if (!window.rainCompleted) {
-        fetch('/complete-rain', { method: 'POST' });
-        window.rainCompleted = true;
+        if (!window.rainCompleted) {
+            fetch('/complete-rain', { method: 'POST' });
+            window.rainCompleted = true;
+        }
     }
-}
 }
 
 function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMountain();
 
-    let targetX, targetY;
+    let targetX = canvas.width / 2;
+    let targetY = 100;
 
-    const centerX = canvas.width / 2;
-    const centerY = 100;  // consistent height for cloud return
-
-    const allLettersRevealed = letters.every(l => l.revealed);
-
-    if (isMouseDown && !allLettersRevealed) {
+    if (isMouseDown && !allRevealed) {
         targetX = mouse.x;
         targetY = mouse.y;
-    } else {
-        targetX = centerX;
-        targetY = centerY;
     }
 
-    // Smooth cloud movement
     cloud.x += (targetX - cloud.x) * 0.05;
     cloud.y += (targetY - cloud.y) * 0.05;
 
@@ -214,7 +238,6 @@ function update() {
 
     requestAnimationFrame(update);
 }
-
 
 update();
 </script>
