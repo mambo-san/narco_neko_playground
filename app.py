@@ -21,12 +21,7 @@ else:
     app.secret_key = secret
 
 ################### Set limiter... Just in case.
-limiter = Limiter(get_remote_address, app=app, default_limits=["10 per hour"])
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["100 per hour"]  # fallback default
-)
+limiter = Limiter(get_remote_address, app=app, default_limits=["100 per hour"])
 @limiter.request_filter
 def exempt_internal():
     return request.remote_addr == "127.0.0.1"  # skip local dev
@@ -48,7 +43,7 @@ def complete_rain():
     session['rain_complete'] = True
     return jsonify({'status': 'ok'})
 
-@limiter.limit("25 per day") 
+@limiter.limit("10 per 1 hour") 
 @app.route('/ai_game_generator')
 def ai_game_generator():
     if not session.get('rain_complete'):
