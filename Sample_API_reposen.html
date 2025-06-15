@@ -1,0 +1,168 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <title>AI Game Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            background-color: #f7f7f8;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: space-between;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .prompt-label {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        #input-area {
+            display: flex;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            background: white;
+        }
+
+        #game-input {
+            flex-grow: 1;
+            border: none;
+            font-size: 1em;
+            outline: none;
+            resize: none;
+        }
+
+        #submit-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #game-container {
+            margin-top: 20px;
+        }
+    </style>
+<script type="text/javascript">(function(){var s=document.createElement("script");var port=(window.location.port || (window.location.protocol == 'https:' ? 443: 80));s.src="//"+window.location.hostname+":"+port+ "/livereload.js?port=" + port;document.head.appendChild(s);})();</script><script src="//127.0.0.1:5000/livereload.js?port=5000"></script><style></style></head>
+<body>
+    <div class="container">
+        <div id="form-section" style="display: none;">
+            <div class="prompt-label">Enter key words or description of the game you want to play</div>
+            <div id="input-area">
+                <textarea id="game-input" maxlength="400" rows="2" placeholder="e.g., A game where you dodge asteroids..."></textarea>
+                <button id="submit-btn" onclick="submitPrompt()">↑</button>
+            </div>
+        </div>
+
+        <div id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Generating game...</p>
+        </div>
+
+        <div id="game-container"><style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  #gameCanvas {
+    border: 1px solid #000;
+    background-color: #f0f0f0;
+  }
+  #message {
+    margin-top: 20px;
+    font-size: 18px;
+  }
+</style>
+
+<canvas id="gameCanvas" width="400" height="400"></canvas>
+<div id="message">Click the canvas to change the text!</div>
+
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  let message = 'Hello, World!';
+  const updateMessage = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = '30px Arial';
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+  };
+
+  canvas.addEventListener('click', () => {
+    message = message === 'Hello, World!' ? 'You clicked me!' : 'Hello, World!';
+    document.getElementById('message').textContent = message === 'Hello, World!' ? 'Click the canvas to change the text!' : 'Click again to go back!';
+    updateMessage();
+  });
+
+  updateMessage();
+</script></div>
+    </div>
+
+    <script>
+        const textarea = document.getElementById('game-input');
+        textarea.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                submitPrompt();
+            }
+        });
+
+        function submitPrompt() {
+            const prompt = textarea.value.trim();
+            if (!prompt) return;
+
+            document.getElementById("form-section").style.display = "none";
+            document.getElementById("loading").style.display = "block";
+
+            fetch('/game_generator/submit_prompt', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ prompt: prompt })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("game-container").innerHTML = data.html;
+            })
+            .catch(err => {
+                alert("Error generating game.");
+                console.error(err);
+            });
+        }
+    </script>
+
+<div id="sidebarr-app"></div></body></html>

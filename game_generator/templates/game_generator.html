@@ -1,1 +1,164 @@
-Hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Game Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            background-color: #f7f7f8;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: space-between;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .prompt-label {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        #input-area {
+            display: flex;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            background: white;
+        }
+
+        #game-input {
+            flex-grow: 1;
+            border: none;
+            font-size: 1em;
+            outline: none;
+            resize: none;
+        }
+
+        #submit-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #game-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="form-section">
+            <div class="prompt-label">Enter key words or description of the game you want to play</div>
+            <div id="input-area">
+                <textarea id="game-input" maxlength="400" rows="2" placeholder="e.g., A game where you dodge asteroids..."></textarea>
+                <button id="submit-btn" onclick="submitPrompt()">↑</button>
+            </div>
+        </div>
+
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>Generating game...</p>
+        </div>
+
+        <div id="game-container"></div>
+        <button id="replay-btn" style="display: none; margin-top: 10px;" onclick="replayGame()">Replay</button>
+    </div>
+
+    <script>
+	    const textarea = document.getElementById('game-input');
+	    let lastGeneratedGame = null;
+
+	    textarea.addEventListener("keydown", function (e) {
+	        if (e.key === "Enter" && !e.shiftKey) {
+	            e.preventDefault();
+	            submitPrompt();
+	        }
+	    });
+
+	    function submitPrompt() {
+	        const prompt = textarea.value.trim();
+	        if (!prompt) return;
+
+	        document.getElementById("form-section").style.display = "none";
+	        document.getElementById("loading").style.display = "block";
+
+	        fetch('/game_generator/submit_prompt', {
+	            method: 'POST',
+	            headers: {'Content-Type': 'application/json'},
+	            body: JSON.stringify({ 
+	            	prompt: prompt, 
+	            	screen: {
+						width: window.screen.width,
+						height: window.screen.height,
+						viewportWidth: window.innerWidth,
+						viewportHeight: window.innerHeight
+	            	}
+	            })
+	        })
+	       .then(() => {
+		    // Now redirect to the play page after successful submission
+		        window.location.href = "/game_generator/play";
+		    })
+		    .catch(err => {
+		        alert("Error generating game.");
+		        console.error(err);
+		    });
+	    }
+
+	    function replayGame() {
+	        if (!lastGeneratedGame) return;
+
+	        const container = document.getElementById("game-container");
+	        container.innerHTML = lastGeneratedGame;
+	        runScriptsIn(container);
+	    }
+
+	    function runScriptsIn(container) {
+	        const scripts = container.querySelectorAll("script");
+	        scripts.forEach(oldScript => {
+	            const newScript = document.createElement("script");
+	            if (oldScript.src) {
+	                newScript.src = oldScript.src;
+	            } else {
+	                newScript.textContent = `(function() { ${oldScript.textContent} })();`;
+	            }
+	            oldScript.replaceWith(newScript);
+	        });
+	    }
+	</script>
+</body>
+</html>

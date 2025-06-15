@@ -1,0 +1,6 @@
+{
+    "cmd": [".\\venv\\Scripts\\python.exe --version"],
+    "file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+    "selector": "source.python",
+    "working_dir": "$file_path"
+}
