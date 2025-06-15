@@ -73,27 +73,65 @@ ctx.font = `${fontSize}px sans-serif`;
 ctx.textBaseline = "top";
 
 let startX, startY;
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    startX = (canvas.width - ctx.measureText(phrase).width) / 2;
-    startY = canvas.height * 0.7;
+
+    const heightRatio = window.innerWidth > 600 ? 0.6 : 0.7;
+    startY = canvas.height * heightRatio;
 
     letters.length = 0;
-    for (let i = 0; i < phrase.length; i++) {
-        const char = phrase[i];
-        const width = ctx.measureText(char).width;
-        letters.push({
-            char,
-            x: startX,
-            y: startY,
-            width,
-            height: fontSize,
-            revealed: false
-        });
-        startX += width;
+
+    if (canvas.width <= 600) {
+        // Mobile layout: spread across 80% of screen
+        const spreadWidth = canvas.width * 0.8;
+        const letterSpacing = spreadWidth / phrase.length;
+        const leftMargin = (canvas.width - spreadWidth) / 2;
+
+        for (let i = 0; i < phrase.length; i++) {
+            const char = phrase[i];
+            letters.push({
+                char,
+                x: leftMargin + i * letterSpacing,
+                y: startY,
+                width: ctx.measureText(char).width,
+                height: fontSize,
+                revealed: char === ' '
+            });
+        }
+    } else {
+        // Desktop layout: dynamic spacing based on screen width
+        const spacing = Math.min(canvas.width * 0.1, 40); // cap at 20px
+        let totalWidth = 0;
+
+        // Calculate total width including dynamic spacing
+        for (let i = 0; i < phrase.length; i++) {
+            totalWidth += ctx.measureText(phrase[i]).width;
+            if (i < phrase.length - 1) totalWidth += spacing;
+        }
+
+        let cursorX = (canvas.width - totalWidth) / 2;
+
+        for (let i = 0; i < phrase.length; i++) {
+            const char = phrase[i];
+            const width = ctx.measureText(char).width;
+
+            letters.push({
+                char,
+                x: cursorX,
+                y: startY,
+                width,
+                height: fontSize,
+                revealed: char === ' '
+            });
+
+            cursorX += width + spacing;
+        }
     }
 }
+
+
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
@@ -148,6 +186,17 @@ function drawCloud(x, y) {
 function drawRain() {
     ctx.strokeStyle = '#1f75fe';
     ctx.lineWidth = 2;
+
+    const btn = document.getElementById("nextBtn");
+    const btnRect = btn.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+
+    // Convert button position to canvas coordinates
+    const btnX = btnRect.left - canvasRect.left;
+    const btnY = btnRect.top - canvasRect.top;
+    const btnWidth = btnRect.width;
+    const btnHeight = btnRect.height;
+
     raindrops.forEach((drop, index) => {
         ctx.beginPath();
         ctx.moveTo(drop.x, drop.y);
@@ -166,12 +215,30 @@ function drawRain() {
             }
         });
 
+        // Interact with button
+        if ( allRevealed &&
+            drop.x >= btnX &&
+            drop.x <= btnX + btnWidth &&
+            drop.y >= btnY &&
+            drop.y <= btnY + btnHeight
+        ) {
+            // Splash effect
+            ctx.beginPath();
+            ctx.arc(drop.x, drop.y - 10, 2 + Math.random() * 3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.fill();
+
+            raindrops.splice(index, 1); // remove raindrop
+            return;
+        }
+
         drop.y += 10;
         if (drop.y > canvas.height) {
             raindrops.splice(index, 1);
         }
     });
 }
+
 
 let hue = 0;
 let allRevealed = false;
@@ -224,8 +291,7 @@ function update() {
 
     drawCloud(cloud.x, cloud.y);
 
-    const dist = Math.hypot(cloud.x - mouse.x, cloud.y - mouse.y);
-    const raining = isMouseDown && dist < 50;
+    const raining = isMouseDown;
 
     if (raining) {
         for (let i = 0; i < 5; i++) {

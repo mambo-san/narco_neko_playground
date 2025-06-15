@@ -48,7 +48,8 @@ def rate_limit_exceeded(e):
     return render_template("too_many_requests.html", error=e), 429
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  
+    app.run(host="0.0.0.0", port=5000, debug=True)
     app.run(debug=True)
 
-print(app.url_map)
+print(app.url_map)  
