@@ -1,17 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Welcome</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome | Narco Neko Playground</title>
+  <script>
+    if (!localStorage.getItem('theme') || localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+  
 </head>
-<body>
-    <div class="container">
-        <h1>Welcome to My App</h1>
-        <div class="button-group">
-            <a href="{{ url_for('game_generator.index') }}" class="button">Game Generator</a>
-            <a href="{{ url_for('action2') }}" class="button">Go to Action 2</a>
+<body class="transition-colors duration-1000 bg-slate-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-100">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="fixed top-20 right-4 z-50 space-y-2">
+          {% for category, message in messages %}
+            <div class="px-4 py-2 rounded-md shadow text-white
+                        {% if category == 'success' %} bg-green-500 {% else %} bg-red-500 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
         </div>
+      {% endif %}
+    {% endwith %}
+
+  <!-- Mobile Sidebar Toggle Button -->
+  <div class="fixed top-4 left-4 z-50 sm:hidden">
+    <button id="menuBtn" class="text-3xl">☰</button>
+  </div>
+
+  <!-- Dark Mode Toggle -->
+  <div class="fixed top-4 right-4 z-50">
+    <button id="themeToggle" class="text-2xl bg-white dark:bg-gray-800 text-black dark:text-white px-3 py-1 rounded-md shadow">
+      🌓
+    </button>
+  </div>
+
+  <!-- Sidebar Menu -->
+  <div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-white dark:bg-gray-800 shadow-lg transform -translate-x-full transition-transform duration-1000 sm:hidden z-40">
+    <div class="p-6">
+      <button id="closeBtn" class="text-xl mb-4 dark:text-white">✕ Close</button>
+      <nav class="flex flex-col space-y-4">
+        <a href="/" class="text-blue-600 dark:text-blue-400 font-semibold">🏠 Home</a>
+        <a href="#projects" class="text-blue-600 dark:text-blue-400 font-semibold">🧩 Projects</a>
+        <a href="#about" class="text-blue-600 dark:text-blue-400 font-semibold">👤 About Me</a>
+        <a href="#contact" class="text-blue-600 dark:text-blue-400 font-semibold">📬 Contact</a>
+      </nav>
     </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex flex-col items-center px-4 py-16 sm:py-24">
+
+    <!-- Hero -->
+    <h1 class="text-4xl sm:text-6xl font-bold mb-4 animate-fade-in text-center">Narco Neko Playground 🐾</h1>
+    <p class="text-lg sm:text-xl mb-12 max-w-xl text-center text-gray-700 dark:text-gray-300 animate-fade-in delay-1">
+      A collection of fun, experimental mini-projects powered by Flask and curiosity.
+    </p>
+
+    <!-- Projects -->
+    <div id="projects" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl animate-fade-in delay-2">
+      <a href="/make_it_rain"
+         class="transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
+        🌧 Make it Rain
+      </a>
+      <a href="/game_generator"
+         class="transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
+        🎮 Game Generator
+      </a>
+      <a href="/earthquake_map"
+         class="transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
+        🌍 Earthquake Visualizer
+      </a>
+    </div>
+
+    <!-- About Me -->
+    <section id="about" class="mt-24 max-w-2xl text-center px-4">
+      <h2 class="text-3xl font-bold mb-4">About Me</h2>
+      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+        I'm Takuma — a software engineer who builds silly, insightful, and sometimes oddly useful mini-projects.<br>
+        I love exploring the intersection of technology, play, and cultural storytelling.  
+      </p>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="mt-24 max-w-2xl text-center px-4">
+      <h2 class="text-3xl font-bold mb-4">Contact Me</h2>
+
+      <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">
+        Interested in working together? I’d love to hear from you!
+      </p>
+      <form action="/submit_contact" method="POST">
+        <div>
+          <label class="block text-sm font-medium mb-1" for="name">Name</label>
+          <input type="text" id="name" name="name" required
+            class="w-full px-4 py-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="email">Email</label>
+          <input type="email" id="email" name="email" required
+            class="w-full px-4 py-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required
+            class="w-full px-4 py-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+        </div>
+        <button type="submit"
+          class="w-full bg-blue-500 dark:bg-blue-400 text-white font-semibold py-2 rounded-md hover:bg-blue-600 dark:hover:bg-blue-500 transition-all">
+          Send Message
+        </button>
+      </form>
+
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-6">
+        Or just email me at
+        <a href="mailto:takuma.sato.nz@gmail.com" class="text-blue-600 dark:text-blue-400 underline">takuma.sato.nz@gmail.com</a>
+      </p>
+
+      <div class="mt-10 text-gray-700 dark:text-gray-300">
+        <p class="text-base">
+          If you're curious about what I'm up to outside this site:
+        </p>
+        <a href="https://mambo-san.github.io/" target="_blank" class="text-blue-600 dark:text-blue-400 font-semibold underline block mt-2">
+          https://mambo-san.github.io/
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- Fade-In Animation Styles -->
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    .delay-1 { animation-delay: 0.3s; }
+    .delay-2 { animation-delay: 0.6s; }
+  </style>
+
+  <!-- Sidebar Script -->
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const closeBtn = document.getElementById('closeBtn');
+    menuBtn.onclick = () => sidebar.classList.remove('-translate-x-full');
+    closeBtn.onclick = () => sidebar.classList.add('-translate-x-full');
+  </script>
+
+  <!-- Dark Mode Toggle Script -->
+  <script>
+      const toggle = document.getElementById('themeToggle');
+      const html = document.documentElement;
+
+      toggle.onclick = () => {
+        if (html.classList.contains('dark')) {
+          html.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        } else {
+          html.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        }
+      };
+    </script>
 </body>
 </html>

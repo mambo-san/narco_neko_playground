@@ -62,6 +62,9 @@ def submit_prompt():
             f"The game must be mobile friendly." 
             f"The game control must be done via touch panel."
         )
+    else:
+        full_prompt += f"Within the HTML, have a text box that shows the control and goal of the game within the HTML."
+    
     full_prompt += (
          f"User wants game with the follwoing description: {prompt}"
     )
@@ -78,16 +81,16 @@ def submit_prompt():
                 {"role": "system",
                     "content": (
                         "You are an HTML game generator assistant. "
-                        "Return a valid HTML from start to finish."
-                        "The output must be immediately usable as a standalone HTML page. "
-                        "Include <style> and <script> if needed, but do not wrap the response in markdown, backticks, or any extra explanation. "
-                        "The game should be mathmatically (visually) pleasing to watch"
+                        "Only respond with a single valid HTML from start to finish."
+                        "The output must be immediately usable as a standalone HTML page (do not load external resource from the HTML). "
                         "Only return clean, raw HTML."
+                        "The game you generate needs randomness and a goal."
+
                     )},
                 {"role": "user", "content": full_prompt}
             ],
             temperature=0.7, # The higher this value, the more "creative" but also higher risk of malformed response.
-            max_tokens=2000
+            max_tokens=4000
         )
 
         raw_html = response.choices[0].message.content

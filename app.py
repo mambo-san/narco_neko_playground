@@ -1,6 +1,8 @@
 import os
 
-from flask import Flask, render_template, redirect, url_for, session, request, jsonify
+from flask import Flask, render_template, redirect, url_for, session, request, jsonify, flash
+from flask_mail import Message, Mail
+from config import Config
 from dotenv import load_dotenv
 from extensions.limiter import limiter
 #Blue prints
@@ -15,6 +17,11 @@ import socket
 load_dotenv()  # loads variables from .env
 
 app = Flask(__name__)
+# Email setup
+app.config.from_object(Config)
+mail = Mail(app)
+
+#Blueprints:
 app.register_blueprint(game_generator_bp)
 
 #API keys
@@ -37,8 +44,35 @@ def exempt_internal():
 ################### routes
 
 @app.route('/')
-def welcome():
+def index():
     return render_template('index.html')
+
+@app.route('/submit_contact', methods=['POST'])
+def submit_contact():
+    name = request.form.get('name')
+    email = request.form.get('email')
+    message = request.form.get('message')
+
+    if not (name and email and message):
+        flash("All fields are required.", "error")
+        return redirect('/')
+
+    print(f"[Contact Form] {name} ({email}) said: {message}")
+    print("Default sender is:", app.config.get('MAIL_DEFAULT_SENDER'))
+    try:
+        msg = Message(subject=f"[NNP:Contact] from {name}",
+                      sender=app.config['MAIL_DEFAULT_SENDER'],
+                      recipients=[app.config['MAIL_USERNAME']],
+                      body=f"From: {name} <{email}>\n\n{message}")
+
+        mail.send(msg)
+        flash("Thanks for reaching out! I’ll get back to you soon.", "success")
+    except Exception as e:
+        print(f"Mail error: {e}")
+        flash("Oops. Message failed to send.", "error")
+
+    return redirect('/')
+
 
 
 @app.route('/action2')
@@ -72,5 +106,5 @@ if __name__ == '__main__':
         server.watch('templates/*.html')
         server.watch('static/*.css')
         # this starts Flask + opens browser automatically
-        #server.serve(open_url_delay=1, host='127.0.0.1', port=5000, debug=True)
-        server.serve(open_url_delay=1, host='0.0.0.0', port=5000, debug=True)
+        server.serve(open_url_delay=1, host='127.0.0.1', port=5000, debug=True)
+        #server.serve(open_url_delay=1, host='0.0.0.0', port=5000, debug=True)
