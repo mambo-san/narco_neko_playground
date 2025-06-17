@@ -270,7 +270,10 @@
             btn.disabled = false;
 
             if (!window.rainCompleted) {
-                fetch('/complete-rain', { method: 'POST' });
+                fetch('/game_generator/complete_rain', { 
+                    method: 'POST', 
+                    credentials: 'same-origin'
+                });
                 window.rainCompleted = true;
             }
         }

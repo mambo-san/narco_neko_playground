@@ -112,7 +112,7 @@
 	        document.getElementById("form-section").style.display = "none";
 	        document.getElementById("loading").style.display = "block";
 
-	        fetch('/game_generator/submit_prompt', {
+	        fetch('submit_prompt', {
 	            method: 'POST',
 	            headers: {'Content-Type': 'application/json'},
 	            body: JSON.stringify({ 
@@ -127,7 +127,7 @@
 	        })
 	       .then(() => {
 		    // Now redirect to the play page after successful submission
-		        window.location.href = "/game_generator/play";
+		        window.location.href = "play";
 		    })
 		    .catch(err => {
 		        alert("Error generating game.");

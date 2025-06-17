@@ -47,7 +47,22 @@ def get_mini_projects():
             'description': 'Generate games with AI'
         },
         {
-            'name': 'Dummy Project',
+            'name': 'Dummy Project 2',
+            'endpoint': 'game_generator.game_generator',
+            'description': 'My next project'
+        },
+        {
+            'name': 'Dummy Project 3',
+            'endpoint': 'game_generator.game_generator',
+            'description': 'My next project'
+        },
+        {
+            'name': 'Dummy Project 4',
+            'endpoint': 'game_generator.game_generator',
+            'description': 'My next project'
+        },
+        {
+            'name': 'Dummy Project 5',
             'endpoint': 'game_generator.game_generator',
             'description': 'My next project'
         },
@@ -67,10 +82,7 @@ def exempt_internal():
 def index():
 
     projects = get_mini_projects()
-
-
-
-    return render_template('index.html')
+    return render_template('index.html', projects=projects)
 
 @app.route('/submit_contact', methods=['POST'])
 def submit_contact():
@@ -136,7 +148,8 @@ if __name__ == '__main__':
             server.watch('**/*.js')
             server.watch('**/*.py')
             #
-            server.serve(open_url_delay=1, host='127.0.0.1', port=5000, debug=True)
+            server.serve(host='127.0.0.1', port=5000, debug=True)
+            #app.run(host='0.0.0.0', port=5000)
     else: #PROD
          app.run(host='0.0.0.0', port=5000)
 
