@@ -66,7 +66,7 @@ def submit_prompt():
         full_prompt += f"Within the HTML, have a text box that shows the control and goal of the game within the HTML."
     
     full_prompt += (
-         f"User wants game with the follwoing description: {prompt}"
+         f"User wants game with the following description: {prompt}"
     )
 
     ### Ask OpenAI very nicely and pray ⛩️:

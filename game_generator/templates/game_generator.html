@@ -93,14 +93,10 @@
             <div class="spinner"></div>
             <p>Generating game...</p>
         </div>
-
-        <div id="game-container"></div>
-        <button id="replay-btn" style="display: none; margin-top: 10px;" onclick="replayGame()">Replay</button>
     </div>
 
     <script>
 	    const textarea = document.getElementById('game-input');
-	    let lastGeneratedGame = null;
 
 	    textarea.addEventListener("keydown", function (e) {
 	        if (e.key === "Enter" && !e.shiftKey) {
@@ -137,14 +133,6 @@
 		        alert("Error generating game.");
 		        console.error(err);
 		    });
-	    }
-
-	    function replayGame() {
-	        if (!lastGeneratedGame) return;
-
-	        const container = document.getElementById("game-container");
-	        container.innerHTML = lastGeneratedGame;
-	        runScriptsIn(container);
 	    }
 
 	    function runScriptsIn(container) {

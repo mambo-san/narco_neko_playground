@@ -21,8 +21,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 mail = Mail(app)
 
-#Blueprints:
-app.register_blueprint(game_generator_bp)
+
 
 #API keys
 if os.getenv('FLASK_ENV') == 'development':
@@ -35,6 +34,27 @@ else:
         raise RuntimeError("Missing FLASK_SECRET_KEY in production!")
     app.secret_key = secret
 
+#Blueprints (list of mini projects):
+app.register_blueprint(game_generator_bp, url_prefix='/game_generator')
+
+# collect mini projects
+def get_mini_projects():
+    return [
+        
+        {
+            'name': '🎮 Game Generator',
+            'endpoint': 'game_generator.game_generator',
+            'description': 'Generate games with AI'
+        },
+        {
+            'name': 'Dummy Project',
+            'endpoint': 'game_generator.game_generator',
+            'description': 'My next project'
+        },
+        # Add more as needed
+    ]
+
+
 ################### Set limiter... Just in case.
 limiter.init_app(app)
 @limiter.request_filter
@@ -45,6 +65,11 @@ def exempt_internal():
 
 @app.route('/')
 def index():
+
+    projects = get_mini_projects()
+
+
+
     return render_template('index.html')
 
 @app.route('/submit_contact', methods=['POST'])
@@ -98,13 +123,21 @@ def is_server_running(host='127.0.0.1', port=5000):
         return result == 0  # 0 means port is in use (server is running)
 
 if __name__ == '__main__':
-    if is_server_running():
-        print("Server is already running on 127.0.0.1:5000/")
-    else:
-        print(app.url_map)  
-        server = Server(app.wsgi_app)
-        server.watch('templates/*.html')
-        server.watch('static/*.css')
-        # this starts Flask + opens browser automatically
-        server.serve(open_url_delay=1, host='127.0.0.1', port=5000, debug=True)
-        #server.serve(open_url_delay=1, host='0.0.0.0', port=5000, debug=True)
+
+    if os.getenv('FLASK_ENV') == 'development':
+        if is_server_running():
+            print("Server is already running on 127.0.0.1:5000/")
+        else:
+            print(app.url_map)  
+            #Live reload server
+            server = Server(app.wsgi_app)
+            server.watch('**/*.html')
+            server.watch('**/*.css')
+            server.watch('**/*.js')
+            server.watch('**/*.py')
+            #
+            server.serve(open_url_delay=1, host='127.0.0.1', port=5000, debug=True)
+    else: #PROD
+         app.run(host='0.0.0.0', port=5000)
+
+    

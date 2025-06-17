@@ -63,23 +63,17 @@
     <!-- Hero -->
     <h1 class="text-4xl sm:text-6xl font-bold mb-4 animate-fade-in text-center">Narco Neko Playground 🐾</h1>
     <p class="text-lg sm:text-xl mb-12 max-w-xl text-center text-gray-700 dark:text-gray-300 animate-fade-in delay-1">
-      A collection of fun, experimental mini-projects powered by Flask and curiosity.
+      A collection of fun, experimental mini-projects powered curiosity and caffeine overdose.
     </p>
 
     <!-- Projects -->
     <div id="projects" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl animate-fade-in delay-2">
-      <a href="/make_it_rain"
+      {% for project in projects %}
+      <a href="{{ url_for(project.endpoint) }}"
          class="transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
-        🌧 Make it Rain
+        {{ project.emoji }} {{ project.name }}
       </a>
-      <a href="/game_generator"
-         class="transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
-        🎮 Game Generator
-      </a>
-      <a href="/earthquake_map"
-         class="transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
-        🌍 Earthquake Visualizer
-      </a>
+      {% endfor %}
     </div>
 
     <!-- About Me -->
