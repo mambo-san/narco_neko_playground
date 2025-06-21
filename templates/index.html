@@ -37,12 +37,6 @@
     <button id="menuBtn" class="text-3xl">☰</button>
   </div>
 
-  <!-- Dark Mode Toggle -->
-  <div class="fixed top-4 right-4 z-50">
-    <button id="themeToggle" class="text-2xl bg-white dark:bg-gray-800 text-black dark:text-white px-3 py-1 rounded-md shadow">
-      🌓
-    </button>
-  </div>
 
   <!-- Sidebar Menu -->
   <div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-white dark:bg-gray-800 shadow-lg transform -translate-x-full transition-transform duration-1000 sm:hidden z-40">
@@ -63,7 +57,7 @@
     <!-- Hero -->
     <h1 class="text-4xl sm:text-6xl font-bold mb-4 animate-fade-in text-center">Narco Neko Playground 🐾</h1>
     <p class="text-lg sm:text-xl mb-12 max-w-xl text-center text-gray-700 dark:text-gray-300 animate-fade-in delay-1">
-      A collection of fun, experimental mini-projects powered curiosity and caffeine overdose.
+      A collection of fun, experimental mini-projects powered by curiosity and caffeine overdose.
     </p>
 
     <!-- Projects -->
@@ -116,7 +110,7 @@
 
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-6">
         Or just email me at
-        <a href="mailto:takuma.sato.nz@gmail.com" class="text-blue-600 dark:text-blue-400 underline">takuma.sato.nz@gmail.com</a>
+        <a href="mailto:takuma.sato.nz@gmail.com" class="text-blue-600 dark:text-blue-400 underline">{{my_email}}</a>
       </p>
 
       <div class="mt-10 text-gray-700 dark:text-gray-300">
@@ -176,23 +170,6 @@
     closeBtn.onclick = () => sidebar.classList.add('-translate-x-full');
   </script>
 
-  <!-- Dark Mode Toggle Script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-    // your JS code here
-      const toggle = document.getElementById('themeToggle');
-      const html = document.documentElement;
-
-      toggle.onclick = () => {
-        if (html.classList.contains('dark')) {
-          html.classList.remove('dark');
-          localStorage.setItem('theme', 'light');
-        } else {
-          html.classList.add('dark');
-          localStorage.setItem('theme', 'dark');
-        }
-      }};
-      
-    </script>
+  
 </body>
 </html>

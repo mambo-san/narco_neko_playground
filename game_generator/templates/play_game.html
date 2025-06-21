@@ -1,0 +1,32 @@
+<!-- templates/play_game.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Game Generator</title>
+    <style>
+        iframe {
+            width: 100%;
+            height: 90vh;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <iframe src="{{ url_for('game_generator.embedded_game') }}"></iframe>
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="submitFeedback('up')"> Good job AI👍 </button>
+        <button onclick="submitFeedback('down')"> Bad job AI👎 </button>
+    </div>
+</body>
+<script>
+    function submitFeedback(rating) {
+        fetch('/game_generator/submit_feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rating: rating })
+        }).then(res => {
+            if (res.ok) alert('Thanks for your feedback!');
+        });
+    }
+</script>
+</html>

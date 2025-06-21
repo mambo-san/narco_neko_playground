@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request
-from extensions.limiter import limiter
+from extensions import limiter
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
 import re
+
+from .models import Game_data
 
 game_generator_bp = Blueprint(
 	'game_generator', 
@@ -36,7 +38,6 @@ def game_generator():
         return redirect(url_for('game_generator.index'))
     #User needs to complete the stupid game every use
     session.pop('rain_complete', None)
-    print('Redirect to game_generator')
     return render_template('game_generator.html')
 
 @game_generator_bp.route('/submit_prompt', methods=['POST'])
@@ -48,10 +49,9 @@ def submit_prompt():
     viewport_height = screen.get('viewportHeight')
     is_likely_on_mobile = 'Mobi' in request.user_agent.string #Find out if user is on phone
     print(f"[DEBUG] Received prompt: {user_prompt}")
-    print(f"[DEBUG] Received view_port size: {viewport_width} x {viewport_height}")
 
     if not user_prompt:
-        return jsonify({'error': 'Empty prompt'}), 400
+        return jsoniafy({'error': 'Empty prompt'}), 400
 
     message =messages = build_game_generation_prompt(
         prompt= user_prompt,
@@ -65,38 +65,57 @@ def submit_prompt():
         client = OpenAI(
             api_key = os.getenv('AI_API_KEY')
         )
+
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=messages,
             temperature=0.7, # The higher this value, the more "creative" but also higher risk of malformed response.
             max_tokens=4000
         )
-
         raw_html = response.choices[0].message.content
         print("[DEBUG] API response received.")
 
         cleaned_html = re.sub(r"^```html\s*|\s*```$", "", raw_html.strip(), flags=re.IGNORECASE)
-        print("[DEBUG] API response cleaned: " + cleaned_html)
-
+        print("[DEBUG] API response cleaned")
+        session['user_prompt'] = user_prompt
         session['generated_html'] = cleaned_html
         return jsonify({'status': 'ok'})
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print("[ERROR]", str(e))
         return jsonify({'error': 'Server error'}), 500
+
 
 @game_generator_bp.route('/play')
 def play_game():
     game_html = session.get('generated_html')
     if not game_html:
         return redirect(url_for('game_generator.game_generator'))
+    return render_template('play_game.html')
 
+@game_generator_bp.route('/embedded_game')
+def embedded_game():
+    game_html = session.get('generated_html')
+    if not game_html:
+        return "<p>No game generated yet.</p>"
     return game_html
 
 
+@game_generator_bp.route('/submit_feedback', methods=['POST'])
+def submit_feedback():
+    data = request.get_json()
 
+    prompt = session.get('user_prompt')
+    html = session.get('generated_html')
 
+    if not prompt or not html:
+        return jsonify({'error': 'Missing game data'}), 400
 
+    Game_data.insert_new_game(prompt, html)
+
+    return jsonify({'status': 'feedback saved'})
 
 def build_game_generation_prompt(prompt, viewport_width, viewport_height, is_likely_on_mobile):
     full_prompt = (
@@ -128,14 +147,17 @@ def build_game_generation_prompt(prompt, viewport_width, viewport_height, is_lik
             "content": (
                 "You are an HTML game generator assistant.\n"
                 "Only respond with a single valid HTML file — no explanation, no markdown.\n"
-                "The HTML must be complete, self-contained, and use only inline JavaScript and CSS.\n"
+                "The HTML must be complete, self-contained, and use only inline scripts. e.g. JavaScript and CSS.\n"
                 "Do not load any external libraries or assets.\n"
                 "The game must be interactive and include randomness and a clear goal.\n"
                 "Avoid relying on <form> or <input type='text'> unless they are part of the gameplay.\n"
                 "Only return clean, raw HTML that can be copied and saved directly as a playable game."
+                "The graphical aspect of the game needs to use elements of math to make it interesting. E.g. Use sine, cosine to control enemy movement."
             )
         },
         {"role": "user", "content": full_prompt}
     ]
 
     return messages
+
+
