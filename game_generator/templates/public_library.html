@@ -47,6 +47,24 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        .iframe-center {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 85vh;
+            aspect-ratio: 9 / 16;
+        }
+        .iframe-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 
 
@@ -110,105 +128,86 @@
                 let currentSortDirection = 'asc';
 
                 window.showGame = function (gameId) {
-                    const table = document.getElementById("gameTable");
-                    const button = document.querySelector(`button[data-id="${gameId}"]`);
-                    const newGameBtn = document.getElementById("newGameBtnContainer");
-                    const promptText = button.dataset.prompt;
+                const table = document.getElementById("gameTable");
+                const button = document.querySelector(`button[data-id="${gameId}"]`);
+                const newGameBtn = document.getElementById("newGameBtnContainer");
+                const promptText = button.dataset.prompt;
 
-                    const htmlScriptTag = document.getElementById(`game-html-${gameId}`);
-                    const gameHtml = JSON.parse(htmlScriptTag.textContent);
+                const htmlScriptTag = document.getElementById(`game-html-${gameId}`);
+                const gameHtml = JSON.parse(htmlScriptTag.textContent);
 
-                    if (!originalTable) {
-                        originalTable = table.outerHTML;
-                    }
-                    //hide stuff
-                    table.style.display = "none";
-                    newGameBtn.style.display = "none";
+                const viewer = document.getElementById("gameViewer");
+                const title = document.getElementById("pageTitle");
 
-                    const viewer = document.getElementById("gameViewer");
-                    const title = document.getElementById("pageTitle");
-                    if (title) title.style.display = "none";
-                    viewer.innerHTML = "";
+                if (title) title.style.display = "none";
+                table.style.display = "none";
+                newGameBtn.style.display = "none";
+                viewer.innerHTML = "";
 
-                    const heading = document.createElement("h2");
-                    heading.style.color = "#ffcc66";
-                    heading.textContent = `🎮 ${promptText}`;
-                    heading.style.textAlign = "center";
-                    heading.style.marginBottom = "1rem";
+                const heading = document.createElement("h2");
+                heading.style.color = "#ffcc66";
+                heading.textContent = `🎮 ${promptText}`;
+                heading.style.textAlign = "center";
+                heading.style.marginBottom = "1rem";
 
-                    // Read game canvas size
-                    const tempDiv = document.createElement("div");
-                    tempDiv.innerHTML = gameHtml;
-                    const canvas = tempDiv.querySelector("canvas");
+                // Build iframe
+                const iframe = document.createElement("iframe");
+                iframe.srcdoc = gameHtml;
+                iframe.style.width = "100%";
+                iframe.style.height = "100%";
+                iframe.style.border = "none";
+                iframe.allowFullscreen = true;
 
-                    let width = 800;
-                    let height = 600;
-                    if (canvas) {
-                        width = parseInt(canvas.getAttribute("width")) || 800;
-                        height = parseInt(canvas.getAttribute("height")) || 600;
-                    }
+                // Outer center container
+                const iframeCenter = document.createElement("div");
+                iframeCenter.className = "iframe-center";
 
-                    // Scale iframe to fit container width responsively
-                    const scale = Math.min(1, window.innerWidth / (width + 32));
+                // Inner wrapper with fixed aspect ratio and size
+                const iframeWrapper = document.createElement("div");
+                iframeWrapper.className = "iframe-wrapper";
 
-                    const scaledContainer = document.createElement("div");
-                    scaledContainer.style.position = "relative";
-                    scaledContainer.style.overflow = "hidden";
-                    scaledContainer.style.width = `${width * scale}px`;
-                    scaledContainer.style.height = `${height * scale}px`;
-                    scaledContainer.style.margin = "0 auto";
+                // Nest and attach
+                iframeWrapper.appendChild(iframe);
+                iframeCenter.appendChild(iframeWrapper);
 
-                    const iframe = document.createElement("iframe");
-                    iframe.srcdoc = gameHtml;
-                    iframe.style.width = `${width}px`;
-                    iframe.style.height = `${height}px`;
-                    iframe.style.border = "1px solid #444";
-                    iframe.style.transform = `scale(${scale})`;
-                    iframe.style.transformOrigin = "top left";
-                    iframe.style.display = "block";
-                    iframe.style.pointerEvents = "auto"; // allows interaction
+                // Voting buttons
+                const voteContainer = document.createElement("div");
+                voteContainer.style.display = "flex";
+                voteContainer.style.justifyContent = "center";
+                voteContainer.style.alignItems = "center";
+                voteContainer.style.flexWrap = "wrap";
+                voteContainer.style.columnGap = "0.5rem";
+                voteContainer.style.rowGap = "0.5rem";
+                voteContainer.style.marginTop = "1.5rem";
 
-                    scaledContainer.appendChild(iframe);
+                const goodBtn = document.createElement("button");
+                goodBtn.id = "goodBtn";
+                goodBtn.className = "toggle-btn";
+                goodBtn.textContent = "👍 Good game";
+                goodBtn.onclick = () => submitVote(gameId, 1);
 
-                    const voteContainer = document.createElement("div");
-                    voteContainer.style.display = "flex";
-                    voteContainer.style.justifyContent = "center";
-                    voteContainer.style.alignItems = "center";
-                    voteContainer.style.flexWrap = "wrap";         // still mobile-friendly
-                    voteContainer.style.columnGap = "0.5rem";      // tighter spacing between buttons
-                    voteContainer.style.rowGap = "0.5rem";         // spacing if they wrap
-                    voteContainer.style.marginTop = "1.5rem";
+                const badBtn = document.createElement("button");
+                badBtn.id = "badBtn";
+                badBtn.className = "toggle-btn";
+                badBtn.textContent = "👎 Not so interesting";
+                badBtn.onclick = () => submitVote(gameId, -1);
 
-                    const goodBtn = document.createElement("button");
-                    goodBtn.id = "goodBtn";
-                    goodBtn.className = "toggle-btn";
-                    goodBtn.textContent = "👍 Good game";
-                    goodBtn.onclick = () => submitVote(gameId, 1);
-                    goodBtn.style.flex = "0 1 auto";
+                const backBtn = document.createElement("button");
+                backBtn.className = "toggle-btn";
+                backBtn.textContent = "⬅ Back to Library";
+                backBtn.onclick = hideGame;
 
-                    const badBtn = document.createElement("button");
-                    badBtn.id = "badBtn";
-                    badBtn.className = "toggle-btn";
-                    badBtn.textContent = "👎 Not so interesting";
-                    badBtn.onclick = () => submitVote(gameId, -1);
-                    badBtn.style.flex = "0 1 auto";
+                voteContainer.appendChild(goodBtn);
+                voteContainer.appendChild(badBtn);
+                voteContainer.appendChild(backBtn);
 
-                    const backBtn = document.createElement("button");
-                    backBtn.className = "toggle-btn";
-                    backBtn.textContent = "⬅ Back to Library";
-                    backBtn.onclick = hideGame;
-                    backBtn.style.flex = "0 1 auto";
+                viewer.appendChild(heading);
+                viewer.appendChild(iframeCenter);
+                viewer.appendChild(voteContainer);
+                viewer.style.display = "block";
+                viewer.scrollIntoView({ behavior: "smooth" });
+            };
 
-                    voteContainer.appendChild(goodBtn);
-                    voteContainer.appendChild(badBtn);
-                    voteContainer.appendChild(backBtn);
-
-                    viewer.appendChild(heading);
-                    viewer.appendChild(scaledContainer);
-                    viewer.appendChild(voteContainer);
-                    viewer.style.display = "block";
-                    viewer.scrollIntoView({ behavior: "smooth" });
-                };
 
 
                 function hideGame() {
