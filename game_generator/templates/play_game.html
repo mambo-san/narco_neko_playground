@@ -4,12 +4,23 @@
 <head>
     <title>AI Game Generator</title>
     <style>
-        iframe {
-            display: block;
-            margin: 2rem auto 0 auto; /* Smaller top margin */
+        .iframe-center {
+            display: flex;
+            justify-content: center;
             width: 100%;
-            max-width: 960px;
-            height: 75vh;
+        }
+        .iframe-wrapper {
+            position: relative;
+            width:100%;
+            height: 85vh;
+            max-width: 480px;
+            margin: 2rem auto 1 auto;
+            aspect-ratio: 9 / 16; 
+        }
+
+        .iframe-wrapper iframe {
+            width: 100%;
+            height: 100%;
             border: none;
         }
         body {
@@ -46,8 +57,11 @@
     </style>
 </head>
 <body>
-    <iframe id="game-frame" src="{{ url_for('game_generator.embedded_game') }}"></iframe>
-    
+    <div class="iframe-center">
+        <div class="iframe-wrapper">
+            <iframe id="game-frame" src="{{ url_for('game_generator.embedded_game') }}" allowfullscreen></iframe>
+        </div>
+    </div>
     <style>
   html, body {
     margin: 0;

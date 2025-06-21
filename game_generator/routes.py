@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request
+from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request, current_app
 from extensions import limiter
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -45,8 +45,9 @@ def submit_prompt():
     data = request.get_json()
     user_prompt = data.get('prompt', '')
     screen = data.get('screen', {})
-    print(f"[DEBUG] Received prompt: {user_prompt}")
-
+    current_app.logger.debug(f"[DEBUG] Received prompt: {user_prompt}")
+    current_app.logger.debug(f"[DEBUG] Received screen data: {screen}")
+    
     if not user_prompt:
         return jsonify({'error': 'Empty prompt'}), 400
 
@@ -70,10 +71,10 @@ def submit_prompt():
             max_tokens=4000
         )
         raw_html = response.choices[0].message.content
-        print("[DEBUG] API response received.")
+        current_app.logger.debug(f"[DEBUG] API response received.")
 
         cleaned_html = re.sub(r"^```html\s*|\s*```$", "", raw_html.strip(), flags=re.IGNORECASE)
-        print("[DEBUG] API response cleaned")
+        current_app.logger.debug(f"[DEBUG] API response cleanded.")
         session['user_prompt'] = user_prompt
         session['generated_html'] = cleaned_html
         return jsonify({'status': 'ok'})
@@ -81,7 +82,7 @@ def submit_prompt():
     except Exception as e:
         import traceback
         traceback.print_exc()
-        print("[ERROR]", str(e))
+        current_app.logger.error(f"[ERROR] {str(e)}")
         return jsonify({'error': 'Server error'}), 500
 
 
@@ -116,13 +117,15 @@ def submit_feedback():
 
 def build_game_generation_prompt(prompt, viewport_width, viewport_height, is_likely_on_mobile):
     full_prompt = (
-        f"Generate a game in a single valid HTML file.\n"
-        f"The screen size is {viewport_width} x {viewport_height}.\n"
-        f"The game must have an objective or goal. It should be possible to win or lose.\n"
-        f"Game duration should be short — no more than 1–2 minutes per session.\n"
-        f"The game must be fun, surprising, or satisfying in some way.\n"
-        f"Use canvas or DOM manipulation to build the game UI. Avoid using <iframe> or <embed>.\n"
-        f"Use sound effects or visual feedback if appropriate.\n"
+        f"Generate a game in a single valid HTML file that can be embedded into an <iframe>.\n"
+        f"Design the game to fit a default screen size of {viewport_width} x {viewport_height}, "
+        f"but make the HTML layout fully responsive to changes in the parent <iframe>'s size.\n"
+        f"The game must stretch or scale to fill 100% of the iframe's width and height using responsive canvas or layout techniques.\n"
+        f"Use <canvas> or DOM manipulation for the game UI — do NOT use nested <iframe> or <embed>.\n"
+        f"The game must include an objective or goal, and it should be possible to win or lose.\n"
+        f"Keep gameplay short and replayable (1–2 minutes max).\n"
+        f"The game should be fun, surprising, or satisfying in some way.\n"
+        f"Include visual or audio feedback where appropriate.\n"
     )
 
     if is_likely_on_mobile:
