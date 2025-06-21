@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Public Game Library</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #f0f0f0;
+            font-family: sans-serif;
+            padding: 2rem;
+        }
+        h1 {
+            color: #ffcc66;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid #333;
+            text-align: left;
+        }
+        th {
+            background-color: #222;
+            cursor: pointer;
+        }
+        tr:nth-child(even) {
+            background-color: #1e1e1e;
+        }
+        .toggle-btn {
+            background-color: #333;
+            color: #ffcc66;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 6px;
+        }
+        .toggle-btn:hover {
+            background-color: #444;
+        }
+        .prompt-cell {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+
+
+</head>
+<body>
+    <h1 id="pageTitle">🕹️ Public Game Library</h1>
+
+    <table id="gameTable">
+        <thead>
+            <tr>
+                <th>Prompt</th>
+                <th onclick="sortTable(1)">Score ⬍</th>
+                <th onclick="sortTable(2)">Created At ⬍</th>
+                <th onclick="sortTable(3)">Prompt Length ⬍</th>
+                <th>Play</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in games %}
+            <tr>
+                <td style="max-width: 500px; width: 300px;">
+                    <div class="prompt-cell" title="{{ game.prompt }}">
+                        {{ game.prompt }}
+                    </div>
+                </td>
+                <td>{{ game.score }}</td>
+                <td>{{ game.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ game.prompt | length }}</td>
+                <td>
+                    <button class="toggle-btn" 
+                        onclick="showGame('{{game.id}}')"
+                        data-id="{{ game.id }}"
+                        data-prompt="{{ game.prompt }}">
+                        ▶ Show Game
+                    </button>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">No games found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div id="newGameBtnContainer" style="display: flex; justify-content: center; margin-top: 2rem;">
+        <a href="{{ url_for('game_generator.game_generator') }}">
+            <button class="toggle-btn">🎮 Create New Game</button>
+        </a>
+    </div>
+    <div id="gameViewer" style="display: none; margin-top: 2rem;"></div>
+
+    <!-- Store HTML outside the table -->
+    {% for game in games %}
+    <script type="application/json" id="game-html-{{ game.id }}">
+        {{ game.html | tojson | safe }}
+    </script>
+    {% endfor %}
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                let originalTable;
+                let currentSortColumn = null;
+                let currentSortDirection = 'asc';
+
+                window.showGame = function (gameId) {
+                    const table = document.getElementById("gameTable");
+                    const button = document.querySelector(`button[data-id="${gameId}"]`);
+                    const newGameBtn = document.getElementById("newGameBtnContainer");
+                    const promptText = button.dataset.prompt;
+
+                    const htmlScriptTag = document.getElementById(`game-html-${gameId}`);
+                    const gameHtml = JSON.parse(htmlScriptTag.textContent);
+
+                    if (!originalTable) {
+                        originalTable = table.outerHTML;
+                    }
+                    //hide stuff
+                    table.style.display = "none";
+                    newGameBtn.style.display = "none";
+
+                    const viewer = document.getElementById("gameViewer");
+                    const title = document.getElementById("pageTitle");
+                    if (title) title.style.display = "none";
+                    viewer.innerHTML = "";
+
+                    const heading = document.createElement("h2");
+                    heading.style.color = "#ffcc66";
+                    heading.textContent = `🎮 ${promptText}`;
+                    heading.style.textAlign = "center";
+                    heading.style.marginBottom = "1rem";
+
+                    // Read game canvas size
+                    const tempDiv = document.createElement("div");
+                    tempDiv.innerHTML = gameHtml;
+                    const canvas = tempDiv.querySelector("canvas");
+
+                    let width = 800;
+                    let height = 600;
+                    if (canvas) {
+                        width = parseInt(canvas.getAttribute("width")) || 800;
+                        height = parseInt(canvas.getAttribute("height")) || 600;
+                    }
+
+                    // Scale iframe to fit container width responsively
+                    const scale = Math.min(1, window.innerWidth / (width + 32));
+
+                    const scaledContainer = document.createElement("div");
+                    scaledContainer.style.position = "relative";
+                    scaledContainer.style.overflow = "hidden";
+                    scaledContainer.style.width = `${width * scale}px`;
+                    scaledContainer.style.height = `${height * scale}px`;
+                    scaledContainer.style.margin = "0 auto";
+
+                    const iframe = document.createElement("iframe");
+                    iframe.srcdoc = gameHtml;
+                    iframe.style.width = `${width}px`;
+                    iframe.style.height = `${height}px`;
+                    iframe.style.border = "1px solid #444";
+                    iframe.style.transform = `scale(${scale})`;
+                    iframe.style.transformOrigin = "top left";
+                    iframe.style.display = "block";
+                    iframe.style.pointerEvents = "auto"; // allows interaction
+
+                    scaledContainer.appendChild(iframe);
+
+                    const voteContainer = document.createElement("div");
+                    voteContainer.style.display = "flex";
+                    voteContainer.style.justifyContent = "center";
+                    voteContainer.style.alignItems = "center";
+                    voteContainer.style.flexWrap = "wrap";         // still mobile-friendly
+                    voteContainer.style.columnGap = "0.5rem";      // tighter spacing between buttons
+                    voteContainer.style.rowGap = "0.5rem";         // spacing if they wrap
+                    voteContainer.style.marginTop = "1.5rem";
+
+                    const goodBtn = document.createElement("button");
+                    goodBtn.id = "goodBtn";
+                    goodBtn.className = "toggle-btn";
+                    goodBtn.textContent = "👍 Good game";
+                    goodBtn.onclick = () => submitVote(gameId, 1);
+                    goodBtn.style.flex = "0 1 auto";
+
+                    const badBtn = document.createElement("button");
+                    badBtn.id = "badBtn";
+                    badBtn.className = "toggle-btn";
+                    badBtn.textContent = "👎 Not so interesting";
+                    badBtn.onclick = () => submitVote(gameId, -1);
+                    badBtn.style.flex = "0 1 auto";
+
+                    const backBtn = document.createElement("button");
+                    backBtn.className = "toggle-btn";
+                    backBtn.textContent = "⬅ Back to Library";
+                    backBtn.onclick = hideGame;
+                    backBtn.style.flex = "0 1 auto";
+
+                    voteContainer.appendChild(goodBtn);
+                    voteContainer.appendChild(badBtn);
+                    voteContainer.appendChild(backBtn);
+
+                    viewer.appendChild(heading);
+                    viewer.appendChild(scaledContainer);
+                    viewer.appendChild(voteContainer);
+                    viewer.style.display = "block";
+                    viewer.scrollIntoView({ behavior: "smooth" });
+                };
+
+
+                function hideGame() {
+                    location.reload(); // reloads current page, refreshing table
+                }
+
+                function sortTable(columnIndex) {
+                    const table = document.getElementById("gameTable");
+                    const rows = Array.from(table.rows).slice(1); // skip header
+
+                   let sortType = 'string';
+                    if (columnIndex === 1 || columnIndex === 3) sortType = 'number';       // Score, Prompt Length
+                    if (columnIndex === 2) sortType = 'date';                              // Created At
+
+                    // Determine sort direction
+                    if (currentSortColumn === columnIndex) {
+                        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        currentSortColumn = columnIndex;
+                        currentSortDirection = 'asc';
+                    }
+
+                    rows.sort((a, b) => {
+                        const aText = a.cells[columnIndex].innerText;
+                        const bText = b.cells[columnIndex].innerText;
+
+                        let comparison;
+
+                        if (sortType === 'number') {
+                            comparison = parseFloat(aText) - parseFloat(bText);
+                        } else if (sortType === 'date') {
+                            comparison = new Date(aText) - new Date(bText);
+                        } else {
+                            comparison = aText.localeCompare(bText);
+                        }
+
+                        return currentSortDirection === 'asc' ? comparison : -comparison;
+                    });
+
+                    rows.forEach(row => table.appendChild(row));
+                }
+
+                function submitVote(gameId, delta) {
+                    fetch('/game_generator/public_library/vote', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: gameId, delta: delta })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`${data.message}`);
+                            //Remove the good/bad buttons
+                            const goodBtn = document.getElementById("goodBtn");
+                            const badBtn = document.getElementById("badBtn");
+                            if (goodBtn) goodBtn.remove();
+                            if (badBtn) badBtn.remove();
+                        } else {
+                            alert("Something went wrong: " + (data.error || "unknown error"));
+                        }
+                    });
+                }
+        
+            window.showGame = showGame;
+            window.hideGame = hideGame;
+            window.sortTable = sortTable;
+            });
+        </script>
+</body>
+</html>

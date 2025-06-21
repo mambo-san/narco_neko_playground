@@ -14,3 +14,12 @@ class Game_data(game_db.Model):
     def insert_new_game(prompt, html):
         game_db.session.add(Game_data(prompt=prompt, html=html, score=0))
         game_db.session.commit()
+
+    def adjust_score(self, delta):
+        self.score += delta
+        game_db.session.commit()
+        return self.score
+    
+    def delete_game(self):
+        game_db.session.delete(self)
+        game_db.session.commit()

@@ -5,28 +5,102 @@
     <title>AI Game Generator</title>
     <style>
         iframe {
+            display: block;
+            margin: 2rem auto 0 auto; /* Smaller top margin */
             width: 100%;
-            height: 90vh;
+            max-width: 960px;
+            height: 75vh;
             border: none;
+        }
+        body {
+            background-color: #111;
+            color: #f5f5f5;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .toggle-btn {
+            background-color: #333;
+            color: #ffcc66;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: 8px;
+            margin: 0 0.5rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .toggle-btn:hover {
+            background-color: #444;
+        }
+
+        .button-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem; /* Reduced space */
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
     </style>
 </head>
 <body>
-    <iframe src="{{ url_for('game_generator.embedded_game') }}"></iframe>
-    <div style="text-align: center; margin-top: 20px;">
-        <button onclick="submitFeedback('up')"> Good job AI👍 </button>
-        <button onclick="submitFeedback('down')"> Bad job AI👎 </button>
+    <iframe id="game-frame" src="{{ url_for('game_generator.embedded_game') }}"></iframe>
+    
+    <style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #111; /* match host background if needed */
+  }
+</style>
+    <div id="buttonBar" class="button-bar">
+        <button id="saveBtn" class="toggle-btn" onclick="saveToDatabase()">💾 Save game to Public Library</button>
+        <button id="discardBtn" class="toggle-btn" onclick="redirectToGameGenerator()">🗑️ Discard and create new</button>
     </div>
+    <div id="publicLibraryUrl" data-url="{{ url_for('game_generator.public_library') }}"></div>
 </body>
 <script>
-    function submitFeedback(rating) {
+    function saveToDatabase() {
         fetch('/game_generator/submit_feedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ rating: rating })
+            body: JSON.stringify({ rating: 'up' })
         }).then(res => {
-            if (res.ok) alert('Thanks for your feedback!');
+            if (res.ok) {
+                alert('📚 Game added to Public Library!');
+
+                // Remove Save button
+                const saveBtn = document.getElementById("saveBtn");
+                if (saveBtn) saveBtn.remove();
+
+                // Update discard button
+                const discardBtn = document.getElementById("discardBtn");
+                if (discardBtn) discardBtn.textContent = "🔄 Create another game";
+
+                // Get Public Library URL from hidden div
+                const libraryUrl = document.getElementById("publicLibraryUrl").dataset.url;
+
+                // Create the new button
+                const libraryBtn = document.createElement("button");
+                libraryBtn.className = "toggle-btn";
+                libraryBtn.textContent = "📚 Visit Public Game Library";
+                libraryBtn.onclick = () => {
+                    location.href = libraryUrl;
+                };
+
+                // Insert next to discard/create-another button
+                const buttonBar = document.getElementById("buttonBar");
+                if (buttonBar) {
+                    buttonBar.insertBefore(libraryBtn, buttonBar.firstChild);
+                }
+            }
         });
+    }
+    function redirectToGameGenerator() {
+        window.location.href = '{{ url_for("game_generator.game_generator") }}';
     }
 </script>
 </html>

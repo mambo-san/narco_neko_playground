@@ -36,8 +36,8 @@ def game_generator():
 
     if not session.get('rain_complete'):
         return redirect(url_for('game_generator.index'))
-    #User needs to complete the stupid game every use
-    session.pop('rain_complete', None)
+    #User needs to complete the stupid game every use.
+    #session.pop('rain_complete', None)
     return render_template('game_generator.html')
 
 @game_generator_bp.route('/submit_prompt', methods=['POST'])
@@ -45,19 +45,16 @@ def submit_prompt():
     data = request.get_json()
     user_prompt = data.get('prompt', '')
     screen = data.get('screen', {})
-    viewport_width = screen.get('viewportWidth')
-    viewport_height = screen.get('viewportHeight')
-    is_likely_on_mobile = 'Mobi' in request.user_agent.string #Find out if user is on phone
     print(f"[DEBUG] Received prompt: {user_prompt}")
 
     if not user_prompt:
-        return jsoniafy({'error': 'Empty prompt'}), 400
+        return jsonify({'error': 'Empty prompt'}), 400
 
     message =messages = build_game_generation_prompt(
         prompt= user_prompt,
-        viewport_width=1280,
-        viewport_height=720,
-        is_likely_on_mobile=False
+        viewport_width=screen.get('viewportWidth') -10,
+        viewport_height=screen.get('viewportHeight') -10,
+        is_likely_on_mobile='Mobi' in request.user_agent.string #Find out if user is on phone
     )
     ### Ask OpenAI very nicely and pray ⛩️:
     try:
@@ -135,7 +132,7 @@ def build_game_generation_prompt(prompt, viewport_width, viewport_height, is_lik
     )
     else:
         full_prompt += (
-            "Use keyboard (WASD or arrows) or mouse for control.\n"
+            "Use keyboard and/or mouse for control.\n"
             "Include visible instructions inside the HTML that explain the game’s goal and controls.\n"
     )
 
@@ -161,3 +158,27 @@ def build_game_generation_prompt(prompt, viewport_width, viewport_height, is_lik
     return messages
 
 
+@game_generator_bp.route('/public_library')
+def public_library():
+    games = Game_data.query.order_by(Game_data.created_at.desc()).all()
+    return render_template('public_library.html', games=games)
+
+@game_generator_bp.route('/public_library/vote', methods=['POST'])
+def vote_on_game():
+    data = request.get_json()
+    game_id = data.get('id')
+    delta = data.get('delta', 0)
+
+    game = Game_data.query.get(game_id)
+    if not game:
+        return jsonify({'success': False, 'error': 'Game not found'}), 404
+
+    new_score = game.adjust_score(delta)
+    
+    minimum_score = -2
+    if game.score < minimum_score:
+        game.delete_game()
+        return jsonify({'success': True, 'message': f"Score went below the minimum_score of {minimum_score}. Game deleted."})
+    
+    
+    return jsonify({'success': True, 'message': f'Thanks for your feedback! New score: {new_score}'})

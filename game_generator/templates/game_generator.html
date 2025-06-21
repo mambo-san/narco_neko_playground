@@ -79,6 +79,7 @@
         }
 
         .prompt-label {
+            margin-top: 1.5rem;
             margin-bottom: 12px;
             font-size: 1.2em;
             font-weight: 600;
@@ -142,6 +143,12 @@
                 <button id="submit-btn" onclick="submitPrompt()">↑</button>
             </div>
         </div>
+        <div id="option-section">
+            <div class="prompt-label">
+                Or play games from <a href="{{ url_for('game_generator.public_library') }}">Public Game Library 📚</a>
+            </div>
+
+        </div>
 
         <div id="loading">
             <div class="spinner"></div>
@@ -162,7 +169,7 @@
         function submitPrompt() {
             const prompt = textarea.value.trim();
             if (!prompt) return;
-
+            document.getElementById("option-section").style.display = "none";
             document.getElementById("form-section").style.display = "none";
             document.getElementById("loading").style.display = "block";
 
@@ -172,10 +179,8 @@
                 body: JSON.stringify({
                     prompt: prompt,
                     screen: {
-                        width: window.screen.width,
-                        height: window.screen.height,
-                        viewportWidth: window.innerWidth,
-                        viewportHeight: window.innerHeight
+                        viewportWidth: Math.min(window.innerWidth, 960),
+                        viewportHeight: Math.min(window.innerHeight, 720)
                     }
                 })
             })

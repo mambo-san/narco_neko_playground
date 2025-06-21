@@ -1,4 +1,5 @@
 import os, io, sys
+from pathlib import Path
 
 from flask import Flask, request
 from flask_mail import Mail
@@ -30,6 +31,9 @@ def is_server_running(host='127.0.0.1', port=5000):
         result = sock.connect_ex((host, port))
         return result == 0  # 0 means port is in use (server is running)
 
+def find_template_files():
+    base = Path(__file__).parent / "templates"
+    return [str(p) for p in base.rglob("*.html")]
 
 def create_app():
     app = Flask(__name__)
@@ -66,22 +70,20 @@ def create_app():
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     return app
 
-
 if __name__ == '__main__':
+    print("Starting app...")
     app = create_app()
-    if os.getenv('FLASK_ENV') == 'development':
-        if is_server_running():
-            print("Server is already running on 127.0.0.1:5000/")
-        else:
-            print(app.url_map)  
-            #Live reload server
-            server = Server(app.wsgi_app)
-            server.watch('**/*.html')
-            server.watch('**/*.css')
-            server.watch('**/*.js')
-            server.watch('**/*.py')
-            #
-            server.serve(host='127.0.0.1', port=5000, debug=True)
-            #app.run(host='0.0.0.0', port=5000)
-    else: #PROD
-         app.run(host='0.0.0.0', port=5000)
+
+    from pathlib import Path
+    def find_template_files():
+        base = Path(__file__).parent / "templates"
+        return [str(p) for p in base.rglob("*.html")]
+
+    extra_files = find_template_files()
+
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=True,
+        extra_files=extra_files
+    )
