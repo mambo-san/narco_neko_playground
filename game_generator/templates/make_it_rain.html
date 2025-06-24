@@ -37,7 +37,17 @@
             opacity: 1;
             background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet);
             pointer-events: auto;
-            animation: pulse 2s infinite alternate;
+            animation: pulse 0.5s ease-in-out infinite alternate;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #nextBtn.revealed:hover {
+            animation: none;
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+
+        #nextBtn.revealed:active {
+            transform: translate(-50%, -50%) scale(0.95);
         }
 
         @keyframes pulse {
@@ -55,262 +65,268 @@
 </head>
 <body>
     <canvas id="rainCanvas"></canvas>
-    <button id="nextBtn" disabled style="color: black;" onclick="location.href='{{ url_for('game_generator.game_generator') }}'">
-      Generate Game
+    <button id="nextBtn" 
+        disabled style="color: black;" 
+        onclick="location.href = redirect_to_game_generator();">
+        Generate Game
     </button>
 
     <script>
-    const canvas = document.getElementById('rainCanvas');
-    const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
 
-    let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    let cloud = { x: window.innerWidth / 2, y: 100 };
-    let isMouseDown = false;
-    let raindrops = [];
+        let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        let cloud = { x: window.innerWidth / 2, y: 100 };
+        let isMouseDown = false;
+        let raindrops = [];
 
-    const phrase = "Access Granted";
-    const letters = [];
-    const fontSize = 48;
-    ctx.font = `${fontSize}px sans-serif`;
-    ctx.textBaseline = "top";
-
-    let startX, startY;
-
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const heightRatio = window.innerWidth > 600 ? 0.6 : 0.7;
-        startY = canvas.height * heightRatio;
-
-        letters.length = 0;
-
-        if (canvas.width <= 600) {
-            // Mobile layout: spread across 80% of screen
-            const spreadWidth = canvas.width * 0.8;
-            const letterSpacing = spreadWidth / phrase.length;
-            const leftMargin = (canvas.width - spreadWidth) / 2;
-
-            for (let i = 0; i < phrase.length; i++) {
-                const char = phrase[i];
-                letters.push({
-                    char,
-                    x: leftMargin + i * letterSpacing,
-                    y: startY,
-                    width: ctx.measureText(char).width,
-                    height: fontSize,
-                    revealed: char === ' '
-                });
-            }
-        } else {
-            // Desktop layout: dynamic spacing based on screen width
-            const spacing = Math.min(canvas.width * 0.1, 40); // cap at 20px
-            let totalWidth = 0;
-
-            // Calculate total width including dynamic spacing
-            for (let i = 0; i < phrase.length; i++) {
-                totalWidth += ctx.measureText(phrase[i]).width;
-                if (i < phrase.length - 1) totalWidth += spacing;
-            }
-
-            let cursorX = (canvas.width - totalWidth) / 2;
-
-            for (let i = 0; i < phrase.length; i++) {
-                const char = phrase[i];
-                const width = ctx.measureText(char).width;
-
-                letters.push({
-                    char,
-                    x: cursorX,
-                    y: startY,
-                    width,
-                    height: fontSize,
-                    revealed: char === ' '
-                });
-
-                cursorX += width + spacing;
-            }
-        }
-    }
-
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Mouse events
-    document.addEventListener('mousedown', () => isMouseDown = true);
-    document.addEventListener('mouseup', () => isMouseDown = false);
-    document.addEventListener('mousemove', (e) => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-    });
-
-    // Touch support
-    canvas.addEventListener('touchstart', (e) => {
-        isMouseDown = true;
-        const touch = e.touches[0];
-        mouse.x = touch.clientX;
-        mouse.y = touch.clientY;
-    }, { passive: false });
-
-    canvas.addEventListener('touchmove', (e) => {
-        const touch = e.touches[0];
-        mouse.x = touch.clientX;
-        mouse.y = touch.clientY;
-    }, { passive: false });
-
-    canvas.addEventListener('touchend', () => {
-        isMouseDown = false;
-    });
-
-    function drawMountain() {
-        ctx.beginPath();
-        ctx.moveTo(0, canvas.height);
-        ctx.lineTo(canvas.width / 3, canvas.height / 2);
-        ctx.lineTo(canvas.width / 2, canvas.height * 0.65);
-        ctx.lineTo(canvas.width * 2 / 3, canvas.height / 2.5);
-        ctx.lineTo(canvas.width, canvas.height);
-        ctx.closePath();
-        ctx.fillStyle = "#2e8b57";
-        ctx.fill();
-    }
-
-    function drawCloud(x, y) {
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(x, y, 30, 0, Math.PI * 2);
-        ctx.arc(x + 30, y + 10, 30, 0, Math.PI * 2);
-        ctx.arc(x - 30, y + 10, 30, 0, Math.PI * 2);
-        ctx.arc(x, y + 20, 30, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    function drawRain() {
-        ctx.strokeStyle = '#1f75fe';
-        ctx.lineWidth = 2;
-
-        const btn = document.getElementById("nextBtn");
-        const btnRect = btn.getBoundingClientRect();
-        const canvasRect = canvas.getBoundingClientRect();
-
-        // Convert button position to canvas coordinates
-        const btnX = btnRect.left - canvasRect.left;
-        const btnY = btnRect.top - canvasRect.top;
-        const btnWidth = btnRect.width;
-        const btnHeight = btnRect.height;
-
-        raindrops.forEach((drop, index) => {
-            ctx.beginPath();
-            ctx.moveTo(drop.x, drop.y);
-            ctx.lineTo(drop.x, drop.y + 10);
-            ctx.stroke();
-
-            // Reveal letters if hit
-            letters.forEach(letter => {
-                if (!letter.revealed &&
-                    drop.x >= letter.x &&
-                    drop.x <= letter.x + letter.width &&
-                    drop.y >= letter.y &&
-                    drop.y <= letter.y + letter.height
-                ) {
-                    letter.revealed = true;
-                }
-            });
-
-            // Interact with button
-            if ( allRevealed &&
-                drop.x >= btnX &&
-                drop.x <= btnX + btnWidth &&
-                drop.y >= btnY &&
-                drop.y <= btnY + btnHeight
-            ) {
-                // Splash effect
-                ctx.beginPath();
-                ctx.arc(drop.x, drop.y - 10, 2 + Math.random() * 3, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-                ctx.fill();
-
-                raindrops.splice(index, 1); // remove raindrop
-                return;
-            }
-
-            drop.y += 10;
-            if (drop.y > canvas.height) {
-                raindrops.splice(index, 1);
-            }
-        });
-    }
-
-
-    let hue = 0;
-    let allRevealed = false;
-
-    function drawLetters() {
+        const phrase = "Access Granted";
+        const letters = [];
+        const fontSize = 48;
         ctx.font = `${fontSize}px sans-serif`;
         ctx.textBaseline = "top";
 
-        allRevealed = letters.every(l => l.revealed);
+        let startX, startY;
 
-        letters.forEach((letter, index) => {
-            if (letter.revealed) {
-                if (allRevealed) {
-                    const color = `hsl(${(hue + index * 30) % 360}, 100%, 50%)`;
-                    ctx.fillStyle = color;
-                } else {
-                    ctx.fillStyle = "black";
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const heightRatio = window.innerWidth > 600 ? 0.6 : 0.7;
+            startY = canvas.height * heightRatio;
+
+            letters.length = 0;
+
+            if (canvas.width <= 600) {
+                // Mobile layout: spread across 80% of screen
+                const spreadWidth = canvas.width * 0.8;
+                const letterSpacing = spreadWidth / phrase.length;
+                const leftMargin = (canvas.width - spreadWidth) / 2;
+
+                for (let i = 0; i < phrase.length; i++) {
+                    const char = phrase[i];
+                    letters.push({
+                        char,
+                        x: leftMargin + i * letterSpacing,
+                        y: startY,
+                        width: ctx.measureText(char).width,
+                        height: fontSize,
+                        revealed: char === ' '
+                    });
                 }
-                ctx.fillText(letter.char, letter.x, letter.y);
+            } else {
+                // Desktop layout: dynamic spacing based on screen width
+                const spacing = Math.min(canvas.width * 0.1, 40); // cap at 20px
+                let totalWidth = 0;
+
+                // Calculate total width including dynamic spacing
+                for (let i = 0; i < phrase.length; i++) {
+                    totalWidth += ctx.measureText(phrase[i]).width;
+                    if (i < phrase.length - 1) totalWidth += spacing;
+                }
+
+                let cursorX = (canvas.width - totalWidth) / 2;
+
+                for (let i = 0; i < phrase.length; i++) {
+                    const char = phrase[i];
+                    const width = ctx.measureText(char).width;
+
+                    letters.push({
+                        char,
+                        x: cursorX,
+                        y: startY,
+                        width,
+                        height: fontSize,
+                        revealed: char === ' '
+                    });
+
+                    cursorX += width + spacing;
+                }
             }
+        }
+
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Mouse events
+        document.addEventListener('mousedown', () => isMouseDown = true);
+        document.addEventListener('mouseup', () => isMouseDown = false);
+        document.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
         });
 
-        if (allRevealed) {
-            hue += 2;
+        // Touch support
+        canvas.addEventListener('touchstart', (e) => {
+            isMouseDown = true;
+            const touch = e.touches[0];
+            mouse.x = touch.clientX;
+            mouse.y = touch.clientY;
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            mouse.x = touch.clientX;
+            mouse.y = touch.clientY;
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', () => {
+            isMouseDown = false;
+        });
+
+        function drawMountain() {
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            ctx.lineTo(canvas.width / 3, canvas.height / 2);
+            ctx.lineTo(canvas.width / 2, canvas.height * 0.65);
+            ctx.lineTo(canvas.width * 2 / 3, canvas.height / 2.5);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            ctx.fillStyle = "#2e8b57";
+            ctx.fill();
+        }
+
+        function drawCloud(x, y) {
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(x, y, 30, 0, Math.PI * 2);
+            ctx.arc(x + 30, y + 10, 30, 0, Math.PI * 2);
+            ctx.arc(x - 30, y + 10, 30, 0, Math.PI * 2);
+            ctx.arc(x, y + 20, 30, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawRain() {
+            ctx.strokeStyle = '#1f75fe';
+            ctx.lineWidth = 2;
+
             const btn = document.getElementById("nextBtn");
-            btn.classList.add("revealed");
-            btn.disabled = false;
+            const btnRect = btn.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
 
-            if (!window.rainCompleted) {
-                fetch('/game_generator/complete_rain', { 
-                    method: 'POST', 
-                    credentials: 'same-origin'
+            // Convert button position to canvas coordinates
+            const btnX = btnRect.left - canvasRect.left;
+            const btnY = btnRect.top - canvasRect.top;
+            const btnWidth = btnRect.width;
+            const btnHeight = btnRect.height;
+
+            raindrops.forEach((drop, index) => {
+                ctx.beginPath();
+                ctx.moveTo(drop.x, drop.y);
+                ctx.lineTo(drop.x, drop.y + 10);
+                ctx.stroke();
+
+                // Reveal letters if hit
+                letters.forEach(letter => {
+                    if (!letter.revealed &&
+                        drop.x >= letter.x &&
+                        drop.x <= letter.x + letter.width &&
+                        drop.y >= letter.y &&
+                        drop.y <= letter.y + letter.height
+                    ) {
+                        letter.revealed = true;
+                    }
                 });
-                window.rainCompleted = true;
+
+                // Interact with button
+                if ( allRevealed &&
+                    drop.x >= btnX &&
+                    drop.x <= btnX + btnWidth &&
+                    drop.y >= btnY &&
+                    drop.y <= btnY + btnHeight
+                ) {
+                    // Splash effect
+                    ctx.beginPath();
+                    ctx.arc(drop.x, drop.y - 10, 2 + Math.random() * 3, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.fill();
+
+                    raindrops.splice(index, 1); // remove raindrop
+                    return;
+                }
+
+                drop.y += 10;
+                if (drop.y > canvas.height) {
+                    raindrops.splice(index, 1);
+                }
+            });
+        }
+
+
+        let hue = 0;
+        let allRevealed = false;
+
+        function drawLetters() {
+            ctx.font = `${fontSize}px sans-serif`;
+            ctx.textBaseline = "top";
+
+            allRevealed = letters.every(l => l.revealed);
+
+            letters.forEach((letter, index) => {
+                if (letter.revealed) {
+                    if (allRevealed) {
+                        const color = `hsl(${(hue + index * 30) % 360}, 100%, 50%)`;
+                        ctx.fillStyle = color;
+                    } else {
+                        ctx.fillStyle = "black";
+                    }
+                    ctx.fillText(letter.char, letter.x, letter.y);
+                }
+            });
+
+            if (allRevealed) {
+                hue += 2;
+                const btn = document.getElementById("nextBtn");
+                btn.classList.add("revealed");
+                btn.disabled = false;
+
+                if (!window.rainCompleted) {
+                    fetch('/game_generator/complete_rain', { 
+                        method: 'POST', 
+                        credentials: 'same-origin'
+                    });
+                    window.rainCompleted = true;
+                }
             }
         }
-    }
 
-    function update() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawMountain();
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawMountain();
 
-        let targetX = canvas.width / 2;
-        let targetY = 100;
+            let targetX = canvas.width / 2;
+            let targetY = 100;
 
-        if (isMouseDown && !allRevealed) {
-            targetX = mouse.x;
-            targetY = mouse.y;
-        }
-
-        cloud.x += (targetX - cloud.x) * 0.05;
-        cloud.y += (targetY - cloud.y) * 0.05;
-
-        drawCloud(cloud.x, cloud.y);
-
-        const raining = isMouseDown;
-
-        if (raining) {
-            for (let i = 0; i < 5; i++) {
-                raindrops.push({ x: cloud.x + (Math.random() * 60 - 30), y: cloud.y + 40 });
+            if (isMouseDown && !allRevealed) {
+                targetX = mouse.x;
+                targetY = mouse.y;
             }
+
+            cloud.x += (targetX - cloud.x) * 0.05;
+            cloud.y += (targetY - cloud.y) * 0.05;
+
+            drawCloud(cloud.x, cloud.y);
+
+            const raining = isMouseDown;
+
+            if (raining) {
+                for (let i = 0; i < 5; i++) {
+                    raindrops.push({ x: cloud.x + (Math.random() * 60 - 30), y: cloud.y + 40 });
+                }
+            }
+
+            drawRain();
+            drawLetters();
+
+            requestAnimationFrame(update);
         }
 
-        drawRain();
-        drawLetters();
+        function redirect_to_game_generator() {
+            return "{{ url_for('game_generator.game_generator') }}";
+        }
 
-        requestAnimationFrame(update);
-    }
-
-    update();
+        update();
     </script>
 </body>
 </html>

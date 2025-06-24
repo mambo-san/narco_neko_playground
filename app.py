@@ -8,8 +8,9 @@ from dotenv import load_dotenv
 from extensions import limiter, mail
 from game_generator.models import game_db
 #Blue prints
-from game_generator.routes import game_generator_bp
 from routes import home_bp
+from game_generator.routes import game_generator_bp
+from world_dashboard.world_dashboard import world_dashboard_bp
 
 #For testing 
 import webbrowser #for dev only
@@ -65,6 +66,7 @@ def create_app():
     # Register Blueprints here
     app.register_blueprint(home_bp, url_prefix='/')
     app.register_blueprint(game_generator_bp, url_prefix='/game_generator')
+    app.register_blueprint(world_dashboard_bp, url_prefix='/world_dashboard')
 
     #Handle printing of emojis to console (in case you are on windows)
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')

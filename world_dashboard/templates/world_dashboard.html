@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('world_dashboard.static', filename='style.css') }}">
+</head>
+<body>
+  <div id="container">
+    <div id="time">--:--:--</div>
+    <div id="main">
+      <div id="map-container">
+        <div id="country-name"></div>
+        <svg id="globe"></svg>
+      </div>
+      <div id="info-panel">
+        <h2>Country Info</h2>
+        <p>Select a country on the map to view details.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load D3 and TopoJSON -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
+  <script src="{{ url_for('world_dashboard.static', filename='scripts.js') }}"></script>
+</body>
+</html>
