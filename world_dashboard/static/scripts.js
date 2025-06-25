@@ -1,8 +1,27 @@
+//import * as d3 from "d3"; // if using modules
+
 // Live Time Display
 setInterval(() => {
   const now = new Date();
-  document.getElementById("time").textContent = now.toLocaleTimeString();
+  const userTimeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  document.getElementById("user-time").textContent = "Your time: " + userTimeStr;
 }, 1000);
+
+// When a country is selected, calculate time diff
+function updateTimeInfo(countryOffset) {
+  const now = new Date();
+  const userOffset = now.getTimezoneOffset() / -60; // e.g. -360 => +6 hours
+  const localHour = (now.getUTCHours() + countryOffset + 24) % 24;
+
+  document.getElementById("local-time").textContent = `Local time: ${localHour}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+  const diff = countryOffset - userOffset;
+  let relation = diff > 0 ? `You are ahead by ${diff} hour(s)` :
+                diff < 0 ? `You are behind by ${Math.abs(diff)} hour(s)` :
+                `Same time zone`;
+
+  document.getElementById("time-diff").textContent = relation;
+}
 
 //Store zoom level. Is there better way to do this?
 let currentZoom = 1;
@@ -99,21 +118,56 @@ const renderGlobe = () => {
       document.getElementById("country-name").textContent = "";
     })
     .on("click", function (event, d) {
-      const countryCode = d.id;
-      fetch("/world-dashboard/country-click", {
+      const countryCode = d.id; // Use the country ID (e.g 392) for the click event
+      const countryInfo = isoNumericToCountry[countryCode]; // Use the ISO A2 code (e.g. JP) and A3 code (e.g JPN) for the flag and other things.
+
+      // Compute geographic center of the country shape
+      const [mouseX, mouseY] = d3.pointer(event);
+      const [lon, lat] = projection.invert([mouseX, mouseY]);
+
+      fetch("/world_dashboard/country-click", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: countryCode })
+        body: JSON.stringify({ country: countryCode, lat: lat, lon: lon })
       })
       .then(res => res.json())
       .then(data => {
-        document.getElementById("info-panel").innerHTML = `
-          <h2>${data.country}</h2>
-          <p>This is where info about the country will appear.</p>
-        `;
+        // Set the Flag
+        if (countryInfo && countryInfo.alpha2) {
+          const flagUrl = `https://flagcdn.com/w80/${countryInfo.alpha2.toLowerCase()}.png`;
+          const flagImg = document.getElementById("flag-img");
+          flagImg.src = flagUrl;
+          flagImg.alt = `${countryInfo.name} flag`;
+          flagImg.classList.add("show");
+          document.getElementById("flag-img").alt = `${countryInfo.name} flag`;
+          //Also set the country name
+          document.getElementById("country-label").textContent = countryInfo.name;
+        }
+        
+
+        // Set the news content
+        document.getElementById("news-content").textContent = `Latest news for ${data.country}`;
+        
+        // Time zone content
+        const now = new Date();
+        const userTime = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+        const localTime = data.local_time || '--:--';
+        const diff = data.offset_hours !== null ? data.offset_hours : '--';
+        const relation = (diff === '--') ? '' :
+                        (diff > 0 ? `You are ahead by ${diff} hour(s)` :
+                          diff < 0 ? `You are behind by ${Math.abs(diff)} hour(s)` :
+                          `Same time zone`);
+
+        document.getElementById("user-time").textContent = "Your time: " + userTime;
+        document.getElementById("local-time").textContent = "Local time: " + localTime;
+        document.getElementById("time-diff").textContent = relation;
       });
-    });
-};
+
+      
+    })
+
+
+  };
 
 const enableDrag = () => {
   svg
@@ -148,6 +202,33 @@ const enableZoom = () => {
     svg.call(zoom);
 };
 
+
+// Logic for resizable divider
+const resizer = document.getElementById("resizer");
+const leftPane = document.getElementById("map-container");
+const rightPane = document.getElementById("info-section");
+
+let isResizing = false;
+
+resizer.addEventListener("mousedown", (e) => {
+  isResizing = true;
+  document.body.style.cursor = "ew-resize";
+});
+
+document.addEventListener("mousemove", (e) => {
+  if (!isResizing) return;
+
+  const offsetRight = document.body.offsetWidth - e.clientX;
+  const minRight = 400;
+  rightPane.style.width = `${Math.max(offsetRight, minRight)}px`;
+});
+
+document.addEventListener("mouseup", () => {
+  isResizing = false;
+  document.body.style.cursor = "";
+});
+
+//Load the map and enable drag and zoom
 d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(worldData => {
   countries = topojson.feature(worldData, worldData.objects.countries).features;
   renderGlobe();

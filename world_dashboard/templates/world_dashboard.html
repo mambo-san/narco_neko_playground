@@ -5,19 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>World Dashboard</title>
   <link rel="stylesheet" href="{{ url_for('world_dashboard.static', filename='style.css') }}">
+  <script src="{{ url_for('world_dashboard.static', filename='isoNumericToCountry.js') }}"></script>
 </head>
 <body>
   <div id="container">
-    <div id="time">--:--:--</div>
+    
+    <!-- The left side of the screen.-->
     <div id="main">
       <div id="map-container">
         <div id="country-name"></div>
         <svg id="globe"></svg>
       </div>
-      <div id="info-panel">
-        <h2>Country Info</h2>
-        <p>Select a country on the map to view details.</p>
+
+      <!-- Adjustable divider-->
+      <div id="resizer"></div>
+
+      <!-- The right side of the screen. -->
+      <div id="info-section">
+
+        <div id="flag-wrapper">
+          <div id="flag-block">
+            <img id="flag-img" alt="Pick a Country" />
+            <span id="country-label">Select a country</span>
+          </div>
+        </div>
+
+        <div class="info-container" id="news-container">
+          <h3>News</h3>
+          <div id="news-content">No news yet.</div>
+        </div>
+
+        <div class="info-container" id="holiday-container">
+          <h3>Public Holiday</h3>
+          <div id="holiday-content">No data yet.</div>
+        </div>
+
+        <div class="info-container" id="time-container">
+          <h3>Time Difference</h3>
+          <div id="user-time">Your time: --:--</div>
+          <div id="local-time">Local time: --:--</div>
+          <div id="time-diff">Time difference: --</div>
+        </div>
       </div>
+
+
     </div>
   </div>
 
