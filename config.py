@@ -19,5 +19,5 @@ class Config:
 	#New project to be added here to display as card on the home page
 	MINI_PROJECTS = [
         {'name': '🎮 Game Generator', 'endpoint': 'game_generator.game_generator','description': 'Generate games with AI'},
-        {"name": " World Dashbaord", 'endpoint': 'world_dashboard.index','description': 'Something useful'},
+        {"name": "🌎 World Dashbaord", 'endpoint': 'world_dashboard.index','description': 'Something useful'},
     ]

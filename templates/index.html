@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome | Narco Neko Playground</title>
   <script>
     if (!localStorage.getItem('theme') || localStorage.getItem('theme') === 'dark') {
@@ -16,23 +17,25 @@
     };
   </script>
 
-  
-</head>
-<body class="transition-colors duration-1000 bg-slate-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-100">
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="fixed top-20 right-4 z-50 space-y-2">
-          {% for category, message in messages %}
-            <div class="px-4 py-2 rounded-md shadow text-white
+</head>
+
+<body
+  class="transition-colors duration-1000 bg-slate-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-100">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="fixed top-20 right-4 z-50 space-y-2">
+    {% for category, message in messages %}
+    <div class="px-4 py-2 rounded-md shadow text-white
                         {% if category == 'success' %} bg-green-500 {% else %} bg-red-500 {% endif %}">
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-    
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
   <!-- Mobile Sidebar Toggle Button -->
   <div class="fixed top-4 left-4 z-50 sm:hidden">
     <button id="menuBtn" class="text-3xl">☰</button>
@@ -40,7 +43,8 @@
 
 
   <!-- Sidebar Menu -->
-  <div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-white dark:bg-gray-800 shadow-lg transform -translate-x-full transition-transform duration-1000 sm:hidden z-40">
+  <div id="sidebar"
+    class="fixed top-0 left-0 w-64 h-full bg-white dark:bg-gray-800 shadow-lg transform -translate-x-full transition-transform duration-1000 sm:hidden z-40">
     <div class="p-6">
       <button id="closeBtn" class="text-xl mb-4 dark:text-white">✕ Close</button>
       <nav class="flex flex-col space-y-4">
@@ -62,30 +66,25 @@
     </p>
 
     <!-- Projects -->
-    <div id="projects" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl animate-fade-in delay-2">
+    <div id="projects"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl animate-fade-in delay-2">
       {% for project in projects %}
-        <a href="{{ url_for(project.endpoint) }}"
-           class="transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
-          {{ project.emoji }} {{ project.name }}
-        </a>
+      <a href="{{ url_for(project.endpoint) }}"
+        class="transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
+        {{ project.emoji }} {{ project.name }}
+      </a>
       {% endfor %}
     </div>
 
-    <!-- About Me -->
-    <section id="about" class="mt-24 max-w-2xl text-center px-4">
-      <h2 class="text-3xl font-bold mb-4">About Me</h2>
-      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-        I'm Takuma — a software engineer who builds silly, insightful, and sometimes oddly useful mini-projects.<br>
-        I love exploring the intersection of technology, play, and cultural storytelling.  
-      </p>
-    </section>
 
     <!-- Contact -->
     <section id="contact" class="mt-24 max-w-2xl text-center px-4">
-      <h2 class="text-3xl font-bold mb-4">Contact Me</h2>
+      <h2 class="text-3xl font-bold mb-4">Contact</h2>
 
       <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">
-        Interested in working together? I’d love to hear from you!
+        Interested in working together? Want to request a feature? <br />
+        Maybe have me mow your lawn for the price of a coffee?<br />
+        Want to send me your cat photos? I’d love to hear from you!
       </p>
       <form action="/submit_contact" method="POST">
         <div>
@@ -111,93 +110,149 @@
 
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-6">
         Or just email me at
-        <a href="mailto:takuma.sato.nz@gmail.com" class="text-blue-600 dark:text-blue-400 underline">{{my_email}}</a>
+        <a href="mailto:{{my_email}}" class="text-blue-600 dark:text-blue-400 underline">{{my_email}}</a>
+      </p>
+    </section>
+
+    <!-- About Me -->
+    <section id="about" class="mt-24 max-w-2xl text-center px-4">
+      <h2 class="text-3xl font-bold mb-4">About Me</h2>
+      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+        I was born in Japan but spent much of my early life bouncing between Southeast Asian countries every few years.
+        By the time puberty ended, so did my identity crisis — just in time for university.
+        <br /><br />
+        To reignite that identity crisis, I chose New Zealand, where I earned a degree in Computer Science and was lucky enough
+        to be hired as a bilingual programmer in the energy industry.
+        <br /><br />
+        After a decade of calling Auckland home, I moved to the U.S. to provide on-site technical service for one of our
+        clients.
+        <br /><br />
+        Now, after more than a year in Colorado, I’ve decided to head back to Japan with my cat, Cheeto, and enter a brief
+        period of “professional recharging” (read: available for hire from the end of 2025 😏).
+        <br /><br />
+        With that in mind.... whether you know me personally or professionally, I hope this site serves as a way for us to connect and keep in touch!
+        <br />
+
       </p>
 
-      <div class="mt-10 text-gray-700 dark:text-gray-300">
-        <p class="text-base">
-          If you're curious about what I'm up to outside this site:
-        </p>
-        <a href="https://mambo-san.github.io/" target="_blank" class="text-blue-600 dark:text-blue-400 font-semibold underline block mt-2">
-          Narco Neko Diary
-        </a>
-      </div>
     </section>
-    <div class="mt-12 flex justify-center space-x-6">
-  <!-- GitHub -->
-  <a href="https://github.com/mambo-san" target="_blank" rel="noopener noreferrer" title="GitHub">
-    <svg class="w-6 h-6 fill-current text-gray-400 hover:text-white transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.29 3.438 9.78 8.205 11.385.6.111.82-.26.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.757-1.333-1.757-1.09-.745.083-.729.083-.729 1.204.084 1.837 1.237 1.837 1.237 1.07 1.834 2.809 1.304 3.495.996.108-.775.419-1.304.762-1.603-2.665-.3-5.467-1.332-5.467-5.93 0-1.31.468-2.38 1.236-3.22-.123-.303-.536-1.524.117-3.176 0 0 1.008-.322 3.3 1.23a11.495 11.495 0 0 1 3-.404c1.02.005 2.045.138 3 .404 2.29-1.552 3.297-1.23 3.297-1.23.655 1.652.242 2.873.12 3.176.77.84 1.233 1.91 1.233 3.22 0 4.61-2.807 5.628-5.48 5.922.43.37.823 1.102.823 2.222v3.293c0 .32.217.694.825.576C20.565 22.276 24 17.788 24 12.5 24 5.87 18.63.5 12 .5z"/>
-    </svg>
-  </a>
 
-  <!-- Instagram -->
-  <a href="https://www.instagram.com/tkm.photo.diary/" target="_blank" rel="noopener noreferrer" title="Instagram">
-    <svg class="w-6 h-6 fill-current text-gray-400 hover:text-pink-400 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.32 3.608 1.294.975.975 1.232 2.242 1.294 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.32 2.633-1.294 3.608-.975.975-2.242 1.232-3.608 1.294-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.32-3.608-1.294-.975-.975-1.232-2.242-1.294-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.062-1.366.32-2.633 1.294-3.608C4.502 2.483 5.769 2.226 7.135 2.164 8.401 2.106 8.781 2.094 12 2.094M12 0C8.741 0 8.332.015 7.052.072 5.771.13 4.725.347 3.828 1.243 2.93 2.14 2.713 3.186 2.655 4.467.015 5.747 0 6.156 0 9.415s.015 3.667.072 4.947c.058 1.281.275 2.327 1.173 3.224.897.897 1.943 1.115 3.224 1.173 1.28.057 1.689.072 4.948.072s3.667-.015 4.947-.072c1.281-.058 2.327-.275 3.224-1.173.897-.897 1.115-1.943 1.173-3.224.057-1.28.072-1.689.072-4.948s-.015-3.667-.072-4.947c-.058-1.281-.275-2.327-1.173-3.224C20.275.347 19.229.13 17.948.072 16.668.015 16.259 0 12 0zm0 5.838a6.163 6.163 0 1 0 0 12.325 6.163 6.163 0 0 0 0-12.325zm0 10.163a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 1 0-2.88 1.44 1.44 0 0 1 0 2.88z"/>
-    </svg>
-  </a>
-  <a href="https://www.instagram.com/mambo.jp.vn.nz//" target="_blank" rel="noopener noreferrer" title="Instagram">
-    <svg class="w-6 h-6 fill-current text-gray-400 hover:text-pink-400 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.32 3.608 1.294.975.975 1.232 2.242 1.294 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.32 2.633-1.294 3.608-.975.975-2.242 1.232-3.608 1.294-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.32-3.608-1.294-.975-.975-1.232-2.242-1.294-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.062-1.366.32-2.633 1.294-3.608C4.502 2.483 5.769 2.226 7.135 2.164 8.401 2.106 8.781 2.094 12 2.094M12 0C8.741 0 8.332.015 7.052.072 5.771.13 4.725.347 3.828 1.243 2.93 2.14 2.713 3.186 2.655 4.467.015 5.747 0 6.156 0 9.415s.015 3.667.072 4.947c.058 1.281.275 2.327 1.173 3.224.897.897 1.943 1.115 3.224 1.173 1.28.057 1.689.072 4.948.072s3.667-.015 4.947-.072c1.281-.058 2.327-.275 3.224-1.173.897-.897 1.115-1.943 1.173-3.224.057-1.28.072-1.689.072-4.948s-.015-3.667-.072-4.947c-.058-1.281-.275-2.327-1.173-3.224C20.275.347 19.229.13 17.948.072 16.668.015 16.259 0 12 0zm0 5.838a6.163 6.163 0 1 0 0 12.325 6.163 6.163 0 0 0 0-12.325zm0 10.163a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 1 0-2.88 1.44 1.44 0 0 1 0 2.88z"/>
-    </svg>
-  </a>
-  <a href="https://www.instagram.com/baked_japanese_baker/" target="_blank" rel="noopener noreferrer" title="Instagram">
-    <svg class="w-6 h-6 fill-current text-gray-400 hover:text-pink-400 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.32 3.608 1.294.975.975 1.232 2.242 1.294 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.32 2.633-1.294 3.608-.975.975-2.242 1.232-3.608 1.294-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.32-3.608-1.294-.975-.975-1.232-2.242-1.294-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.062-1.366.32-2.633 1.294-3.608C4.502 2.483 5.769 2.226 7.135 2.164 8.401 2.106 8.781 2.094 12 2.094M12 0C8.741 0 8.332.015 7.052.072 5.771.13 4.725.347 3.828 1.243 2.93 2.14 2.713 3.186 2.655 4.467.015 5.747 0 6.156 0 9.415s.015 3.667.072 4.947c.058 1.281.275 2.327 1.173 3.224.897.897 1.943 1.115 3.224 1.173 1.28.057 1.689.072 4.948.072s3.667-.015 4.947-.072c1.281-.058 2.327-.275 3.224-1.173.897-.897 1.115-1.943 1.173-3.224.057-1.28.072-1.689.072-4.948s-.015-3.667-.072-4.947c-.058-1.281-.275-2.327-1.173-3.224C20.275.347 19.229.13 17.948.072 16.668.015 16.259 0 12 0zm0 5.838a6.163 6.163 0 1 0 0 12.325 6.163 6.163 0 0 0 0-12.325zm0 10.163a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 1 0-2.88 1.44 1.44 0 0 1 0 2.88z"/>
-    </svg>
-  </a>
-  <!-- LinkedIn -->
-  <a href="https://www.linkedin.com/in/takuma-sato-385775221" target="_blank" rel="noopener noreferrer" title="LinkedIn">
-    <svg class="w-6 h-6 fill-current text-gray-400 hover:text-blue-400 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M19 0h-14C2.24 0 0 2.24 0 5v14c0 2.76 2.24 5 5 5h14c2.76 
+
+    <div class="mt-12 flex justify-center space-x-6">
+      <!-- GitHub -->
+      <a href="https://github.com/mambo-san" target="_blank" rel="noopener noreferrer" title="GitHub">
+        <svg class="w-6 h-6 fill-current text-gray-400 hover:text-white transition" xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24">
+          <path
+            d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.29 3.438 9.78 8.205 11.385.6.111.82-.26.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.757-1.333-1.757-1.09-.745.083-.729.083-.729 1.204.084 1.837 1.237 1.837 1.237 1.07 1.834 2.809 1.304 3.495.996.108-.775.419-1.304.762-1.603-2.665-.3-5.467-1.332-5.467-5.93 0-1.31.468-2.38 1.236-3.22-.123-.303-.536-1.524.117-3.176 0 0 1.008-.322 3.3 1.23a11.495 11.495 0 0 1 3-.404c1.02.005 2.045.138 3 .404 2.29-1.552 3.297-1.23 3.297-1.23.655 1.652.242 2.873.12 3.176.77.84 1.233 1.91 1.233 3.22 0 4.61-2.807 5.628-5.48 5.922.43.37.823 1.102.823 2.222v3.293c0 .32.217.694.825.576C20.565 22.276 24 17.788 24 12.5 24 5.87 18.63.5 12 .5z" />
+        </svg>
+      </a>
+
+      <!-- Instagram -->
+      <a href="https://www.instagram.com/tkm.photo.diary/" target="_blank" rel="noopener noreferrer" title="Instagram">
+        <svg class="w-6 h-6 fill-current text-gray-400 hover:text-pink-400 transition"
+          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.32 3.608 1.294.975.975 1.232 2.242 1.294 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.32 2.633-1.294 3.608-.975.975-2.242 1.232-3.608 1.294-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.32-3.608-1.294-.975-.975-1.232-2.242-1.294-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.062-1.366.32-2.633 1.294-3.608C4.502 2.483 5.769 2.226 7.135 2.164 8.401 2.106 8.781 2.094 12 2.094M12 0C8.741 0 8.332.015 7.052.072 5.771.13 4.725.347 3.828 1.243 2.93 2.14 2.713 3.186 2.655 4.467.015 5.747 0 6.156 0 9.415s.015 3.667.072 4.947c.058 1.281.275 2.327 1.173 3.224.897.897 1.943 1.115 3.224 1.173 1.28.057 1.689.072 4.948.072s3.667-.015 4.947-.072c1.281-.058 2.327-.275 3.224-1.173.897-.897 1.115-1.943 1.173-3.224.057-1.28.072-1.689.072-4.948s-.015-3.667-.072-4.947c-.058-1.281-.275-2.327-1.173-3.224C20.275.347 19.229.13 17.948.072 16.668.015 16.259 0 12 0zm0 5.838a6.163 6.163 0 1 0 0 12.325 6.163 6.163 0 0 0 0-12.325zm0 10.163a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 1 0-2.88 1.44 1.44 0 0 1 0 2.88z" />
+        </svg>
+      </a>
+      <a href="https://www.instagram.com/mambo.jp.vn.nz//" target="_blank" rel="noopener noreferrer" title="Instagram">
+        <svg class="w-6 h-6 fill-current text-gray-400 hover:text-pink-400 transition"
+          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.32 3.608 1.294.975.975 1.232 2.242 1.294 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.32 2.633-1.294 3.608-.975.975-2.242 1.232-3.608 1.294-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.32-3.608-1.294-.975-.975-1.232-2.242-1.294-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.062-1.366.32-2.633 1.294-3.608C4.502 2.483 5.769 2.226 7.135 2.164 8.401 2.106 8.781 2.094 12 2.094M12 0C8.741 0 8.332.015 7.052.072 5.771.13 4.725.347 3.828 1.243 2.93 2.14 2.713 3.186 2.655 4.467.015 5.747 0 6.156 0 9.415s.015 3.667.072 4.947c.058 1.281.275 2.327 1.173 3.224.897.897 1.943 1.115 3.224 1.173 1.28.057 1.689.072 4.948.072s3.667-.015 4.947-.072c1.281-.058 2.327-.275 3.224-1.173.897-.897 1.115-1.943 1.173-3.224.057-1.28.072-1.689.072-4.948s-.015-3.667-.072-4.947c-.058-1.281-.275-2.327-1.173-3.224C20.275.347 19.229.13 17.948.072 16.668.015 16.259 0 12 0zm0 5.838a6.163 6.163 0 1 0 0 12.325 6.163 6.163 0 0 0 0-12.325zm0 10.163a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 1 0-2.88 1.44 1.44 0 0 1 0 2.88z" />
+        </svg>
+      </a>
+      <a href="https://www.instagram.com/baked_japanese_baker/" target="_blank" rel="noopener noreferrer"
+        title="Instagram">
+        <svg class="w-6 h-6 fill-current text-gray-400 hover:text-pink-400 transition"
+          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.32 3.608 1.294.975.975 1.232 2.242 1.294 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.32 2.633-1.294 3.608-.975.975-2.242 1.232-3.608 1.294-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.32-3.608-1.294-.975-.975-1.232-2.242-1.294-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.062-1.366.32-2.633 1.294-3.608C4.502 2.483 5.769 2.226 7.135 2.164 8.401 2.106 8.781 2.094 12 2.094M12 0C8.741 0 8.332.015 7.052.072 5.771.13 4.725.347 3.828 1.243 2.93 2.14 2.713 3.186 2.655 4.467.015 5.747 0 6.156 0 9.415s.015 3.667.072 4.947c.058 1.281.275 2.327 1.173 3.224.897.897 1.943 1.115 3.224 1.173 1.28.057 1.689.072 4.948.072s3.667-.015 4.947-.072c1.281-.058 2.327-.275 3.224-1.173.897-.897 1.115-1.943 1.173-3.224.057-1.28.072-1.689.072-4.948s-.015-3.667-.072-4.947c-.058-1.281-.275-2.327-1.173-3.224C20.275.347 19.229.13 17.948.072 16.668.015 16.259 0 12 0zm0 5.838a6.163 6.163 0 1 0 0 12.325 6.163 6.163 0 0 0 0-12.325zm0 10.163a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 1 0-2.88 1.44 1.44 0 0 1 0 2.88z" />
+        </svg>
+      </a>
+      <!-- LinkedIn -->
+      <a href="https://www.linkedin.com/in/takuma-sato-385775221" target="_blank" rel="noopener noreferrer"
+        title="LinkedIn">
+        <svg class="w-6 h-6 fill-current text-gray-400 hover:text-blue-400 transition"
+          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M19 0h-14C2.24 0 0 2.24 0 5v14c0 2.76 2.24 5 5 5h14c2.76 
       0 5-2.24 5-5V5c0-2.76-2.24-5-5-5zM7.12 20.45H3.56V9h3.56v11.45zM5.34 
       7.5c-1.13 0-2.06-.93-2.06-2.06 0-1.14.92-2.06 2.06-2.06 1.14 
       0 2.06.92 2.06 2.06 0 1.13-.92 2.06-2.06 2.06zM20.45 
       20.45h-3.56v-5.6c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.15 
       1.45-2.15 2.95v5.7h-3.56V9h3.42v1.56h.05c.48-.9 1.64-1.85 
-      3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29z"/>
-    </svg>
-  </a>
-</div>
-      
+      3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29z" />
+        </svg>
+      </a>
+
+    </div>
+    <!-- Link to Narco Neko Diary -->
+    <section id="diary-link" class="mt-24 max-w-2xl text-center px-4">
+      <div class="mt-10 text-gray-700 dark:text-gray-300">
+        <p class="text-base">
+          If you're curious about what I'm up to outside this site:
+        </p>
+        <a href="https://mambo-san.github.io/" target="_blank"
+          class="text-blue-600 dark:text-blue-400 font-semibold underline block mt-2">
+          Narco Neko Diary
+        </a>
+      </div>
+    </section>
   </div>
+
+
+
 
   <!-- Card layout-->
   <style>
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
 
-        .card {
-            background: #222;
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            width: 250px;
-            box-shadow: 0 0 10px #0006;
-        }
+    .card {
+      background: #222;
+      color: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 250px;
+      box-shadow: 0 0 10px #0006;
+    }
 
-        button {
-            margin-top: 10px;
-            padding: 8px 16px;
-            font-size: 1em;
-        }
-    </style>
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 1em;
+    }
+  </style>
   <!-- Fade-In Animation Styles -->
   <style>
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .animate-fade-in {
       opacity: 0;
       animation: fadeInUp 0.8s ease-out forwards;
     }
-    .delay-1 { animation-delay: 0.3s; }
-    .delay-2 { animation-delay: 0.6s; }
+
+    .delay-1 {
+      animation-delay: 0.3s;
+    }
+
+    .delay-2 {
+      animation-delay: 0.6s;
+    }
   </style>
 
   <!-- Sidebar Script -->
@@ -209,6 +264,7 @@
     closeBtn.onclick = () => sidebar.classList.add('-translate-x-full');
   </script>
 
-  
+
 </body>
+
 </html>
