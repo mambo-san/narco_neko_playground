@@ -118,55 +118,126 @@ const renderGlobe = () => {
       document.getElementById("country-name").textContent = "";
     })
     .on("click", function (event, d) {
-      const countryCode = d.id; // Use the country ID (e.g 392) for the click event
-      const countryInfo = isoNumericToCountry[countryCode]; // Use the ISO A2 code (e.g. JP) and A3 code (e.g JPN) for the flag and other things.
-
-      // Compute geographic center of the country shape
+      const countryCode = d.id;
       const [mouseX, mouseY] = d3.pointer(event);
       const [lon, lat] = projection.invert([mouseX, mouseY]);
 
-      fetch("/world_dashboard/country-click", {
+      // Show loading
+      document.getElementById("flag-img").classList.remove("show");
+      document.getElementById("flag-img").opacity = 0;
+      document.getElementById("country-label").opacity = 0;
+      const wikiContent = document.getElementById("wiki-content");
+      wikiContent.classList.remove("show");
+      wikiContent.textContent = "Loading...";
+      document.getElementById("holiday-content").textContent = "Loading...";
+      document.getElementById("user-time").textContent = "--:--";
+      document.getElementById("local-time").textContent = "Loading...";
+      document.getElementById("time-diff").textContent = "";
+      
+
+      fetch("/world_dashboard/country/info", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: countryCode, lat: lat, lon: lon })
+        body: JSON.stringify({ country: countryCode })
+      }).then(res => res.json())
+        .then(countryInfo => {
+          if (countryInfo?.alpha2) {
+            const flagUrl = `https://flagcdn.com/w80/${countryInfo.alpha2.toLowerCase()}.png`;
+            const flagImg = document.getElementById("flag-img");
+            const flagBlock = document.getElementById("flag-block");
+            flagBlock.classList.remove("show");
+            
+
+            flagImg.onload = () => {
+              flagImg.classList.add("show");
+              flagBlock.classList.add("show");
+            };
+
+            flagImg.src = ""; // force image refresh even if cached
+            flagImg.src = flagUrl;
+            flagImg.alt = `${countryInfo.name} flag`;
+
+            document.getElementById("country-label").textContent = countryInfo.name;
+          }
+        })
+
+      // Fetch time info
+      fetch("/world_dashboard/country/time", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lat, lon })
       })
-      .then(res => res.json())
-      .then(data => {
-        // Set the Flag
-        if (countryInfo && countryInfo.alpha2) {
-          const flagUrl = `https://flagcdn.com/w80/${countryInfo.alpha2.toLowerCase()}.png`;
-          const flagImg = document.getElementById("flag-img");
-          flagImg.src = flagUrl;
-          flagImg.alt = `${countryInfo.name} flag`;
-          flagImg.classList.add("show");
-          document.getElementById("flag-img").alt = `${countryInfo.name} flag`;
-          //Also set the country name
-          document.getElementById("country-label").textContent = countryInfo.name;
-        }
-        
+        .then(res => res.json())
+        .then(data => {
+          const now = new Date();
+          const userTime = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+          const localTime = data.local_time || "--:--";
+          const diff = data.offset_hours;
+          const relation = diff == null ? "" :
+            diff > 0 ? `You are ahead by ${diff} hour(s)` :
+              diff < 0 ? `You are behind by ${Math.abs(diff)} hour(s)` :
+                `Same time zone`;
 
-        // Set the news content
-        document.getElementById("news-content").textContent = `Latest news for ${data.country}`;
-        
-        // Time zone content
-        const now = new Date();
-        const userTime = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
-        const localTime = data.local_time || '--:--';
-        const diff = data.offset_hours !== null ? data.offset_hours : '--';
-        const relation = (diff === '--') ? '' :
-                        (diff > 0 ? `You are ahead by ${diff} hour(s)` :
-                          diff < 0 ? `You are behind by ${Math.abs(diff)} hour(s)` :
-                          `Same time zone`);
+          document.getElementById("user-time").textContent = "Your time: " + userTime;
+          document.getElementById("local-time").textContent = "Local time: " + localTime;
+          document.getElementById("time-diff").textContent = relation;
+        });
 
-        document.getElementById("user-time").textContent = "Your time: " + userTime;
-        document.getElementById("local-time").textContent = "Local time: " + localTime;
-        document.getElementById("time-diff").textContent = relation;
-      });
+      // Fetch holidays
+      fetch("/world_dashboard/country/holidays", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: countryCode })
+      })
+        .then(res => res.json())
+        .then(holidays => {
+          const container = document.getElementById("holiday-content");
+          container.innerHTML = "";
+          if (holidays.length > 0) {
+            holidays.forEach(h => {
+              const div = document.createElement("div");
+              div.textContent = `${h.date}: ${h.name}`;
+              container.appendChild(div);
+            });
+          } else {
+            container.textContent = "No holiday data found.";
+          }
+        });
 
-      
+      // Fetch Wiki data (placeholder)
+      fetch("/world_dashboard/country/wiki", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: countryCode })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById("wiki-content");
+          container.innerHTML = "";
+
+          if (data.error) {
+            container.textContent = "No Wikipedia data found.";
+            return;
+          }
+
+          const title = document.createElement("h4");
+          title.textContent = data.title;
+
+          const text = document.createElement("p");
+          text.textContent = data.extract;
+
+          const link = document.createElement("a");
+          link.href = data.url;
+          link.textContent = "Read more on Wikipedia";
+          link.target = "_blank";
+
+          container.appendChild(title);
+          container.appendChild(text);
+          container.appendChild(link);
+        });
     })
 
-
+    
   };
 
 const enableDrag = () => {

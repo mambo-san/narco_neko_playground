@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()  # loads variables from .env
 
 class Config:
+	#API keys and stuff
 	SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', 'fallback')
 	#Email stuff
 	MAIL_SERVER = 'smtp.gmail.com'

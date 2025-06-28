@@ -1,4 +1,4 @@
-const isoNumericToCountry = {
+{
   "533": {
     "alpha2": "AW",
     "alpha3": "ABW",
@@ -1244,4 +1244,4 @@ const isoNumericToCountry = {
     "alpha3": "ZWE",
     "name": "Zimbabwe"
   }
-};
+}
