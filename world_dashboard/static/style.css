@@ -1,15 +1,48 @@
-html, body {
+html,
+body {
   margin: 0;
   height: 100%;
-  overflow: hidden; /* removes full-page scroll */
+  overflow: hidden;
   font-family: sans-serif;
-  background-color: #f0f2f5;
+  /* fallback if ::before fails */
+  position: relative;
 }
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-gradient, linear-gradient(to top, #87ceeb, #ffffff));
+  /* default daytime */
+  pointer-events: none;
+  transition: ease;
+}
+body::after {
+  transition: 1s ease;
+}
+
+/* Used for background gradation based on time */
+body.daytime {
+  background: linear-gradient(to bottom, #87ceeb, #ffffff);
+  /* light blue to white */
+  transition: background 1s ease;
+}
+
+body.nighttime {
+  background: linear-gradient(to bottom, #0b0c2a, #1a1a40);
+  /* deep navy to dark blue */
+  transition: background 1s ease;
+}
+
 #main {
   display: flex;
   flex-direction: row;
   height: 100vh;
-  padding-top: 40px;
   overflow: hidden;
 }
 
@@ -51,6 +84,13 @@ html, body {
   padding: 2px 8px;
   border-radius: 4px;
 }
+
+.selected-country {
+  fill: #ffd700 !important;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
 .graticule {
   shape-rendering: geometricPrecision;
 }
@@ -126,19 +166,31 @@ html, body {
 }
 
 
-
 @media (max-width: 768px) {
   #main {
     flex-direction: column;
+    height: 100vh;
   }
 
-  #info-panel {
+  #map-container,
+  #info-section {
+    flex-shrink: 0;
     width: 100%;
-    max-height: 40vh;
+    max-width: 100%;
+    transition: height 0.4s ease-in-out;
     resize: none;
   }
 
+  #info-section {
+    height: 30vh;
+    overflow-y: auto;
+  }
+
   #map-container {
-    height: 60vh;
+    height: 70vh;
+  }
+
+  #resizer {
+    display: none;
   }
 }

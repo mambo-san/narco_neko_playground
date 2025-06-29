@@ -47,30 +47,27 @@
             caret-color: #000;
         }
 
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: var(--bg-dark);
-                color: var(--text-dark);
-            }
-
-            #input-area {
-                background-color: var(--input-bg-dark);
-                border-color: #333;
-            }
-
-
-            #game-input {
-                background-color: var(--input-bg-dark); /* dark background */
-                color: #e0e0e0;                         /* light text */
-                caret-color: #e0e0e0;
-            }
-
-            ::placeholder {
-                color: #888;  /* ✅ Ensure placeholder is visible in dark */
-                opacity: 1;
-            }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
         }
 
+        #input-area {
+            background-color: var(--input-bg-dark);
+            border-color: #333;
+        }
+
+
+        #game-input {
+            background-color: var(--input-bg-dark); /* dark background */
+            color: #e0e0e0;                         /* light text */
+            caret-color: #e0e0e0;
+        }
+
+        ::placeholder {
+            color: #888;  /* ✅ Ensure placeholder is visible in dark */
+            opacity: 1;
+        }
         .container {
             max-width: 600px;
             width: 90%;

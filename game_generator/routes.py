@@ -68,7 +68,7 @@ def submit_prompt():
             model="gpt-4o",
             messages=messages,
             temperature=0.7, # The higher this value, the more "creative" but also higher risk of malformed response.
-            max_tokens=4000
+            max_tokens=8000
         )
         raw_html = response.choices[0].message.content
         current_app.logger.debug(f"[DEBUG] API response received.")

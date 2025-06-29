@@ -7,22 +7,6 @@ setInterval(() => {
   document.getElementById("user-time").textContent = "Your time: " + userTimeStr;
 }, 1000);
 
-// When a country is selected, calculate time diff
-function updateTimeInfo(countryOffset) {
-  const now = new Date();
-  const userOffset = now.getTimezoneOffset() / -60; // e.g. -360 => +6 hours
-  const localHour = (now.getUTCHours() + countryOffset + 24) % 24;
-
-  document.getElementById("local-time").textContent = `Local time: ${localHour}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-  const diff = countryOffset - userOffset;
-  let relation = diff > 0 ? `You are ahead by ${diff} hour(s)` :
-                diff < 0 ? `You are behind by ${Math.abs(diff)} hour(s)` :
-                `Same time zone`;
-
-  document.getElementById("time-diff").textContent = relation;
-}
-
 //Store zoom level. Is there better way to do this?
 let currentZoom = 1;
 //Some rotation for the globe
@@ -54,7 +38,7 @@ function animate() {
     const speedFactor = 1 - Math.min(Math.max(zoomRatio, 0), 1); // clamp between 0 and 1
     const adjustedSpeed = baseSpeed * speedFactor;
 
-    targetRotation[0] += adjustedSpeed;
+    targetRotation[0] -= adjustedSpeed;
     svg.selectAll("path.graticule").attr("d", path);
     }   
 
@@ -63,6 +47,10 @@ function animate() {
   rotation[1] += (targetRotation[1] - rotation[1]) * 0.50;
 
   projection.rotate(rotation);
+
+  //Background color based on center longitude
+  const centerLongitude = -projection.rotate()[0];
+  setBackgroundByLongitude(centerLongitude);
 
   // Interpolate zoom
   if (targetScale !== null) {
@@ -77,7 +65,7 @@ function animate() {
   svg.selectAll("path.graticule").attr("d", path);
 }
 
-const renderGlobe = () => {
+  const renderGlobe = () => {
     const container = document.getElementById("globe");
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -118,9 +106,15 @@ const renderGlobe = () => {
       document.getElementById("country-name").textContent = "";
     })
     .on("click", function (event, d) {
-      const countryCode = d.id;
-      const [mouseX, mouseY] = d3.pointer(event);
-      const [lon, lat] = projection.invert([mouseX, mouseY]);
+      //Stop auto-rotation
+      autoRotate = false;
+      //Focus on the clicked country and zoom in
+      d3.selectAll(".country").classed("selected-country", false);
+      d3.select(this).classed("selected-country", true);
+      const [cx, cy] = d3.geoCentroid(d); // d is the clicked country’s GeoJSON
+      targetRotation[0] = -cx;
+      targetRotation[1] = -cy;
+      targetScale = 2; 
 
       // Show loading
       document.getElementById("flag-img").classList.remove("show");
@@ -134,6 +128,10 @@ const renderGlobe = () => {
       document.getElementById("local-time").textContent = "Loading...";
       document.getElementById("time-diff").textContent = "";
       
+      // Get input data to fetch country info
+      const countryCode = d.id;
+      const [mouseX, mouseY] = d3.pointer(event);
+      const [lon, lat] = projection.invert([mouseX, mouseY]);
 
       fetch("/world_dashboard/country/info", {
         method: "POST",
@@ -172,15 +170,26 @@ const renderGlobe = () => {
           const now = new Date();
           const userTime = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
           const localTime = data.local_time || "--:--";
-          const diff = data.offset_hours;
-          const relation = diff == null ? "" :
-            diff > 0 ? `You are ahead by ${diff} hour(s)` :
-              diff < 0 ? `You are behind by ${Math.abs(diff)} hour(s)` :
-                `Same time zone`;
+          const userOffset = -now.getTimezoneOffset() / 60;
+          const localOffset = data.offset_hours;
+          const diff = localOffset - userOffset;
+
+          const relation = 
+            diff > 0 ? 
+              `You are ahead by ${diff} hour(s)` 
+            : diff < 0 ? 
+              `You are behind by ${Math.abs(diff)} hour(s)` 
+            : `Same time zone`;
+
+          const localHour = typeof data.local_hour === 'number'
+            ? data.local_hour
+            : parseInt((localTime || "0:00").split(":")[0], 10);
 
           document.getElementById("user-time").textContent = "Your time: " + userTime;
           document.getElementById("local-time").textContent = "Local time: " + localTime;
           document.getElementById("time-diff").textContent = relation;
+          setBackgroundByTime(localHour);
+
         });
 
       // Fetch holidays
@@ -310,6 +319,88 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(wo
     enableDrag();
     enableZoom();
   });
+});
+
+if (window.innerWidth <= 768) {
+  const infoSection = document.getElementById('info-section');
+  const mapContainer = document.getElementById('map-container');
+
+  let lastScrollTop = 0;
+  let expanded = false;
+
+  infoSection.addEventListener('scroll', () => {
+    const scrollTop = infoSection.scrollTop;
+
+    if (!expanded && scrollTop > lastScrollTop + 10) {
+      // (thumb swipes up) → EXPAND info
+      infoSection.style.height = '80vh';
+      mapContainer.style.height = '20vh';
+      expanded = true;
+    } else if (expanded && scrollTop === 0) {
+      // (thumb swipes down) COLLAPSE info
+      infoSection.style.height = '20vh';
+      mapContainer.style.height = '80vh';
+      expanded = false;
+    }
+
+    lastScrollTop = scrollTop;
+  });
+}
+
+function interpolateColor(hex1, hex2, t) {
+  const c1 = parseInt(hex1.slice(1), 16);
+  const c2 = parseInt(hex2.slice(1), 16);
+
+  const r1 = (c1 >> 16) & 0xff, g1 = (c1 >> 8) & 0xff, b1 = c1 & 0xff;
+  const r2 = (c2 >> 16) & 0xff, g2 = (c2 >> 8) & 0xff, b2 = c2 & 0xff;
+
+  const r = Math.round(r1 + (r2 - r1) * t);
+  const g = Math.round(g1 + (g2 - g1) * t);
+  const b = Math.round(b1 + (b2 - b1) * t);
+
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
+function getGradientForHour(hour) {
+  const stops = [
+    { h: 0, top: "#0b0c2a", bottom: "#000814" },  // Midnight
+    { h: 6, top: "#ffb347", bottom: "#ffe4b5" },  // Sunrise
+    { h: 9, top: "#87ceeb", bottom: "#e0f7ff" },  // Morning
+    { h: 12, top: "#00bfff", bottom: "#ffffff" },  // Noon
+    { h: 16, top: "#ff7e5f", bottom: "#feb47b" },  // Sunset
+    { h: 19, top: "#2c3e50", bottom: "#34495e" },  // Dusk
+    { h: 22, top: "#1a1a40", bottom: "#0b0c2a" },  // Night
+    { h: 24, top: "#0b0c2a", bottom: "#000814" },  // Wrap-around to midnight
+  ];
+
+  // Find two surrounding stops
+  let i = 0;
+  while (i < stops.length - 1 && hour >= stops[i + 1].h) i++;
+
+  const t = (hour - stops[i].h) / (stops[i + 1].h - stops[i].h);
+  const top = interpolateColor(stops[i].top, stops[i + 1].top, t);
+  const bottom = interpolateColor(stops[i].bottom, stops[i + 1].bottom, t);
+
+  return `linear-gradient(to bottom, ${top}, ${bottom})`;
+}
+
+function setBackgroundByLongitude(longitude) {
+  // Normalize longitude to -180 ~ 180
+  const clamped = ((longitude + 180) % 360 + 360) % 360 - 180;
+
+  // Approximate timezone offset
+  const offset = Math.round(clamped / 15);
+  const utcHour = new Date().getUTCHours();
+  const localHour = (utcHour + offset + 24) % 24;
+
+  const gradient = getGradientForHour(localHour);
+  document.body.style.setProperty('--bg-gradient', gradient);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const lon = -projection.rotate()[0];
+  setBackgroundByLongitude(lon);
+
 });
 
 animate();
