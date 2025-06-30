@@ -1,38 +1,41 @@
 //import * as d3 from "d3"; // if using modules
 
 // Live Time Display
-setInterval(() => {
-  const now = new Date();
-  const userTimeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  document.getElementById("user-time").textContent = "Your time: " + userTimeStr;
-}, 1000);
 
-//Store zoom level. Is there better way to do this?
+
+//Globa variables for our lovely globe. 
 let currentZoom = 1;
-//Some rotation for the globe
 let rotation = [0, 0];
 let isDragging = false;
 let lastPos = null;
-
-let autoRotate = true;
-const rotationSpeed = 0.1; // Degrees per frame
+let countrySelected = false;
+let selectedCountryId = null;
+let selectedClickLonLat = null;
+const rotationSpeed = 0.2; // Degrees per frame
 let targetRotation = [0, 0];
 let targetScale = null;
+let markerLonLat = null;
+let lastScale = null;
+let lastRotationState = null;
 
 // Load and render the globe
+let countries = [];
 const svg = d3.select("#globe");
 let projection = d3.geoOrthographic();
 let path = d3.geoPath().projection(projection);
-let countries = [];
+
+
+const maxZoom = 5 * (Math.min(svg.node().clientWidth, svg.node().clientHeight) / 2.2);
+const minZoom = 0.5 * (Math.min(svg.node().clientWidth, svg.node().clientHeight) / 2.2);
 
 function animate() {
   requestAnimationFrame(animate);
 
-  if (autoRotate && !isDragging) {
+
+  if (!countrySelected && !isDragging) {
     const baseSpeed = 0.1;
     const scale = projection.scale();
-    const maxZoom = 5 * (Math.min(svg.node().clientWidth, svg.node().clientHeight) / 2.2);
-    const minZoom = 0.5 * (Math.min(svg.node().clientWidth, svg.node().clientHeight) / 2.2);
+
 
     const zoomRatio = (scale - minZoom) / (maxZoom - minZoom); // 0 (zoomed out) → 1 (max zoom)
     const speedFactor = 1 - Math.min(Math.max(zoomRatio, 0), 1); // clamp between 0 and 1
@@ -40,18 +43,14 @@ function animate() {
 
     targetRotation[0] -= adjustedSpeed;
     svg.selectAll("path.graticule").attr("d", path);
-    }   
+  }
 
   // Interpolate rotation
   rotation[0] += (targetRotation[0] - rotation[0]) * 0.50;
   rotation[1] += (targetRotation[1] - rotation[1]) * 0.50;
 
   projection.rotate(rotation);
-
-  //Background color based on center longitude
-  const centerLongitude = -projection.rotate()[0];
-  setBackgroundByLongitude(centerLongitude);
-
+  
   // Interpolate zoom
   if (targetScale !== null) {
     const desired = targetScale * Math.min(svg.node().clientWidth, svg.node().clientHeight) / 2.2;
@@ -60,194 +59,304 @@ function animate() {
     projection.scale(newScale);
   }
 
-  // Redraw
-  svg.selectAll("path.country").attr("d", path);
-  svg.selectAll("path.graticule").attr("d", path);
+  const currentScale = projection.scale();
+  const currentRotation = projection.rotate().slice();
+
+  const rotationChanged = !lastRotationState || currentRotation.some((val, i) => Math.abs(val - lastRotationState[i]) > 0.1);
+  const zoomChanged = !lastScale || Math.abs(currentScale - lastScale) > 0.1;
+
+  if (rotationChanged || zoomChanged) {
+    svg.selectAll("path.country").attr("d", path);
+    svg.select("path.graticule").attr("d", path);
+    svg.select(".ocean").attr("d", path);
+    lastScale = currentScale;
+    lastRotationState = currentRotation;
+  }
+
+  //Background color based on center longitude
+  const centerLongitude = -projection.rotate()[0];
+  setBackgroundByLongitude(centerLongitude);
+
+  // Update the click marker position if it exists
+  const marker = svg.select("#click-marker");
+  if (markerLonLat && marker.style("display") !== "none") {
+    const [x, y] = projection(markerLonLat);
+    marker.attr("cx", x).attr("cy", y);
+  }
+
+
+  
+  
+
 }
 
-  const renderGlobe = () => {
-    const container = document.getElementById("globe");
-    const width = container.clientWidth;
-    const height = container.clientHeight;
 
-    svg.selectAll("path").remove();// Clear previous render
-    svg
-        .attr("viewBox", `0 0 ${width} ${height}`)
-        .attr("preserveAspectRatio", "xMidYMid meet");
+const renderGlobe = () => {
+  const container = document.getElementById("globe");
+  const width = container.clientWidth;
+  const height = container.clientHeight;
 
-    projection
-        .scale(currentZoom * Math.min(width, height) / 2.2)
-        .translate([width / 2, height / 2])
-        .clipAngle(90);
+  
+  svg
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
 
-     path = d3.geoPath().projection(projection);
+  projection
+    .scale(currentZoom * Math.min(width, height) / 2.2)
+    .translate([width / 2, height / 2])
+    .clipAngle(90);
 
-    const graticule = d3.geoGraticule();
-    svg.append("path")
-        .datum(graticule())
-        .attr("class", "graticule")
-        .attr("fill", "none")
-        .attr("stroke", "#ccc")
-        .attr("d", path);
+  path = d3.geoPath().projection(projection);
 
-    svg.selectAll("path.country")
-        .data(countries)
-        .enter().append("path")
-        .attr("class", "country")
-        .attr("fill", "#87ceeb")
-        .attr("stroke", "#555")
-        .attr("d", path)
-        .on("mouseover", function (event, d) {
-            d3.select(this).attr("fill", "#ffa07a");
-            document.getElementById("country-name").textContent = d.properties.name || "Unknown";
+  const graticule = d3.geoGraticule();
+
+  svg.append("path")
+    .datum({ type: "Sphere" })
+    .attr("class", "ocean")
+    .attr("d", path)
+    .attr("fill", "#008891")          
+    .attr("fill-opacity", 0.5); 
+
+  svg.append("path")
+    .datum(d3.geoGraticule10())
+    .attr("class", "graticule")
+    .attr("d", path)
+    .attr("stroke", "#ccc")
+    .attr("stroke-width", 0.5)
+    .attr("fill", "none");
+    
+  
+
+  svg.selectAll("path.country")
+    .data(countries)
+    .enter().append("path")
+    .attr("class", "country")
+    .attr("fill", "#87ceeb")
+    .attr("stroke", "#555")
+    .attr("d", path)
+    .on("mouseover", function (event, d) {
+      d3.select(this).attr("fill", "#ffa07a");
+      document.getElementById("country-name").textContent = d.properties.name || "Unknown";
     })
     .on("mouseout", function () {
       d3.select(this).attr("fill", "#87ceeb");
       document.getElementById("country-name").textContent = "";
     })
     .on("click", function (event, d) {
-      //Stop auto-rotation
+      const clickedId = d.id;
+      const [mouseX, mouseY] = d3.pointer(event);
+      const [clickedLon, clickedLat] = projection.invert([mouseX, mouseY]);
+
+      
+
+      // Track what to refresh
+      let refreshTime = false;
+      let refreshWiki = false;
+      let refreshHoliday = false;
+
+      // Detect if same location
+      const isSameLocation = selectedClickLonLat &&
+        Math.abs(clickedLon - selectedClickLonLat[0]) < 1 &&
+        Math.abs(clickedLat - selectedClickLonLat[1]) < 1;
+
+      // Reset case
+      if (selectedCountryId === clickedId && isSameLocation) {
+        autoRotate = true;
+        countrySelected = false;
+        selectedCountryId = null;
+        selectedClickLonLat = null;
+        markerLonLat = null;
+        d3.selectAll(".country").classed("selected-country", false);
+        svg.select("#click-marker").style("display", "none");
+        return;
+      }
+
+      // Same country, different location → refresh time only
+      if (selectedCountryId === clickedId && !isSameLocation) {
+        refreshTime = true;
+      } else {
+        // New country → refresh everything
+        refreshTime = refreshWiki = refreshHoliday = true;
+      }
+
+      // Update state
       autoRotate = false;
-      //Focus on the clicked country and zoom in
+      countrySelected = true;
+      selectedCountryId = clickedId;
+      selectedClickLonLat = [clickedLon, clickedLat];
+      markerLonLat = [clickedLon, clickedLat];
+
+      // Set marker
+      svg.select("#click-marker").style("display", "block");
+
+      // Focus view
+      targetRotation[0] = -clickedLon;
+      targetRotation[1] = -clickedLat;
+
+      // Highlight selection
       d3.selectAll(".country").classed("selected-country", false);
       d3.select(this).classed("selected-country", true);
-      const [cx, cy] = d3.geoCentroid(d); // d is the clicked country’s GeoJSON
-      targetRotation[0] = -cx;
-      targetRotation[1] = -cy;
-      targetScale = 2; 
 
-      // Show loading
-      document.getElementById("flag-img").classList.remove("show");
-      document.getElementById("flag-img").opacity = 0;
-      document.getElementById("country-label").opacity = 0;
-      const wikiContent = document.getElementById("wiki-content");
-      wikiContent.classList.remove("show");
-      wikiContent.textContent = "Loading...";
-      document.getElementById("holiday-content").textContent = "Loading...";
-      document.getElementById("user-time").textContent = "--:--";
-      document.getElementById("local-time").textContent = "Loading...";
-      document.getElementById("time-diff").textContent = "";
-      
-      // Get input data to fetch country info
+      // Show UI loading
+      if (refreshHoliday) { //Country changed
+        document.getElementById("flag-img").classList.remove("show");
+        document.getElementById("country-label").opacity = 0;
+        document.getElementById("wiki-content").textContent = "Loading...";
+        document.getElementById("holiday-content").textContent = "Loading...";
+      }
+      if (refreshTime) {
+        document.getElementById("user-time").textContent = "--:--";
+        document.getElementById("local-time").textContent = "Loading...";
+        document.getElementById("time-diff").textContent = "";
+      }
+
+
       const countryCode = d.id;
-      const [mouseX, mouseY] = d3.pointer(event);
-      const [lon, lat] = projection.invert([mouseX, mouseY]);
 
-      fetch("/world_dashboard/country/info", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: countryCode })
-      }).then(res => res.json())
-        .then(countryInfo => {
-          if (countryInfo?.alpha2) {
-            const flagUrl = `https://flagcdn.com/w80/${countryInfo.alpha2.toLowerCase()}.png`;
-            const flagImg = document.getElementById("flag-img");
-            const flagBlock = document.getElementById("flag-block");
-            flagBlock.classList.remove("show");
-            
-
-            flagImg.onload = () => {
-              flagImg.classList.add("show");
-              flagBlock.classList.add("show");
-            };
-
-            flagImg.src = ""; // force image refresh even if cached
-            flagImg.src = flagUrl;
-            flagImg.alt = `${countryInfo.name} flag`;
-
-            document.getElementById("country-label").textContent = countryInfo.name;
-          }
+      // Fetch flag/country only if country changed (using refreshHoliday flag)
+      if (refreshHoliday){
+        fetch("/world_dashboard/country/info", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ country: countryCode })
         })
+          .then(res => res.json())
+          .then(countryInfo => {
+            if (countryInfo?.alpha2) {
+              const flagImg = document.getElementById("flag-img");
+              const flagBlock = document.getElementById("flag-block");
+              flagBlock.classList.remove("show");
 
-      // Fetch time info
-      fetch("/world_dashboard/country/time", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lat, lon })
-      })
-        .then(res => res.json())
-        .then(data => {
-          const now = new Date();
-          const userTime = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
-          const localTime = data.local_time || "--:--";
-          const userOffset = -now.getTimezoneOffset() / 60;
-          const localOffset = data.offset_hours;
-          const diff = localOffset - userOffset;
+              flagImg.onload = () => {
+                flagImg.classList.add("show");
+                flagBlock.classList.add("show");
+              };
 
-          const relation = 
-            diff > 0 ? 
-              `You are ahead by ${diff} hour(s)` 
-            : diff < 0 ? 
-              `You are behind by ${Math.abs(diff)} hour(s)` 
-            : `Same time zone`;
+              flagImg.src = "";
+              flagImg.src = `https://flagcdn.com/w80/${countryInfo.alpha2.toLowerCase()}.png`;
+              flagImg.alt = `${countryInfo.name} flag`;
+              document.getElementById("country-label").textContent = countryInfo.name;
+            }
+          })
+        };
+      // 🌍 Refresh only if flagged
+      if (refreshTime) {
+        fetch("/world_dashboard/country/time", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lat: clickedLat, lon: clickedLon })
+        })
+          .then(res => res.json())
+          .then(data => {
+            const now = new Date();
+            const userTime = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+            const localTime = data.local_time || "--:--";
+            const userOffset = -now.getTimezoneOffset() / 60;
+            const localOffset = data.offset_hours;
+            let diff = userOffset - localOffset;
+            let absDiff = Math.abs(diff);
+            let diffHours = Math.floor(absDiff);
+            let diffMinutes = Math.round((absDiff - diffHours) * 60);
+            if (diffMinutes === 60) { diffMinutes = 0; diffHours += 1; }
 
-          const localHour = typeof data.local_hour === 'number'
-            ? data.local_hour
-            : parseInt((localTime || "0:00").split(":")[0], 10);
+            let relation = "Same time zone";
+            if (diff !== 0) {
+              const direction = diff > 0 ? "ahead" : "behind";
+              const hourPart = diffHours ? `${diffHours} hour${diffHours !== 1 ? "s" : ""}` : "";
+              const minutePart = diffMinutes ? `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""}` : "";
+              const joiner = hourPart && minutePart ? " and " : "";
+              relation = `You are ${direction} by ${hourPart}${joiner}${minutePart}`;
+            }
 
-          document.getElementById("user-time").textContent = "Your time: " + userTime;
-          document.getElementById("local-time").textContent = "Local time: " + localTime;
-          document.getElementById("time-diff").textContent = relation;
-          setBackgroundByTime(localHour);
+            const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const localTimeZone = data.timezone || "Unknown";
+            document.getElementById("user-time").textContent = `Your time: ${userTime} (${userTimeZone})`;
+            document.getElementById("local-time").textContent = `Local time: ${localTime} (${localTimeZone})`;
+            document.getElementById("time-diff").textContent = relation;
+          });
+      }
 
-        });
+      if (refreshHoliday) {
+        fetch("/world_dashboard/country/holidays", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ country: countryCode })
+        })
+          .then(res => res.json())
+          .then(holidays => {
+            const container = document.getElementById("holiday-content");
+            container.innerHTML = "";
+            const todayStr = new Date().toISOString().split("T")[0];
+            let todayInserted = false;
 
-      // Fetch holidays
-      fetch("/world_dashboard/country/holidays", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: countryCode })
-      })
-        .then(res => res.json())
-        .then(holidays => {
-          const container = document.getElementById("holiday-content");
-          container.innerHTML = "";
-          if (holidays.length > 0) {
             holidays.forEach(h => {
+              if (!todayInserted && todayStr < h.date) {
+                const todayDiv = document.createElement("div");
+                todayDiv.textContent = ` ${todayStr}     ── Today ──`;
+                todayDiv.style.color = "#666";
+                todayDiv.style.fontStyle = "italic";
+                container.appendChild(todayDiv);
+                todayInserted = true;
+              }
+
               const div = document.createElement("div");
               div.textContent = `${h.date}: ${h.name}`;
+              if (h.date === todayStr) {
+                div.style.color = "#e63946";
+                div.style.fontWeight = "bold";
+                div.textContent += " ← Today";
+                todayInserted = true;
+              }
+
               container.appendChild(div);
             });
-          } else {
-            container.textContent = "No holiday data found.";
-          }
-        });
 
-      // Fetch Wiki data (placeholder)
-      fetch("/world_dashboard/country/wiki", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: countryCode })
-      })
-        .then(res => res.json())
-        .then(data => {
-          const container = document.getElementById("wiki-content");
-          container.innerHTML = "";
+            if (!holidays.length) {
+              container.textContent = "No holiday data found.";
+            }
+          });
+      }
 
-          if (data.error) {
-            container.textContent = "No Wikipedia data found.";
-            return;
-          }
+      if (refreshWiki) {
+        fetch("/world_dashboard/country/wiki", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ country: countryCode })
+        })
+          .then(res => res.json())
+          .then(data => {
+            const container = document.getElementById("wiki-content");
+            container.innerHTML = "";
 
-          const title = document.createElement("h4");
-          title.textContent = data.title;
+            if (data.error) {
+              container.textContent = "No Wikipedia data found.";
+              return;
+            }
 
-          const text = document.createElement("p");
-          text.textContent = data.extract;
+            const text = document.createElement("p");
+            text.textContent = data.extract;
 
-          const link = document.createElement("a");
-          link.href = data.url;
-          link.textContent = "Read more on Wikipedia";
-          link.target = "_blank";
+            const link = document.createElement("a");
+            link.href = data.url;
+            link.textContent = "Read more on Wikipedia";
+            link.target = "_blank";
 
-          container.appendChild(title);
-          container.appendChild(text);
-          container.appendChild(link);
-        });
-    })
+            container.appendChild(text);
+            container.appendChild(link);
+          });
+      }
+    });
 
-    
-  };
+  //Marker for user click
+  svg.append("circle") 
+    .attr("id", "click-marker")
+    .attr("r", 5)
+    .attr("fill", "#e63946")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 1.5)
+    .style("display", "none")
+    .style("pointer-events", "none"); // 👈 This mother f*cker swallows pointer event which prevents reset.
+}; //End of renderGlobe function
 
 const enableDrag = () => {
   svg
@@ -273,13 +382,13 @@ const enableDrag = () => {
 };
 
 const enableZoom = () => {
-    const zoom = d3.zoom()
-    .scaleExtent([0.5, 5])
+  const zoom = d3.zoom()
+    .scaleExtent([0.5, 12])
     .on("zoom", (event) => {
-        targetScale = event.transform.k;
+      targetScale = event.transform.k;
     });
 
-    svg.call(zoom);
+  svg.call(zoom);
 };
 
 
@@ -312,8 +421,8 @@ document.addEventListener("mouseup", () => {
 d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(worldData => {
   countries = topojson.feature(worldData, worldData.objects.countries).features;
   renderGlobe();
-    enableDrag();
-    enableZoom();
+  enableDrag();
+  enableZoom();
   window.addEventListener("resize", () => {
     //renderGlobe();
     enableDrag();
@@ -330,17 +439,25 @@ if (window.innerWidth <= 768) {
 
   infoSection.addEventListener('scroll', () => {
     const scrollTop = infoSection.scrollTop;
-
+    const countryNameEl = document.getElementById("country-name");
     if (!expanded && scrollTop > lastScrollTop + 10) {
       // (thumb swipes up) → EXPAND info
-      infoSection.style.height = '80vh';
-      mapContainer.style.height = '20vh';
+      infoSection.style.height = '100vh';
+      mapContainer.style.height = '0vh'; // hide map when fully expanded
+
       expanded = true;
+      //Make the country name (on the globe) disappear for mobile users
+      countryNameEl.style.opacity = "0";
+      countryNameEl.style.pointerEvents = "none";
+
     } else if (expanded && scrollTop === 0) {
       // (thumb swipes down) COLLAPSE info
       infoSection.style.height = '20vh';
       mapContainer.style.height = '80vh';
       expanded = false;
+      //Make the country name (on the globe) appear for mobile users
+      countryNameEl.style.opacity = "1";
+      countryNameEl.style.pointerEvents = "auto";
     }
 
     lastScrollTop = scrollTop;

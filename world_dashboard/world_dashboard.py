@@ -18,6 +18,7 @@ world_dashboard_bp = Blueprint(
 _iso_cache = None
 iso_json_path = Path(__file__).parent / "static" / "isoNumericToCountry.json"
 
+_tf_cache = TimezoneFinder()
 def get_country_iso():
     global _iso_cache
     if _iso_cache is None:
@@ -45,20 +46,18 @@ def get_time_info():
     lat, lon = data.get("lat"), data.get("lon")
     response = {"local_time": None, "offset_hours": None, "timezone": None}
 
-    if lat is not None and lon is not None:
-        tf = TimezoneFinder()
-        tz_name = tf.timezone_at(lat=lat, lng=lon)
-        if tz_name:
-            now_utc = datetime.now(timezone.utc)
-            tz = pytz.timezone(tz_name)
-            local_dt = now_utc.astimezone(tz)
-            user_dt = datetime.now().astimezone()
-            offset = round((local_dt - user_dt).total_seconds() / 3600)
-            response.update({
-                "local_time": local_dt.strftime("%H:%M"),
-                "offset_hours": offset,
-                "timezone": tz_name
-            })
+    tz_name = _tf_cache.timezone_at(lat=lat, lng=lon)
+    if tz_name:
+        tz = pytz.timezone(tz_name)
+        local_dt = datetime.now(tz)
+        offset = round(local_dt.utcoffset().total_seconds() / 3600, 2)  # Keep decimal for 0.5/0.75 cases
+
+        response.update({
+            "local_time": local_dt.strftime("%H:%M"),
+            "local_hour": local_dt.hour,
+            "offset_hours": offset,
+            "timezone": tz_name
+        })
     return jsonify(response)
 
 @world_dashboard_bp.route('/country/holidays', methods=['POST'])
@@ -72,15 +71,28 @@ def get_holidays():
     holidays = []
     if alpha2:
         try:
-            year = datetime.now().year
-            r = requests.get(f"https://date.nager.at/api/v3/PublicHolidays/{year}/{alpha2}")
-            if r.status_code == 200:
-                today = datetime.now().date()
-                holidays = [
-                    {"date": h["date"], "name": h["name"]}
-                    for h in r.json()
-                    if datetime.fromisoformat(h["date"]).date()
-                ][:5]
+            current_year = datetime.now().year
+            next_year = current_year + 1
+
+            # Fetch current year holidays
+            r1 = requests.get(f"https://date.nager.at/api/v3/PublicHolidays/{current_year}/{alpha2}")
+            r1_data = r1.json() if r1.status_code == 200 else []
+
+            # Fetch next year holidays (but only keep January)
+            r2 = requests.get(f"https://date.nager.at/api/v3/PublicHolidays/{next_year}/{alpha2}")
+            r2_data = [
+                h for h in r2.json() if h["date"].startswith(f"{next_year}-01")
+            ] if r2.status_code == 200 else []
+
+            # Combine both
+            combined = r1_data + r2_data
+
+            # Format response
+            holidays = [
+                {"date": h["date"], "name": h["name"]}
+                for h in combined
+            ]
+
         except Exception as e:
             current_app.logger.warning(f"Holiday fetch failed: {e}")
 
@@ -106,7 +118,6 @@ def get_wiki_summary():
         response.raise_for_status()
         summary = response.json()
         return jsonify({
-            "title": summary.get("title"),
             "extract": summary.get("extract"),
             "image": summary.get("thumbnail", {}).get("source"),
             "url": summary.get("content_urls", {}).get("desktop", {}).get("page")

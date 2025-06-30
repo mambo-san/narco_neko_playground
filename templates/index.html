@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome | Narco Neko Playground</title>
   <script>
-    if (!localStorage.getItem('theme') || localStorage.getItem('theme') === 'dark') {
-      document.documentElement.classList.add('dark');
-    }
+        document.documentElement.classList.add('dark');
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -82,10 +80,8 @@
       <h2 class="text-3xl font-bold mb-4">Contact</h2>
 
       <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">
-        Interested in working together? Want to request a feature? <br />
-        Maybe have me mow your lawn for the price of a coffee?<br />
-        Want to send me your cat photos? I’d love to hear from you!
-      </p>
+        Interested in working together? Want to request a feature? Maybe have me mow your lawn for the price of a coffee? Or
+        send me your cat photos? Ping me—worst case, I don’t mow your lawn.  </p>
       <form action="/submit_contact" method="POST">
         <div>
           <label class="block text-sm font-medium mb-1" for="name">Name</label>
@@ -260,8 +256,23 @@
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
     const closeBtn = document.getElementById('closeBtn');
-    menuBtn.onclick = () => sidebar.classList.remove('-translate-x-full');
-    closeBtn.onclick = () => sidebar.classList.add('-translate-x-full');
+    const sidebarLinks = sidebar.querySelectorAll('a');
+
+    menuBtn.onclick = () => {
+      sidebar.classList.remove('-translate-x-full');
+      menuBtn.classList.add('hidden');
+    };
+
+    closeBtn.onclick = () => {
+      sidebar.classList.add('-translate-x-full');
+      menuBtn.classList.remove('hidden');
+    };
+    sidebarLinks.forEach(link => {
+        link.onclick = () => {
+          sidebar.classList.add('-translate-x-full');
+          menuBtn.classList.remove('hidden');
+        };
+      });
   </script>
 
 
