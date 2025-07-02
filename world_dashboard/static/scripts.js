@@ -1,7 +1,4 @@
-//import * as d3 from "d3"; // if using modules
-
-// Live Time Display
-
+const isMobile = window.innerWidth <= 768; 
 
 //Globa variables for our lovely globe. 
 let currentZoom = 1;
@@ -17,6 +14,14 @@ let targetScale = null;
 let markerLonLat = null;
 let lastScale = null;
 let lastRotationState = null;
+let isCountrySelected = false;
+const dragFactor = isMobile ? 0.15 : 0.1;
+
+let lastPinchDistance = null;
+let isPinching = false;
+const minScale = 150;
+
+const maxScale = isMobile ? 2000 : 460;
 
 // Load and render the globe
 let countries = [];
@@ -100,6 +105,7 @@ function jumpToCountry(country) {
   markerLonLat = [lon, lat];
   countrySelected = true;
   autoRotate = false;
+  isCountrySelected = true;
 
   // Deselect others, highlight this one
   d3.selectAll(".country").classed("selected-country", false);
@@ -251,11 +257,50 @@ const renderGlobe = () => {
   const container = document.getElementById("globe");
   const width = container.clientWidth;
   const height = container.clientHeight;
-
+  
   
   svg
     .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
+
+  svg.node().addEventListener("touchstart", (e) => {
+    if (e.touches.length === 2) {
+      isPinching = true;
+
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastPinchDistance = Math.sqrt(dx * dx + dy * dy);
+    }
+    });
+  svg.node().addEventListener("touchend", () => {
+    isPinching = false;
+    lastPinchDistance = null;
+    });
+
+  svg.node().addEventListener("touchmove", (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault(); // prevent scrolling
+
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (lastPinchDistance !== null) {
+        const delta = distance - lastPinchDistance;
+        let newScale = projection.scale() + delta * 0.8; // adjust zoom sensitivity
+        newScale = Math.max(minScale, Math.min(maxScale, newScale));
+        projection.scale(newScale);
+        svg.selectAll("path").attr("d", path);
+      }
+
+      lastPinchDistance = distance;
+    }
+  }, { passive: false });
+
+  svg.node().addEventListener("touchend", () => {
+    lastPinchDistance = null;
+  });
+
 
   projection
     .scale(currentZoom * Math.min(width, height) / 2.2)
@@ -341,6 +386,7 @@ const renderGlobe = () => {
       selectedCountryId = clickedId;
       selectedClickLonLat = [clickedLon, clickedLat];
       markerLonLat = [clickedLon, clickedLat];
+      isCountrySelected = true;
 
       // Set marker
       svg.select("#click-marker").style("display", "block");
@@ -523,11 +569,18 @@ const enableDrag = () => {
           lastPos = [event.x, event.y];
         })
         .on("drag", (event) => {
+          if (isPinching) return;
           if (!isDragging) return;
+          
           const dx = event.x - lastPos[0];
           const dy = event.y - lastPos[1];
-          targetRotation[0] += dx * 0.1;
-          targetRotation[1] -= dy * 0.1;
+
+          const scale = projection.scale();
+          const zoomFactor = Math.max(0.5, Math.min(2, maxScale / scale));
+          const adjustedFactor = dragFactor * zoomFactor;
+
+          targetRotation[0] += dx * adjustedFactor;
+          targetRotation[1] -= dy * adjustedFactor;
           targetRotation[1] = Math.max(-90, Math.min(90, targetRotation[1]));
           lastPos = [event.x, event.y];
         })
@@ -737,11 +790,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
 });
 
+
+
+
+
+
 //Some mobile specific stuff
 if (window.innerWidth <= 768) {
+  
   const infoSection = document.getElementById("info-section");
   const mapContainer = document.getElementById("map-container");
   const countryNameEl = document.getElementById("country-name");
+
+  let scrolledToTop = false;
 
   let currentInfoHeight = 20; // in vh
   let isLockedExpanded = false;
@@ -763,50 +824,77 @@ if (window.innerWidth <= 768) {
     }
   }
 
-  let isDraggingPanel = false;
-
   infoSection.addEventListener("touchstart", (e) => {
     startY = e.touches[0].clientY;
-    isDraggingPanel = infoSection.scrollTop === 0 || !isLockedExpanded;
+    if(
+      isLockedExpanded &&
+      infoSection.scrollTop === 0 &&
+      e.touches[0].clientY - startY > 0 // user pulling down
+    ) {
+      e.preventDefault(); // stop browser from triggering refresh
+    }
+    if (e.touches.length === 2) {
+      isPinching = true;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastPinchDistance = Math.sqrt(dx * dx + dy * dy);
+    }
+    
   });
 
   infoSection.addEventListener("touchmove", (e) => {
-    if (!isDraggingPanel || startY === null) return;
+    if (startY === null || !isCountrySelected) return;
 
     const deltaY = startY - e.touches[0].clientY;
-    const deltaVH = deltaY / window.innerHeight * 100;
+    const deltaVH = deltaY / window.innerHeight * 100 * 1.4;
     const newHeight = currentInfoHeight + deltaVH;
+
+    //  Don't resize if fully expanded and not at top
+    if (isLockedExpanded && !scrolledToTop) return;
+    
+    if (
+      isLockedExpanded &&
+      scrollable.scrollTop > 0 &&
+      deltaY > 0 // user scrolling up
+    ) {
+      return; // allow native scrolling
+    }
+
+    if (
+      isLockedExpanded &&
+      scrollable.scrollTop === 0 &&
+      deltaY < 0
+    ) {
+      e.preventDefault();
+    }
 
     setHeights(newHeight);
     startY = e.touches[0].clientY;
 
-    // Auto-expand when past 30%
     if (!isLockedExpanded && newHeight > 30) {
       setHeights(100);
       isLockedExpanded = true;
+      infoSection.classList.add("expanded");
     }
 
-    // Auto-collapse when dragging down from top
-    if (isLockedExpanded && newHeight < 90 && infoSection.scrollTop === 0 && deltaY < 0) {
+    if (isLockedExpanded && newHeight < 90 && scrolledToTop && deltaY < 0) {
       setHeights(20);
       isLockedExpanded = false;
+      infoSection.classList.remove("expanded");
     }
   });
 
   infoSection.addEventListener("touchend", () => {
+    isPinching = false;
     startY = null;
-    isDraggingPanel = false;
   });
 
+  const scrollable = document.getElementById("info-scrollable");
   // Allow reverse collapse only when scrolled to the top
-  infoSection.addEventListener("scroll", () => {
-    if (
-      isLockedExpanded &&
-      infoSection.scrollTop === 0 &&
-      startY === null // no active touch
-    ) {
-      isLockedExpanded = false;
-      setHeights(20);
+  scrollable.addEventListener("scroll", () => {
+    if (isLockedExpanded) {
+      // Only set to true if user scrolls to very top
+      scrolledToTop = scrollable.scrollTop <= 0;
     }
   });
 

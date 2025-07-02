@@ -127,7 +127,7 @@ body.nighttime {
   top: 0;
   z-index: 10;
   background: white;
-  padding: 0.5rem;
+  padding: 1rem;
   justify-content: center;
   border-bottom: 1px solid #ddd;
   }
@@ -240,6 +240,13 @@ body.nighttime {
   z-index: 5;
 }
 
+#info-scrollable {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  gap: 1rem;
+}
 
 @media (max-width: 768px) {
   #main {
@@ -261,12 +268,16 @@ body.nighttime {
     height: 100%;
     transition: width 0.2s ease; 
   }
-  
+  #info-scrollable {
+    height: 100%;
+    overflow-y: auto;
+    gap: 1rem; }
+
   #info-section {
     height: 20vh;
     max-height: 100vh;
     overflow-y: hidden;
-    transition: height 0.3s ease-in-out; 
+    transition: height 0.4s ease-in-out; 
   }
 
   #info-section.expanded {
@@ -274,11 +285,6 @@ body.nighttime {
     overflow-y: auto;
   }
 
-  #info-scrollable {
-    height: 100%;
-    overflow-y: auto;
-    padding-top: 60px;
-  }
   
   #info-section:not(.expanded) #info-scrollable {
     overflow: hidden;   
