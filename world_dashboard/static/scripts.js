@@ -83,13 +83,169 @@ function animate() {
     const [x, y] = projection(markerLonLat);
     marker.attr("cx", x).attr("cy", y);
   }
-
-
   
-  
-
 }
 
+
+function jumpToCountry(country) {
+  const [lon, lat] = d3.geoCentroid(country);
+
+  // Set target rotation
+  targetRotation[0] = -lon;
+  targetRotation[1] = -lat;
+
+  // Also manually update internal state
+  selectedCountryId = country.id;
+  selectedClickLonLat = [lon, lat];
+  markerLonLat = [lon, lat];
+  countrySelected = true;
+  autoRotate = false;
+
+  // Deselect others, highlight this one
+  d3.selectAll(".country").classed("selected-country", false);
+  d3.selectAll(".country")
+    .filter(d => d.id === country.id)
+    .classed("selected-country", true);
+
+  // Show marker
+  svg.select("#click-marker").style("display", "block");
+
+  // Trigger refresh as needed
+  refreshCountryInfo(country.id, lat, lon);
+}
+
+function refreshCountryInfo(countryId, lat, lon) {
+  document.getElementById("flag-img").classList.remove("show");
+  document.getElementById("country-label").opacity = 0;
+  document.getElementById("wiki-content").textContent = "Loading...";
+  document.getElementById("holiday-content").textContent = "Loading...";
+  document.getElementById("user-time").textContent = "--:--";
+  document.getElementById("local-time").textContent = "Loading...";
+  document.getElementById("time-diff").textContent = "";
+
+  fetch("/world_dashboard/country/info", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ country: countryId })
+  })
+    .then(res => res.json())
+    .then(countryInfo => {
+      if (countryInfo?.alpha2) {
+        const flagImg = document.getElementById("flag-img");
+        const flagBlock = document.getElementById("flag-block");
+        flagBlock.classList.remove("show");
+
+        flagImg.onload = () => {
+          flagImg.classList.add("show");
+          flagBlock.classList.add("show");
+        };
+
+        flagImg.src = `https://flagcdn.com/w80/${countryInfo.alpha2.toLowerCase()}.png`;
+        flagImg.alt = `${countryInfo.name} flag`;
+        document.getElementById("country-label").textContent = countryInfo.name;
+      }
+    });
+
+  fetch("/world_dashboard/country/time", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ lat, lon })
+  })
+    .then(res => res.json())
+    .then(data => {
+      const now = new Date();
+      const userTime = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+      const localTime = data.local_time || "--:--";
+      const userOffset = -now.getTimezoneOffset() / 60;
+      const localOffset = data.offset_hours;
+      let diff = userOffset - localOffset;
+      let absDiff = Math.abs(diff);
+      let diffHours = Math.floor(absDiff);
+      let diffMinutes = Math.round((absDiff - diffHours) * 60);
+      if (diffMinutes === 60) { diffMinutes = 0; diffHours += 1; }
+
+      let relation = "Same time zone";
+      if (diff !== 0) {
+        const direction = diff > 0 ? "ahead" : "behind";
+        const hourPart = diffHours ? `${diffHours} hour${diffHours !== 1 ? "s" : ""}` : "";
+        const minutePart = diffMinutes ? `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""}` : "";
+        const joiner = hourPart && minutePart ? " and " : "";
+        relation = `You are ${direction} by ${hourPart}${joiner}${minutePart}`;
+      }
+
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const localTimeZone = data.timezone || "Unknown";
+      document.getElementById("user-time").textContent = `Your time: ${userTime} (${userTimeZone})`;
+      document.getElementById("local-time").textContent = `Local time: ${localTime} (${localTimeZone})`;
+      document.getElementById("time-diff").textContent = relation;
+    });
+
+  fetch("/world_dashboard/country/holidays", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ country: countryId })
+  })
+    .then(res => res.json())
+    .then(holidays => {
+      const container = document.getElementById("holiday-content");
+      container.innerHTML = "";
+      const todayStr = new Date().toISOString().split("T")[0];
+      let todayInserted = false;
+
+      holidays.forEach(h => {
+        if (!todayInserted && todayStr < h.date) {
+          const todayDiv = document.createElement("div");
+          todayDiv.textContent = ` ${todayStr}     ── Today ──`;
+          todayDiv.style.color = "#666";
+          todayDiv.style.fontStyle = "italic";
+          container.appendChild(todayDiv);
+          todayInserted = true;
+        }
+
+        const div = document.createElement("div");
+        div.textContent = `${h.date}: ${h.name}`;
+        if (h.date === todayStr) {
+          div.style.color = "#e63946";
+          div.style.fontWeight = "bold";
+          div.textContent += " ← Today";
+          todayInserted = true;
+        }
+
+        container.appendChild(div);
+      });
+
+      if (!holidays.length) {
+        container.textContent = "No holiday data found.";
+      }
+    });
+
+  fetch("/world_dashboard/country/wiki", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ country: countryId })
+  })
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById("wiki-content");
+      container.innerHTML = "";
+
+      if (data.error) {
+        container.textContent = "No Wikipedia data found.";
+        return;
+      }
+
+      const text = document.createElement("p");
+      text.textContent = data.extract;
+
+      const link = document.createElement("a");
+      link.href = data.url;
+      link.textContent = "Read more on Wikipedia";
+      link.target = "_blank";
+
+      container.appendChild(text);
+      container.appendChild(link);
+    });
+}
 
 const renderGlobe = () => {
   const container = document.getElementById("globe");
@@ -430,39 +586,100 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(wo
   });
 });
 
-if (window.innerWidth <= 768) {
-  const infoSection = document.getElementById('info-section');
-  const mapContainer = document.getElementById('map-container');
+const searchInput = document.getElementById("country-search");
+const suggestionsBox = document.getElementById("search-suggestions");
+let selectedIndex = -1;
+let matches = [];
 
-  let lastScrollTop = 0;
-  let expanded = false;
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase().trim();
+  suggestionsBox.innerHTML = "";
+  selectedIndex = -1;
 
-  infoSection.addEventListener('scroll', () => {
-    const scrollTop = infoSection.scrollTop;
-    const countryNameEl = document.getElementById("country-name");
-    if (!expanded && scrollTop > lastScrollTop + 10) {
-      // (thumb swipes up) → EXPAND info
-      infoSection.style.height = '100vh';
-      mapContainer.style.height = '0vh'; // hide map when fully expanded
+  if (query.length < 1) return;
 
-      expanded = true;
-      //Make the country name (on the globe) disappear for mobile users
-      countryNameEl.style.opacity = "0";
-      countryNameEl.style.pointerEvents = "none";
+  matches = countries.filter(c => c.properties.name.toLowerCase().includes(query));
 
-    } else if (expanded && scrollTop === 0) {
-      // (thumb swipes down) COLLAPSE info
-      infoSection.style.height = '20vh';
-      mapContainer.style.height = '80vh';
-      expanded = false;
-      //Make the country name (on the globe) appear for mobile users
-      countryNameEl.style.opacity = "1";
-      countryNameEl.style.pointerEvents = "auto";
+  matches.forEach((country, i) => {
+    const div = document.createElement("div");
+    div.textContent = country.properties.name;
+
+    div.onclick = () => {
+      searchInput.value = country.properties.name;
+      jumpToCountry(country);
+      suggestionsBox.innerHTML = "";
+      selectedIndex = -1;
+    };
+
+    div.addEventListener("mouseover", () => {
+      selectedIndex = i;
+      updateSuggestionHighlight(suggestionsBox.querySelectorAll("div"));
+    });
+
+    suggestionsBox.appendChild(div);
+  });
+});
+
+searchInput.addEventListener("keydown", (e) => {
+  const items = suggestionsBox.querySelectorAll("div");
+  if (!items.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    selectedIndex = (selectedIndex + 1) % items.length;
+    updateSuggestionHighlight(items);
+  }
+
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+    updateSuggestionHighlight(items);
+  }
+
+  if (e.key === "Enter") {
+    e.preventDefault();
+    if (items.length === 1) {
+      searchInput.value = matches[0].properties.name;
+      jumpToCountry(matches[0]);
+    } else if (selectedIndex >= 0 && selectedIndex < matches.length) {
+      searchInput.value = matches[selectedIndex].properties.name;
+      jumpToCountry(matches[selectedIndex]);
     }
+    suggestionsBox.innerHTML = "";
+    selectedIndex = -1;
+    searchInput.blur();
+  }
 
-    lastScrollTop = scrollTop;
+  if (e.key === "Escape") {
+    suggestionsBox.innerHTML = "";
+    selectedIndex = -1;
+  }
+});
+
+function updateSuggestionHighlight(items) {
+  items.forEach((item, i) => {
+    item.classList.toggle("selected", i === selectedIndex);
   });
 }
+
+
+document.addEventListener("keydown", (e) => {
+  // Only trigger if ESC is pressed and the search box is NOT focused
+  if (e.key === "Escape" && document.activeElement.id !== "country-search") {
+    // Clear selection
+    countrySelected = false;
+    selectedCountryId = null;
+    selectedClickLonLat = null;
+    markerLonLat = null;
+    autoRotate = true;
+
+    // Remove marker and highlight
+    svg.select("#click-marker").style("display", "none");
+    d3.selectAll(".country").classed("selected-country", false);
+  }
+});
+
+
 
 function interpolateColor(hex1, hex2, t) {
   const c1 = parseInt(hex1.slice(1), 16);
@@ -519,5 +736,82 @@ window.addEventListener("DOMContentLoaded", () => {
   setBackgroundByLongitude(lon);
 
 });
+
+//Some mobile specific stuff
+if (window.innerWidth <= 768) {
+  const infoSection = document.getElementById("info-section");
+  const mapContainer = document.getElementById("map-container");
+  const countryNameEl = document.getElementById("country-name");
+
+  let currentInfoHeight = 20; // in vh
+  let isLockedExpanded = false;
+  let startY = null;
+
+  function setHeights(vh) {
+    currentInfoHeight = Math.min(Math.max(vh, 20), 100);
+    infoSection.style.height = `${currentInfoHeight}vh`;
+    mapContainer.style.height = `${100 - currentInfoHeight}vh`;
+
+    if (currentInfoHeight >= 95) {
+      countryNameEl.style.opacity = "0";
+      countryNameEl.style.pointerEvents = "none";
+      infoSection.classList.add("expanded");
+    } else {
+      countryNameEl.style.opacity = "1";
+      countryNameEl.style.pointerEvents = "auto";
+      infoSection.classList.remove("expanded");
+    }
+  }
+
+  let isDraggingPanel = false;
+
+  infoSection.addEventListener("touchstart", (e) => {
+    startY = e.touches[0].clientY;
+    isDraggingPanel = infoSection.scrollTop === 0 || !isLockedExpanded;
+  });
+
+  infoSection.addEventListener("touchmove", (e) => {
+    if (!isDraggingPanel || startY === null) return;
+
+    const deltaY = startY - e.touches[0].clientY;
+    const deltaVH = deltaY / window.innerHeight * 100;
+    const newHeight = currentInfoHeight + deltaVH;
+
+    setHeights(newHeight);
+    startY = e.touches[0].clientY;
+
+    // Auto-expand when past 30%
+    if (!isLockedExpanded && newHeight > 30) {
+      setHeights(100);
+      isLockedExpanded = true;
+    }
+
+    // Auto-collapse when dragging down from top
+    if (isLockedExpanded && newHeight < 90 && infoSection.scrollTop === 0 && deltaY < 0) {
+      setHeights(20);
+      isLockedExpanded = false;
+    }
+  });
+
+  infoSection.addEventListener("touchend", () => {
+    startY = null;
+    isDraggingPanel = false;
+  });
+
+  // Allow reverse collapse only when scrolled to the top
+  infoSection.addEventListener("scroll", () => {
+    if (
+      isLockedExpanded &&
+      infoSection.scrollTop === 0 &&
+      startY === null // no active touch
+    ) {
+      isLockedExpanded = false;
+      setHeights(20);
+    }
+  });
+
+  // Set initial layout
+  setHeights(20);
+}
 
 animate();

@@ -9,12 +9,23 @@
 <body>
   <div id="container">
     
-    <!-- The left side of the screen.-->
+    
     <div id="main">
-      <div id="map-container">
-        <div id="country-name"></div>
-        <svg id="globe"></svg>
+      <!-- The left side of the screen.-->
+      <div id="map-column">
+        <div id="map-container">
+          <div id="search-bar">
+            <input id="country-search" type="text" placeholder="Search country..." />
+            <div id="search-suggestions"></div>
+          </div>
+        
+          <svg id="globe"></svg>
+        
+          <!-- Move this back inside -->
+          <div id="country-name"></div>  
+        </div>
       </div>
+      
 
       <!-- Adjustable divider-->
       <div id="resizer"></div>
@@ -29,23 +40,24 @@
           </div>
         </div>
 
-        <div class="info-container" id="time-container">
-          <h3>Time Difference</h3>
-          <div id="user-time" class="fade">Your time: --:--</div>
-          <div id="local-time" class="fade">Local time: --:--</div>
-          <div id="time-diff" class="fade">Time difference: --</div>
+          <div id="info-scrollable">
+          <div class="info-container" id="time-container">
+            <h3>Time Difference</h3>
+            <div id="user-time" class="fade">Your time: --:--</div>
+            <div id="local-time" class="fade">Local time: --:--</div>
+            <div id="time-diff" class="fade">Time difference: --</div>
+          </div>
+          
+          <div class="info-container" id="holiday-container">
+            <h3>Public Holiday</h3>
+            <div id="holiday-content" class="fade">No data yet.</div>
+          </div>
+          
+          <div class="info-container" id="wiki-container">
+            <h3>Wiki data</h3>
+            <div id="wiki-content" class="fade">No data yet.</div>
+          </div>
         </div>
-        
-        <div class="info-container" id="holiday-container">
-          <h3>Public Holiday</h3>
-          <div id="holiday-content" class="fade">No data yet.</div>
-        </div>
-        
-        <div class="info-container" id="wiki-container">
-          <h3>Wiki data</h3>
-          <div id="wiki-content" class="fade">No data yet.</div>
-        </div>
-        
         
         
         
