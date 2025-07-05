@@ -1,12 +1,10 @@
-import { initSimulation } from './simulation.js';
+// main.js
+import { ParticleEngine } from './particle_engine.js';
 import { initUI } from './ui.js';
-import { TYPES, TYPE_COLORS, rules, renderRuleTable } from './rules.js';
+import { renderRuleTable } from './rule_ui.js';
 
-window.TYPES = TYPES;
-window.TYPE_COLORS = TYPE_COLORS;
-window.rules = rules;
-window.renderRuleTable = renderRuleTable;
+const engine = new ParticleEngine();
+window.engine = engine; // optional for debug
 
-initSimulation();
-initUI();
-renderRuleTable();
+initUI(engine);          // pass engine to UI module
+renderRuleTable(engine);

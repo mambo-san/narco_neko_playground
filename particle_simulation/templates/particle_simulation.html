@@ -5,52 +5,39 @@
   <meta charset="UTF-8">
   <title>Particle Simulation</title>
   <link rel="stylesheet" href="{{ url_for('particle_simulation.static', filename='style.css') }}">
-  <!-- Load PixiJS first -->
   <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.2.4/dist/pixi.min.js"></script>
-
-  <!-- simulation script -->
-  <script  type="module" src="{{ url_for('particle_simulation.static', filename='scripts/main.js') }}" defer></script>
+  <script type="module" src="{{ url_for('particle_simulation.static', filename='scripts/main.js') }}" defer></script>
 </head>
 
 <body>
-  <button id="fullscreen-btn"> ⛶ Fullscreen </button>
-    <div id="floating-panel">
-      <h3>Simulation Info</h3>
-      
-      <div id="panel-content">
-        
-        <p><strong>Particles:</strong>
-          <input id="particle-count-input" type="number" min="1" style="width: 60px;">    
-        </p>
-        <p><strong>Interaction Radius:</strong>
-          <input id="interaction-radius-input" type="number" value="50" min="0" style="width: 60px;">    
-        </p>
-
-        <div>
-          <button id="toggle-population">📊 Population %</button>
-          <div id="population-editor" style="display: none;"></div>
-        </div> 
-
-        <div>
-          <button id="toggle-rules">⚙️ Rules</button>
-        
-          <div id="rule-editor" style="display: none;">
-            <table id="rule-table"></table>
-        
-            <button id="explain-rules-btn">📘 Explain</button>
-            <button id="explain-rules-5yo-btn">📘 Explain like I'm 5yo.</button>
-        
-            </div>
-
+  <button id="fullscreen-btn">⛶ Fullscreen</button>
+  <div id="floating-panel">
+    <h3>Simulation Info</h3>
+    <div id="panel-content">
+      <p><strong>Particles:</strong>
+        <input id="particle-count-input" type="number" min="1" style="width: 60px;">
+      </p>
+      <p><strong>Interaction Radius:</strong>
+        <input id="interaction-radius-input" type="number" value="50" min="0" style="width: 60px;">
+      </p>
+      <div>
+        <button id="toggle-population">📊 Population %</button>
+        <div id="population-editor" style="display: none;"></div>
+      </div>
+      <div>
+        <button id="toggle-rules">⚙️ Rules</button>
+        <div id="rule-editor" style="display: none;">
+          <table id="rule-table"></table>
+          <button id="explain-rules-btn">📘 Explain</button>
+          <button id="explain-rules-5yo-btn">📘 Explain like I'm 5yo.</button>
         </div>
+      </div>
     </div>
-
-      
-    </div> 
-    <div id="explanation-window" style="display: none;">
-      <button id="close-explanation">❌</button>
-      <div id="explanation-content"></div>
-    </div>
+  </div>
+  <div id="explanation-window" style="display: none;">
+    <button id="close-explanation">❌</button>
+    <div id="explanation-content"></div>
+  </div>
 </body>
 
 </html>
