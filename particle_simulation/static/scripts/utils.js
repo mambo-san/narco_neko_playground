@@ -98,4 +98,39 @@ export function generateRuleExplanation(rules, is5yo) {
 
     return lines.join("\n");
 }
-  
+
+export function createColorBox(type, TYPE_COLORS, onChangeColor) {
+    const box = document.createElement('div');
+    box.className = 'color-box';
+    box.textContent = type;
+    box.style.backgroundColor = '#' + TYPE_COLORS[type].toString(16).padStart(6, '0');
+    box.style.color = getTextColor(TYPE_COLORS[type]);
+    box.style.display = 'flex';
+    box.style.alignItems = 'center';
+    box.style.justifyContent = 'center';
+    box.style.fontWeight = 'bold';
+    box.style.cursor = 'pointer';
+
+    box.addEventListener('click', () => {
+        const picker = document.createElement('input');
+        picker.type = 'color';
+        picker.value = '#' + TYPE_COLORS[type].toString(16).padStart(6, '0');
+        picker.style.position = 'absolute';
+        picker.style.left = '-9999px';
+        document.body.appendChild(picker);
+        picker.click();
+
+        let isCoolingDown = false;
+        picker.addEventListener('input', () => {
+            if (isCoolingDown) return;
+            TYPE_COLORS[type] = parseInt(picker.value.slice(1), 16);
+            onChangeColor();
+            isCoolingDown = true;
+            setTimeout(() => isCoolingDown = false, 200);
+        });
+
+        picker.addEventListener('blur', () => picker.remove());
+    });
+
+    return box;
+}

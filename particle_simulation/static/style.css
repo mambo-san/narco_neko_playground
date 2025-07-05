@@ -1,3 +1,4 @@
+/* === General Elements === */
 html,
 body {
     margin: 0;
@@ -11,21 +12,36 @@ canvas {
     display: block;
 }
 
-#fullscreen-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 10;
-    padding: 8px 12px;
-    border: none;
-    background: rgba(255, 255, 255, 0.1);
+/* === UI Buttons === */
+#fullscreen-btn,
+#toggle-rules,
+#toggle-population,
+#explain-rules-btn,
+#explain-rules-5yo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: #222;
     color: white;
-    cursor: pointer;
-    font-size: 14px;
+    border: 1px solid #555;
     border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
 }
 
+#fullscreen-btn:hover,
+#toggle-rules:hover,
+#toggle-population:hover,
+#explain-rules-btn:hover,
+#explain-rules-5yo-btn:hover {
+    background-color: #333;
+    transform: scale(1.03);
+    border-color: limegreen;
+}
 
+/* === Floating Panel === */
 #floating-panel {
     position: absolute;
     top: 80px;
@@ -43,61 +59,90 @@ canvas {
     user-select: none;
 }
 
-.hidden-ui {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease; 
-}
-
-body.hide-cursor {
-    cursor: none; }
-
-#fullscreen-btn,
-#floating-panel {
-    transition: opacity 0.3s ease;
-}
-
 #floating-panel h3 {
     margin: 0 0 8px 0;
     font-size: 16px;
-    text-align: center; 
+    text-align: center;
 }
 
-#toggle-rules {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background-color: #222;
-    color: white;
-    border: 1px solid #555;
-    border-radius: 4px;
+/* === Utility Classes === */
+.hidden-ui {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+body.hide-cursor {
+    cursor: none;
+}
+
+.add-btn {
+    margin-bottom: 10px;
     padding: 4px 8px;
-    font-size: 14px;
+    font-size: 0.9em;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s; 
-}
-#toggle-rules:hover {
-    background-color: #333;
-    transform: scale(1.03);
-    border-color: limegreen; 
 }
 
-#rules-table {
-    width: 100%;
-    margin: 8px 0;
-    border-collapse: collapse;
-    font-size: 12px;
-    color: white;
+.trash-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    margin-left: 8px;
 }
 
+/* === Color Box === */
+.color-box {
+    width: 2em;
+    height: 2em;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* === Population Editor === */
+#population-editor {
+    margin-top: 10px;
+    padding: 4px;
+    font-size: 14px;
+}
+
+.pop-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+}
+
+.pop-slider {
+    flex-grow: 1;
+    appearance: none;
+    height: 6px;
+    border-radius: 4px;
+    background: #ccc;
+    outline: none;
+}
+
+.pop-slider::-webkit-slider-thumb,
+.pop-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: 2px solid #666;
+}
+
+/* === Rule Table === */
 #rule-editor {
     margin-top: 12px;
     max-height: calc(100vh - 220px);
     max-width: calc(100vw - 40px);
-    overflow-y: auto;
-    overflow-x: auto;
+    overflow: auto;
     scrollbar-width: thin;
-    /* For Firefox */
     scrollbar-color: #444 transparent;
 }
 
@@ -115,27 +160,7 @@ body.hide-cursor {
     text-align: center;
 }
 
-.color-box {
-    width: 16px;
-    height: 16px;
-    border: 1px solid white;
-    display: inline-block;
-    cursor: pointer; 
-}
-
-#add-type {
-    all: unset;
-    cursor: pointer;
-    color: white;
-    font-size: 16px;
-    text-align: center;
-    display: inline-block;
-}
-
-#add-type:hover {
-    color: limegreen;
-}
-
+/* === Explanation Window === */
 #explanation-window {
     padding: 2px 20px;
     position: fixed;
@@ -153,7 +178,7 @@ body.hide-cursor {
     border-radius: 8px;
     box-shadow: 0 0 12px #000;
     z-index: 1000;
-    cursor: move; 
+    cursor: move;
     user-select: none;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -168,99 +193,15 @@ body.hide-cursor {
     color: white;
     border: none;
     font-size: 16px;
-    cursor: pointer;     
+    cursor: pointer;
 }
 
 #explanation-window p {
-    margin: 6px 0; 
+    margin: 6px 0;
 }
 
 #explanation-window strong {
     display: block;
     margin-top: 6px;
-    color: #fff; 
-}
-
-#toggle-population,
-#explain-rules-btn,
-#explain-rules-5yo-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background-color: #222;
-    color: white;
-    border: 1px solid #555;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-}
-
-#toggle-population:hover,
-#explain-rules-btn:hover,
-#explain-rules-5yo-btn:hover {
-    background-color: #333;
-    transform: scale(1.03);
-    border-color: limegreen;
-}
-
-#population-editor {
-    margin-top: 10px;
-    padding: 4px;
-    font-size: 14px;
-}
-
-.pop-row .color-box {
-    width: 2em;
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-.add-btn {
-    padding: 4px 8px;
-    font-size: 0.9em;
-    cursor: pointer; 
-}
-
-.trash-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1em; 
-}
-
-.pop-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 6px 0; 
-}
-
-.pop-slider {
-    flex-grow: 1;
-    appearance: none;
-    height: 6px;
-    border-radius: 4px;
-    background: #ccc;
-    outline: none;
-}
-
-.pop-slider::-webkit-slider-thumb {
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-    border: 2px solid #666;
-}
-
-.pop-slider::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-    border: 2px solid #666; 
+    color: #fff;
 }

@@ -9,15 +9,15 @@ export const TYPE_COLORS = {
 export let TYPES = Object.keys(TYPE_COLORS);
 
 export let rules = {
-    A: { A: 0.2, B: -0.3, C: 0.01 },
-    B: { A: -0.2, B: 0.2, C: 0.1 },
-    C: { A: 0.3, B: 0, C: -0.1 }
+    A: { A: 0.1, B: 1, C: -0.1 },
+    B: { A: -0.6, B: 0.20, C: 0.05 },
+    C: { A: 0.1, B: 0.5, C: 0.5 }
 };
 
 export let populationDistribution = {
-    A: 33,
-    B: 33,
-    C: 34,
+    A: 45,
+    B: 30,
+    C: 25,
 };
 
 export function setPopulationDistribution(type, value) {

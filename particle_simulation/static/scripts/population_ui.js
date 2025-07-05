@@ -1,6 +1,6 @@
 // population_ui.js
 import { TYPES, TYPE_COLORS, populationDistribution, rules } from './rules.js';
-import { getTextColor, normalizePopulation, redistributePopulation } from './utils.js';
+import { getTextColor, normalizePopulation, redistributePopulation , createColorBox } from './utils.js';
 import { onTypesChanged } from './change_notifier.js'
 
 export function renderPopulationEditor(engine) {
@@ -10,7 +10,6 @@ export function renderPopulationEditor(engine) {
     const addBtn = document.createElement('button');
     addBtn.textContent = '+ Add Particle Type';
     addBtn.className = 'add-btn';
-    addBtn.style.marginBottom = '10px';
 
     addBtn.addEventListener('click', () => {
         if (TYPES.length >= 26) return alert("Max type limit reached (Z)");
@@ -38,39 +37,12 @@ export function renderPopulationEditor(engine) {
         const container = document.createElement('div');
         container.className = 'pop-row';
 
-        const label = document.createElement('div');
-        label.className = 'color-box';
-        label.textContent = type;
-        label.style.backgroundColor = '#' + TYPE_COLORS[type].toString(16).padStart(6, '0');
-        label.style.color = getTextColor(TYPE_COLORS[type]);
-        label.style.display = 'flex';
-        label.style.alignItems = 'center';
-        label.style.justifyContent = 'center';
-        label.style.fontWeight = 'bold';
-        label.style.width = '2em';
-        label.style.cursor = 'pointer';
-
-        label.addEventListener('click', () => {
-            const picker = document.createElement('input');
-            picker.type = 'color';
-            picker.value = '#' + TYPE_COLORS[type].toString(16).padStart(6, '0');
-            picker.style.position = 'absolute';
-            picker.style.left = '-9999px';
-            document.body.appendChild(picker);
-            picker.click();
-
-            let isCoolingDown = false;
-            picker.addEventListener('input', () => {
-                if (isCoolingDown) return;
-                TYPE_COLORS[type] = parseInt(picker.value.slice(1), 16);
-                onTypesChanged(engine);
-                updateParticleColors();
-                isCoolingDown = true;
-                setTimeout(() => isCoolingDown = false, 200);
-            });
-
-            picker.addEventListener('blur', () => picker.remove());
+        const label = createColorBox(type, TYPE_COLORS, () => {
+            onTypesChanged(engine);
+            engine.updateColors();
         });
+        
+    
 
         const slider = document.createElement('input');
         slider.type = 'range';
