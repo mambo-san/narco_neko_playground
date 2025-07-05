@@ -3,6 +3,7 @@ import { TYPES, TYPE_COLORS, rules, populationDistribution } from './rules.js';
 import { createCircleTexture } from './utils.js';
 
 export class ParticleEngine {
+    
     constructor(container = document.body) {
         this.particles = [];
         this.radius = 50;
@@ -172,4 +173,38 @@ export class ParticleEngine {
             }
         }
     }
+
+    showRadiusEffect() {
+        if (this._radiusEffectGraphics) {
+            this.app.ticker.remove(this._radiusEffectUpdater);
+            this._radiusEffectGraphics.destroy();
+            clearTimeout(this._radiusEffectTimeout);
+        }
+
+        const selected = [...this.particles].sort(() => 0.5 - Math.random()).slice(0, 10);
+
+        const g = new PIXI.Graphics();
+        this._radiusEffectGraphics = g;
+
+        const updateCircles = () => {
+            g.clear();
+            g.lineStyle(2, 0xffffff, 0.5);
+            for (const p of selected) {
+                g.drawCircle(p.x, p.y, this.radius);
+            }
+        };
+
+        this._radiusEffectUpdater = updateCircles;
+        this.app.ticker.add(updateCircles);
+        this.app.stage.addChild(g);
+
+        this._radiusEffectTimeout = setTimeout(() => {
+            this.app.ticker.remove(updateCircles);
+            g.destroy();
+            this._radiusEffectGraphics = null;
+            this._radiusEffectUpdater = null;
+            this._radiusEffectTimeout = null;
+        }, 8000);
+    }
+    
 }

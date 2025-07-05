@@ -1,7 +1,7 @@
 // rule_ui.js
 import { onTypesChanged } from './change_notifier.js';
 import { TYPE_COLORS, TYPES, rules, populationDistribution } from './rules.js';
-import { getTextColor } from './utils.js';
+import { getTextColor, createColorBox, getDefaultInteractionValue } from './utils.js';
 
 export function renderRuleTable(engine) {
     const table = document.getElementById('rule-table');
@@ -16,19 +16,22 @@ export function renderRuleTable(engine) {
     addBtn.classList.add('add-btn');
     addBtn.addEventListener('click', () => {
         if (TYPES.length >= 26) return alert("Max type limit reached (Z)");
+        //Asign properteis for the next particle type
         const nextChar = String.fromCharCode(65 + TYPES.length);
         const randomColor = Math.floor(Math.random() * 0xffffff);
         TYPE_COLORS[nextChar] = randomColor;
         rules[nextChar] = {};
+        // Set relationship with other particle types
         TYPES.forEach(existing => {
-            rules[existing][nextChar] = 0;
-            rules[nextChar][existing] = 0;
+            rules[existing][nextChar] = getDefaultInteractionValue();
+            rules[nextChar][existing] = getDefaultInteractionValue();
         });
-        rules[nextChar][nextChar] = 0.2;
+        rules[nextChar][nextChar] = getDefaultInteractionValue();
+        // Commit and reflect changes
         TYPES.push(nextChar);
         populationDistribution[nextChar] = 1; 
         onTypesChanged(engine);
-        engine.update();
+        engine.rebalance();
     });
     addTh.appendChild(addBtn);
     header.appendChild(addTh);
@@ -69,71 +72,79 @@ export function renderRuleTable(engine) {
         th.appendChild(colorBox);
         header.appendChild(th);
     });
-    header.appendChild(document.createElement('th'));
     table.appendChild(header);
 
     TYPES.forEach(rowType => {
         const row = document.createElement('tr');
         const labelCell = document.createElement('td');
-        const rowColorBox = document.createElement('div');
-        rowColorBox.className = 'color-box';
-        rowColorBox.style.backgroundColor = '#' + TYPE_COLORS[rowType].toString(16).padStart(6, '0');
-        rowColorBox.style.color = getTextColor(TYPE_COLORS[rowType]);
-        rowColorBox.textContent = rowType;
-        rowColorBox.style.display = 'flex';
-        rowColorBox.style.alignItems = 'center';
-        rowColorBox.style.justifyContent = 'center';
-        rowColorBox.style.fontWeight = 'bold';
-
-        rowColorBox.addEventListener('click', () => {
-            const picker = document.createElement('input');
-            picker.type = 'color';
-            picker.value = '#' + TYPE_COLORS[rowType].toString(16).padStart(6, '0');
-            picker.style.position = 'absolute';
-            picker.style.left = '-9999px';
-            document.body.appendChild(picker);
-            picker.click();
-
-            let isCoolingDown = false;
-            picker.addEventListener('input', () => {
-                if (isCoolingDown) return;
-                TYPE_COLORS[rowType] = parseInt(picker.value.slice(1), 16);
-                onTypesChanged(engine);
-                engine.updateColors();
-                isCoolingDown = true;
-                setTimeout(() => { isCoolingDown = false; }, 200);
-            });
-            picker.addEventListener('blur', () => picker.remove());
+        const rowColorBox = createColorBox(rowType, TYPE_COLORS, () => {
+            onTypesChanged(engine);
+            engine.updateColors();
         });
+        
 
         labelCell.appendChild(rowColorBox);
         row.appendChild(labelCell);
 
         TYPES.forEach(colType => {
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.min = -1;
-            input.max = 1;
-            input.step = '0.01';
-            input.value = rules[rowType][colType] ?? 0;
-            input.style.width = '4em';
-            input.addEventListener('change', () => {
-                let val = parseFloat(input.value);
-                if (isNaN(val)) val = 0;
-                val = Math.max(-1, Math.min(1, val));
-                input.value = val;
-                rules[rowType][colType] = val;
-            });
+            
+            const input = createRuleInput(rowType, colType);
             const cell = document.createElement('td');
             cell.appendChild(input);
             row.appendChild(cell);
         });
 
-        const delBtn = document.createElement('button');
-        delBtn.textContent = '🗑';
-        delBtn.disabled = true;
-        row.appendChild(delBtn);
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '✖️';
+        deleteBtn.className = 'trash-btn';
+        deleteBtn.title = 'Remove this type';
+
+        deleteBtn.addEventListener('click', () => {
+            if (TYPES.length <= 2) return alert("At least two types are required.");
+
+            // Remove from rules
+            delete rules[rowType];
+            for (const type of TYPES) {
+                delete rules[type][rowType];
+            }
+
+            // Remove from color and population
+            delete TYPE_COLORS[rowType];
+            delete populationDistribution[rowType];
+            TYPES.splice(TYPES.indexOf(rowType), 1);
+
+            engine.reassignType(rowType);
+            engine.rebalance();
+
+            onTypesChanged(engine);
+        });
+
+        const td = document.createElement('td');
+        td.appendChild(deleteBtn);
+        row.appendChild(td);
+
 
         table.appendChild(row);
     });
+}
+
+
+function createRuleInput(fromType, toType) {
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = -1;
+    input.max = 1;
+    input.step = '0.01';
+    input.value = rules[fromType][toType] ?? 0;
+    input.style.width = '4em';
+
+    input.addEventListener('change', () => {
+        let val = parseFloat(input.value);
+        if (isNaN(val)) val = 0;
+        val = Math.max(-1, Math.min(1, val));
+        input.value = val;
+        rules[fromType][toType] = val;
+    });
+
+    return input;
 }

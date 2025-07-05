@@ -19,6 +19,7 @@ class Config:
 
 	#New project to be added here to display as card on the home page
 	MINI_PROJECTS = [
-        {'name': '🎮 Game Generator', 'endpoint': 'game_generator.game_generator','description': 'Generate games with AI'},
-        {"name": "🌎 World Dashbaord", 'endpoint': 'world_dashboard.index','description': 'Something useful'},
+        {'name': '🎮 Game Generator', 'endpoint': 'game_generator.game_generator','description': 'Generate proto type HTML game with AI. Give Feed back to other people\'s creation.'}, 
+        {"name": "🌎 World Dashbaord", 'endpoint': 'world_dashboard.index','description': 'Check timzone difference and learn geography along the way. '}, 
+		{"name": "🧬 Particle Simulator", 'endpoint': 'particle_simulation.index','description': 'Ponder the mechanism of life formation from chaos. '}
     ]

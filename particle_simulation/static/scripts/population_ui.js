@@ -1,6 +1,6 @@
 // population_ui.js
 import { TYPES, TYPE_COLORS, populationDistribution, rules } from './rules.js';
-import { getTextColor, normalizePopulation, redistributePopulation , createColorBox } from './utils.js';
+import { normalizePopulation, redistributePopulation, createColorBox, getDefaultInteractionValue } from './utils.js';
 import { onTypesChanged } from './change_notifier.js'
 
 export function renderPopulationEditor(engine) {
@@ -13,17 +13,19 @@ export function renderPopulationEditor(engine) {
 
     addBtn.addEventListener('click', () => {
         if (TYPES.length >= 26) return alert("Max type limit reached (Z)");
+        //Asign properteis for the next particle type
         const nextChar = String.fromCharCode(65 + TYPES.length);
         const randomColor = Math.floor(Math.random() * 0xffffff);
 
         TYPE_COLORS[nextChar] = randomColor;
         rules[nextChar] = {};
+        // Set relationship with other particle types
         TYPES.forEach(existing => {
-            rules[existing][nextChar] = 0;
-            rules[nextChar][existing] = 0;
+            rules[existing][nextChar] = getDefaultInteractionValue();
+            rules[nextChar][existing] = getDefaultInteractionValue();
         });
-        rules[nextChar][nextChar] = 0.2;
-
+        rules[nextChar][nextChar] = getDefaultInteractionValue();
+        // Commit and reflect changes
         TYPES.push(nextChar);
         populationDistribution[nextChar] = 1;
         normalizePopulation(populationDistribution);

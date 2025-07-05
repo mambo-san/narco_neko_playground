@@ -134,3 +134,8 @@ export function createColorBox(type, TYPE_COLORS, onChangeColor) {
 
     return box;
 }
+
+export function getDefaultInteractionValue() {
+    // To be adjusted later. Let's do 0 to 1 for now.
+    return (Math.random() * 2 - 1).toFixed(2);
+}

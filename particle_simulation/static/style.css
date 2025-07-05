@@ -41,6 +41,20 @@ canvas {
     border-color: limegreen;
 }
 
+#fullscreen-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    padding: 14px 16px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
 /* === Floating Panel === */
 #floating-panel {
     position: absolute;
@@ -63,6 +77,12 @@ canvas {
     margin: 0 0 8px 0;
     font-size: 16px;
     text-align: center;
+}
+
+#fullscreen-btn.inactive-ui,
+#floating-panel.inactive-ui {
+    opacity: 0.2;
+    transition: opacity 2s ease;
 }
 
 /* === Utility Classes === */

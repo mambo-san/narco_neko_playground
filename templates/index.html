@@ -8,6 +8,7 @@
   <script>
         document.documentElement.classList.add('dark');
   </script>
+  <!-- TODO [Mambo - 2025-07-04]: Replace Tailwind CDN with compiled output.css if I ever get serious about this porfolio project. -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -68,8 +69,14 @@
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl animate-fade-in delay-2">
       {% for project in projects %}
       <a href="{{ url_for(project.endpoint) }}"
-        class="transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
+        class="group relative transition-colors duration-1000 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all text-xl font-semibold text-center">
+    
         {{ project.emoji }} {{ project.name }}
+    
+        <div
+          class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 px-3 py-2 bg-black text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+          {{ project.description }}
+        </div>
       </a>
       {% endfor %}
     </div>

@@ -7,7 +7,6 @@ export function makeDraggable(el) {
         isDragging = true;
         offsetX = e.clientX - el.getBoundingClientRect().left;
         offsetY = e.clientY - el.getBoundingClientRect().top;
-        el.style.transition = 'none';
     });
 
     window.addEventListener('mousemove', (e) => {
