@@ -12,7 +12,7 @@
         .iframe-wrapper {
             position: relative;
             width:100%;
-            height: 85vh;
+            height: calc(100vh - 100px); /* Adjust 100px based on estimated button height */
             max-width: 480px;
             margin: 2rem auto 1 auto;
             aspect-ratio: 9 / 16; 
@@ -67,7 +67,11 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
+    height: 100%;
     background-color: #111; /* match host background if needed */
+  }
+  body > * {
+    margin: 0; /* Prevents accidental spacing */
   }
 </style>
     <div id="buttonBar" class="button-bar">

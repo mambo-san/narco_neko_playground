@@ -50,6 +50,26 @@
             transform: translate(-50%, -50%) scale(0.95);
         }
 
+        #prove-human-note {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            text-align: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+            pointer-events: none; /* Let clicks pass through */
+          }
+          #prove-human-note.fade-out {
+            opacity: 0;
+          }
+
         @keyframes pulse {
             from { transform: translate(-50%, -50%) scale(1); }
             to   { transform: translate(-50%, -50%) scale(1.1); }
@@ -64,6 +84,7 @@
     </style>
 </head>
 <body>
+    <div id="prove-human-note">Prove you are human</div>
     <canvas id="rainCanvas"></canvas>
     <button id="nextBtn" 
         disabled style="color: black;" 
@@ -72,6 +93,18 @@
     </button>
 
     <script>
+
+        document.addEventListener('pointerdown', () => {
+                const note = document.getElementById('prove-human-note');
+                if (note && !note.classList.contains('fade-out')) {
+                    note.classList.add('fade-out');
+                    setTimeout(() => note.remove(), 1500); // optional: remove from DOM
+                }
+            }, { once: true }); // only trigger once
+
+
+
+
         const canvas = document.getElementById('rainCanvas');
         const ctx = canvas.getContext('2d');
 

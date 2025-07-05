@@ -8,7 +8,10 @@
             background-color: #121212;
             color: #f0f0f0;
             font-family: sans-serif;
-            padding: 2rem;
+            padding: 0;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
         }
         h1 {
             color: #ffcc66;
@@ -107,12 +110,12 @@
             {% endfor %}
         </tbody>
     </table>
-    <div id="newGameBtnContainer" style="display: flex; justify-content: center; margin-top: 2rem;">
+    <div id="newGameBtnContainer" style="display: flex; justify-content: center; margin-top: 0rem;">
         <a href="{{ url_for('game_generator.game_generator') }}">
             <button class="toggle-btn">🎮 Create New Game</button>
         </a>
     </div>
-    <div id="gameViewer" style="display: none; margin-top: 2rem;"></div>
+    <div id="gameViewer" style="display: none; margin-top: 0rem;"></div>
 
     <!-- Store HTML outside the table -->
     {% for game in games %}
@@ -149,6 +152,7 @@
                 heading.textContent = `🎮 ${promptText}`;
                 heading.style.textAlign = "center";
                 heading.style.marginBottom = "1rem";
+                heading.style.marginTop = "0";
 
                 // Build iframe
                 const iframe = document.createElement("iframe");
