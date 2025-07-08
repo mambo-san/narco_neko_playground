@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>NCA Simulation</title>
+  <link rel="stylesheet" href="{{ url_for('nca_simulation.static', filename='style.css') }}">
+</head>
+
+<body>
+  <div id="container">
+    <div id="sidebar">
+      <h2>Parameters</h2>
+      <label for="gridWidth">Grid Width</label>
+      <input type="number" id="gridWidth" min="10" max="300">
+    
+      <label for="populationSize">Population Size</label>
+      <input type="number" id="populationSize" min="1" max="1000">
+    
+      <label for="genomeLength">Genome Length</label>
+      <input type="number" id="genomeLength" min="1" max="100">
+      <label for="ticksPerGeneration">Ticks per generation</label>
+      <input type="number" id="ticksPerGeneration" min="10" max="1000">
+    
+      <button id="startBtn">Start Simulation</button>
+    </div>
+    <div id="sim-container">
+      <canvas id="sim-canvas"></canvas>
+    </div>
+    <div id="info-panel">
+      <h2>Statistics</h2>
+      <div id="stats">
+        <p><strong>Generation:</strong> <span id="stat-generation">0</span></p>
+        <p><strong>Tick:</strong> <span id="stat-tick">0</span></p>
+        <p><strong>Survivors:</strong> <span id="stat-survivors">0</span></p>
+        <p><strong>Survival Rate:</strong> <span id="stat-survival-rate">0%</span></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="{{ url_for('nca_simulation.static', filename='scripts/main.js') }}"></script>
+</body>
+
+
+</html>
