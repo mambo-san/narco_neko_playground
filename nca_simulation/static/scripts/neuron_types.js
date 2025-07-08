@@ -2,10 +2,12 @@ export const SENSOR_TYPES = [
     { 
         id: 0, 
         name: "Bias", 
+        shortName: "B",
         compute: () => 1 },
     {
         id: 1, 
         name: "Crowded Area", 
+        shortName: "CA",
         compute: (cell, sim) => {
             const { x, y } = cell.position;
             let count = 0;
@@ -21,6 +23,7 @@ export const SENSOR_TYPES = [
     {
         id: 2, 
         name: "Touching Wall", 
+        shortName: "Tw",
         compute: (cell, sim) => {
             const { x, y } = cell.position;
             return (x === 0 || y === 0 || x === sim.gridWidth - 1 || y === sim.gridHeight - 1) ? 1 : 0;
@@ -29,6 +32,7 @@ export const SENSOR_TYPES = [
     {
         id: 3,
         name: "Wall Proximity",
+        shortName: "Wp",
         compute: (cell, sim) => {
             const { x, y } = cell.position;
             const dx = Math.min(x, sim.gridWidth - 1 - x);
@@ -41,14 +45,34 @@ export const SENSOR_TYPES = [
     { 
         id: 4, 
         name: "Random Signal", 
+        shortName: "RN",
         compute: () => Math.random() * 2 - 1 }
 ];
 
 export const ACTION_TYPES = [
-    { id: 0, name: "Move Up", delta: { x: 0, y: -1 } },
-    { id: 1, name: "Move Right", delta: { x: 1, y: 0 } },
-    { id: 2, name: "Move Down", delta: { x: 0, y: 1 } },
-    { id: 3, name: "Move Left", delta: { x: -1, y: 0 } },
-    { id: 3, name: "Do nothing", delta: { x: 0, y: 0 } }
+    { 
+        id: 0, 
+        name: "Move Up", 
+        shortName: "MU",
+        delta: { x: 0, y: -1 } },
+    { 
+        id: 1, 
+        name: "Move Right", 
+        shortName: "MR",
+        delta: { x: 1, y: 0 } },
+    { 
+        id: 2, 
+        name: "Move Down",
+        shortName: "MD", 
+        delta: { x: 0, y: 1 } },
+    { 
+        id: 3, name: "Move Left", 
+        shortName: "ML",
+        delta: { x: -1, y: 0 } },
+    { 
+        id: 3, 
+        name: "Do nothing", 
+        shortName: "Dn",
+        delta: { x: 0, y: 0 } }
 ];
   

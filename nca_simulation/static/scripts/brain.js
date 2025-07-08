@@ -1,3 +1,5 @@
+import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js';
+
 function tanh(x) {
     return Math.tanh(x);  // Native support in JS
 }
@@ -59,34 +61,19 @@ export class Brain {
   }
 
 export function describeNeuron(index, brain) {
-    const inputLabels = [
-        "Bias",
-        "Crowded Area",
-        "Touching Wall",
-        "Near Survival Zone",
-        "Random Signal"
-    ];
-
-    const outputLabels = [
-        "Move Up",
-        "Move Right",
-        "Move Down",
-        "Move Left"
-    ];
-
     const { inputCount, innerCount, outputCount } = brain;
 
     if (index < inputCount) {
-        return `IN (${inputLabels[index] || `Input ${index}`})`;
+        const sensor = SENSOR_TYPES[index];
+        return sensor ? `Sensor (${sensor.name})` : `IN (${index})`;
     }
 
-    const hiddenStart = inputCount;
-    const outputStart = inputCount + innerCount;
-
-    if (index < outputStart) {
-        return `HID (${index - hiddenStart})`;
+    if (index < inputCount + innerCount) {
+        const hiddenIndex = index - inputCount;
+        return `Inner Neurons (${hiddenIndex})`;
     }
 
-    const outIndex = index - outputStart;
-    return `OUT (${outputLabels[outIndex] || `Output ${outIndex}`})`;
+    const outputIndex = index - inputCount - innerCount;
+    const action = ACTION_TYPES[outputIndex];
+    return action ? `Action (${action.name})` : `OUT (${outputIndex})`;
 }

@@ -1,3 +1,6 @@
+import { selectedCellId } from './simulation.js';
+
+
 export function drawSimulation(sim, ctx, cellSize, survivalZone) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -16,6 +19,18 @@ export function drawSimulation(sim, ctx, cellSize, survivalZone) {
         const b = hash & 0xFF;
         ctx.fillStyle = `rgb(${r},${g},${b})`;
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+
+        if (cell.id === selectedCellId) {
+            // Outer bold border
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#000"; // black outer glow
+            ctx.strokeRect(x * cellSize - 1, y * cellSize - 1, cellSize + 2, cellSize + 2);
+
+            // Inner bright border
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = "#ff00ff"; // magenta
+            ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
     }
 }
 

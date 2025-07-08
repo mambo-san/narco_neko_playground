@@ -1,6 +1,7 @@
 import { DEFAULT_CONFIG } from './defaults.js';
-import { Simulation } from './simulation.js';
+import { Simulation, setSelectedCellId } from './simulation.js';
 import { renderBrainGraph } from './UI/render_brain_graph.js';
+import { drawSimulation } from './draw.js';
 
 export function initializeUI(canvas, onStart) {
     // Set defaults
@@ -64,7 +65,12 @@ function setUpCellClick({ canvas, simulation }) {
 
         const cell = simulation.getCellAt(x, y);
         if (cell) {
-            renderBrainGraph(cell);
+            setSelectedCellId(cell.id);
+            //drawSimulation();
+            renderBrainGraph(cell, () => {
+                setSelectedCellId(null);
+                //drawSimulation(); // clear highlight
+            });
         } else {
             console.log('No cell found at this position.');
         }

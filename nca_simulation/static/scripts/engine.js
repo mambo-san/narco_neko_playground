@@ -1,6 +1,16 @@
 import { Cell } from './cell.js';
 import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js';
 
+let nextCellId = 1;
+
+export function generateCellId() {
+    return nextCellId++;
+}
+
+export function getGeneratedCellCount(){
+    return nextCellId;
+}
+
 export class NCASimulation {
     constructor({
         gridWidth,
@@ -61,6 +71,7 @@ export class NCASimulation {
         this.cells = [];
         for (let i = 0; i < this.populationSize; i++) {
             const cell = new Cell({
+                id: generateCellId(),
                 rawDNA: this.randomDNA(),
                 inputCount: this.inputCount,
                 innerCount: this.innerCount,

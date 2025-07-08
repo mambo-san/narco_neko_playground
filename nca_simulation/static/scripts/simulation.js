@@ -2,6 +2,13 @@ import { NCASimulation } from './engine.js';
 import { drawSimulation } from './draw.js';
 import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js';
 
+export let selectedCellId = null;
+
+
+export function setSelectedCellId(id) {
+    selectedCellId = id;
+}
+
 export class Simulation {
     constructor(canvas, config) {
         this.canvas = canvas;
