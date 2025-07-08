@@ -1,6 +1,6 @@
 import { DEFAULT_CONFIG } from './defaults.js';
 import { Simulation } from './simulation.js';
-import { describeNeuron } from './brain.js';
+import { renderBrainGraph } from './UI/render_brain_graph.js';
 
 export function initializeUI(canvas, onStart) {
     // Set defaults
@@ -64,16 +64,7 @@ function setUpCellClick({ canvas, simulation }) {
 
         const cell = simulation.getCellAt(x, y);
         if (cell) {
-            console.log('[🧬 Cell Info]');
-            console.log('Position:', cell.position);
-            console.log('Age:', cell.age);
-            console.log('Genome:', cell.genome.rawDNA);
-            console.log('🧠 Brain Connections:');
-            for (const conn of cell.brain.connections) {
-                const fromType = describeNeuron(conn.from, cell.brain);
-                const toType = describeNeuron(conn.to, cell.brain);
-                console.log(`${fromType} ${conn.from} → ${toType} ${conn.to} | weight: ${conn.weight.toFixed(2)}`);
-            }
+            renderBrainGraph(cell);
         } else {
             console.log('No cell found at this position.');
         }

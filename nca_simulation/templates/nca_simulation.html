@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>NCA Simulation</title>
   <link rel="stylesheet" href="{{ url_for('nca_simulation.static', filename='style.css') }}">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
 <body>
@@ -37,6 +38,8 @@
       </div>
     </div>
   </div>
+
+  <div id="nn-graph"></div>
 
   <script type="module" src="{{ url_for('nca_simulation.static', filename='scripts/main.js') }}"></script>
 </body>

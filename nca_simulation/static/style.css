@@ -98,3 +98,19 @@ body {
 #sidebar button:hover {
     background-color: #0c0;
 }
+
+
+#nn-graph {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    border: 2px solid #fff;
+    z-index: 9999;
+    overflow: hidden;
+    padding: 1em; 
+    display: none;
+}

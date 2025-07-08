@@ -1,6 +1,5 @@
-// engine.js
-
 import { Cell } from './cell.js';
+import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js';
 
 export class NCASimulation {
     constructor({
@@ -26,12 +25,36 @@ export class NCASimulation {
         this.spawnInitialPopulation();
     }
 
-    randomGene() {
-        return [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+    randomGeneValid(inputCount, hiddenCount, outputCount) {
+        // Valid source type: 0 (IN), 1 (HID)
+        const sourceType = Math.random() < 0.5 ? 0 : 1;
+        const sourceID = (sourceType === 0)
+            ? Math.floor(Math.random() * inputCount)
+            : Math.floor(Math.random() * hiddenCount);
+
+        // Valid target type: 0 (HID), 1 (OUT)
+        const targetType = Math.random() < 0.7 ? 0 : 1; // Bias toward HID
+        const targetID = (targetType === 0)
+            ? Math.floor(Math.random() * hiddenCount)
+            : Math.floor(Math.random() * outputCount);
+
+        const weightRaw = Math.floor(Math.random() * 65536); // Unsigned 16-bit
+
+        // Build binary string
+        const bin =
+            sourceType.toString(2).padStart(4, '0') +
+            sourceID.toString(2).padStart(4, '0') +
+            targetType.toString(2).padStart(4, '0') +
+            targetID.toString(2).padStart(4, '0') +
+            weightRaw.toString(2).padStart(16, '0');
+
+        return parseInt(bin, 2).toString(16).padStart(8, '0');
     }
 
     randomDNA() {
-        return Array.from({ length: this.genomeLength }, () => this.randomGene());
+        return Array.from({ length: this.genomeLength }, () =>
+            this.randomGeneValid(this.inputCount, this.innerCount, this.outputCount)
+        );
     }
 
     spawnInitialPopulation() {
@@ -61,37 +84,47 @@ export class NCASimulation {
         for (const cell of this.cells) {
             if (!cell.alive) continue;
 
-            const dummyInputs = Array.from({ length: this.inputCount }).map(() => Math.random());
-            const outputs = cell.step(dummyInputs);
+            // Gather sensory inputs
+            const inputs = SENSOR_TYPES.map(sensor => {
+                try {
+                    return sensor.compute(cell, this);
+                } catch {
+                    return 0;
+                }
+            });
 
-            const actionProb = outputs.map(o => Math.max(0, o));
-            const sum = actionProb.reduce((a, b) => a + b, 0);
-            const probs = actionProb.map(p => (sum === 0 ? 0.25 : p / sum));
+            const outputs = cell.step(inputs);
 
-            const dir = sampleIndex(probs); // helper for weighted pick
+            // Apply softmax to outputs
+            const exp = outputs.map(x => Math.exp(x));
+            const sumExp = exp.reduce((a, b) => a + b, 0);
+            const probs = sumExp > 0 ? exp.map(e => e / sumExp) : Array(outputs.length).fill(1 / outputs.length);
 
-            const deltas = [
-                { x: 0, y: -1 }, // up
-                { x: 1, y: 0 },  // right
-                { x: 0, y: 1 },  // down
-                { x: -1, y: 0 }  // left
-            ];
+            // Optional threshold: only move if one output is significantly dominant
+            const maxOutput = Math.max(...outputs);
+            if (maxOutput < 0.3) continue; // no movement this tick
 
-            const targetX = cell.position.x + deltas[dir].x;
-            const targetY = cell.position.y + deltas[dir].y;
+            const dir = sampleIndex(probs);
+            const delta = ACTION_TYPES[dir]?.delta;
+            if (!delta) continue;
 
-            if (
+            const targetX = cell.position.x + delta.x;
+            const targetY = cell.position.y + delta.y;
+
+            const isInBounds =
                 targetX >= 0 && targetX < this.gridWidth &&
-                targetY >= 0 && targetY < this.gridHeight &&
-                !occupied.has(`${targetX},${targetY}`)
-            ) {
+                targetY >= 0 && targetY < this.gridHeight;
+
+            const key = `${targetX},${targetY}`;
+            if (isInBounds && !occupied.has(key)) {
                 occupied.delete(`${cell.position.x},${cell.position.y}`);
                 cell.position.x = targetX;
                 cell.position.y = targetY;
-                occupied.add(`${targetX},${targetY}`);
+                occupied.add(key);
             }
         }
     }
+    
 
     
 
@@ -119,6 +152,7 @@ export class NCASimulation {
         this.generation++;
     }
 }
+
 
 function sampleIndex(probabilities) {
     const r = Math.random();

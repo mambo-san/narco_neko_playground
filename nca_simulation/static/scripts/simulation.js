@@ -1,5 +1,6 @@
 import { NCASimulation } from './engine.js';
 import { drawSimulation } from './draw.js';
+import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js';
 
 export class Simulation {
     constructor(canvas, config) {
@@ -13,9 +14,9 @@ export class Simulation {
         this.populationSize = config.populationSize;
         this.ticksPerGeneration = config.ticksPerGeneration;
 
-        this.inputCount = 5;
-        this.innerCount = 3;
-        this.outputCount = 4;
+        this.inputCount = SENSOR_TYPES.length; //Number of sensor (e.g. am I close to wall)
+        this.innerCount = 3; //Number of hidden nodes
+        this.outputCount = ACTION_TYPES.length; //Number of actions (e.g. move right)
 
         this.generation = 0;
         this.tickCount = 0;

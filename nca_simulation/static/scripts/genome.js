@@ -19,12 +19,23 @@ export class Genome {
             const targetID = parseInt(bin.slice(12, 16), 2);
             const weightRaw = parseInt(bin.slice(16), 2);
 
+            // Validate feedforward-only logic
+            const validSource = sourceType === 0 || sourceType === 1; // IN or HID
+            const validTarget = targetType === 0 || targetType === 1; // HID or OUT
+
+            const isFromOUT = sourceType >= 2;
+            const isToIN = targetType === 2;
+
+            if (!validSource || !validTarget || isFromOUT || isToIN) {
+                return null; // Invalid connection
+            }
+
             return {
                 source: { type: sourceType, id: sourceID },
                 target: { type: targetType, id: targetID },
                 weight: scaleWeight(weightRaw)
             };
-        });
+        }).filter(conn => conn !== null);
     }
 
     // Later: add mutation, crossover, random generation
