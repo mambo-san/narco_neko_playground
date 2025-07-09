@@ -1,6 +1,7 @@
 // render_brain_graph.js using Cytoscape.js
 import { SENSOR_TYPES, ACTION_TYPES } from '../neuron_types.js';
 import { describeGenome } from '../cell.js'
+import { setSelectedCellId } from '../simulation.js';
 //import cytoscape from 'https://cdn.jsdelivr.net/npm/cytoscape@3.24.0/dist/cytoscape.esm.min.js';
 
 export function renderBrainGraph(cell) {
@@ -46,6 +47,7 @@ export function renderBrainGraph(cell) {
     // Close logic
     header.querySelector("#nn-close").onclick = () => {
         container.style.display = "none";
+        setSelectedCellId(null);
     };
 
     const inputCount = brain.inputCount;

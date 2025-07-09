@@ -66,10 +66,8 @@ function setUpCellClick({ canvas, simulation }) {
         const cell = simulation.getCellAt(x, y);
         if (cell) {
             setSelectedCellId(cell.id);
-            //drawSimulation();
             renderBrainGraph(cell, () => {
                 setSelectedCellId(null);
-                //drawSimulation(); // clear highlight
             });
         } else {
             console.log('No cell found at this position.');

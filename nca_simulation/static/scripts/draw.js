@@ -21,14 +21,21 @@ export function drawSimulation(sim, ctx, cellSize, survivalZone) {
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
         if (cell.id === selectedCellId) {
-            // Outer bold border
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = "#000"; // black outer glow
+            // Compute contrasting color
+            const invert = (value) => 255 - value;
+            const contrastR = invert(r);
+            const contrastG = invert(g);
+            const contrastB = invert(b);
+            const contrastColor = `rgb(${contrastR},${contrastG},${contrastB})`;
+
+            // Outer bright border (contrasting color)
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = contrastColor;
             ctx.strokeRect(x * cellSize - 1, y * cellSize - 1, cellSize + 2, cellSize + 2);
 
-            // Inner bright border
+            // Inner black border for clean visual break
             ctx.lineWidth = 1.5;
-            ctx.strokeStyle = "#ff00ff"; // magenta
+            ctx.strokeStyle = "#000";
             ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
     }
