@@ -46,7 +46,50 @@ export const SENSOR_TYPES = [
         id: 4, 
         name: "Random Signal", 
         shortName: "RN",
-        compute: () => Math.random() * 2 - 1 }
+        compute: () => Math.random() * 2 - 1 
+    },
+    {
+        id: 5,
+        name: "Forward Density",
+        shortName: "FD",
+        compute: (cell, sim) => {
+            const { x, y } = cell.position;
+            const dx = cell.lastDelta?.x ?? 0;
+            const dy = cell.lastDelta?.y ?? 0;
+
+            if (dx === 0 && dy === 0) return 0; // no direction
+
+            let count = 0;
+            for (const other of sim.cells) {
+                if (other === cell || !other.alive) continue;
+                const ox = other.position.x - x;
+                const oy = other.position.y - y;
+                if (dx * ox > 0 || dy * oy > 0) {
+                    if (Math.abs(ox) <= 2 && Math.abs(oy) <= 2) count++;
+                }
+            }
+            return count / 8; // normalize
+        }
+      },
+    {
+        id: 6,
+        name: "Center Pull",
+        shortName: "CP",
+        compute: (cell, sim) => {
+            const dx = sim.gridWidth / 2 - cell.position.x;
+            const dy = sim.gridHeight / 2 - cell.position.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const maxDist = Math.sqrt(Math.pow(sim.gridWidth / 2, 2) + Math.pow(sim.gridHeight / 2, 2));
+            return 1 - (dist / maxDist);
+        }
+      },
+    {
+        id: 7,
+        name: "Age",
+        shortName: "A",
+        compute: (cell, sim) => Math.tanh(cell.age / sim.ticksPerGeneration)
+      }
+
 ];
 
 export const ACTION_TYPES = [

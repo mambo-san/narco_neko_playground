@@ -154,6 +154,23 @@ export function renderBrainGraph(cell) {
             roots: elements.filter(e => e.data?.type === 'input').map(e => e.data.id)
         }
       });
+    //Add tooltip
+    cy.nodes().forEach(node => {
+        node.qtip({
+            content: node.data('title'),
+            position: {
+                my: 'top center',
+                at: 'bottom center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                    width: 16,
+                    height: 8
+                }
+            }
+        });
+      });
 
     // Make window draggable
     let isDragging = false;

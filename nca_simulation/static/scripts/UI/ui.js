@@ -9,6 +9,7 @@ export function initializeUI(canvas, onStart) {
         gridWidth: DEFAULT_CONFIG.gridSize,
         populationSize: DEFAULT_CONFIG.populationSize,
         genomeLength: DEFAULT_CONFIG.genomeLength,
+        mutationRate: DEFAULT_CONFIG.mutationRate,
         ticksPerGeneration: DEFAULT_CONFIG.ticksPerGeneration,
         spawnOutside: DEFAULT_CONFIG.spawnOutside,
         survivalZone: DEFAULT_CONFIG.zoneTemplate
@@ -32,6 +33,7 @@ export function initializeUI(canvas, onStart) {
         const populationSize = parseInt(document.getElementById('populationSize').value) || DEFAULT_CONFIG.populationSize;
         const genomeLength = parseInt(document.getElementById('genomeLength').value) || DEFAULT_CONFIG.genomeLength;
         const ticksPerGeneration = parseInt(document.getElementById('ticksPerGeneration').value) || DEFAULT_CONFIG.ticksPerGeneration;
+        const mutationRate = parseFloat(document.getElementById('mutationRate').value)/100;
         const spawnOutside = document.getElementById('spawnOutside').checked || DEFAULT_CONFIG.spawnOutside;
         const zoneTemplate = document.querySelector('input[name="survivalZone"]:checked')?.value || DEFAULT_CONFIG.zoneTemplate;
         // Resize canvas square based on sim-container
@@ -52,6 +54,7 @@ export function initializeUI(canvas, onStart) {
             gridHeight: gridSize,
             populationSize,
             genomeLength,
+            mutationRate,
             cellSize,
             ticksPerGeneration,
             spawnOutside,

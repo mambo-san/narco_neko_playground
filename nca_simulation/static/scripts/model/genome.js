@@ -39,7 +39,7 @@ export class Genome {
     }
 
     // Later: add mutation, crossover, random generation
-    cloneWithMutation(mutationRate = 0.01) {
+    cloneWithMutation(mutationRate) {
         const mutateHexChar = char => {
             if (Math.random() < mutationRate) {
                 return Math.floor(Math.random() * 16).toString(16);

@@ -105,14 +105,14 @@ export class NCASimulation {
         });
     }
 
-    evolve(survivalMask, spawnOutside, survivors, selectedCellId) {
+    evolve(survivalMask, spawnOutside, survivors, selectedCellId, mutationRate) {
         let newSelectedId = null;
         const nextGen = [];
 
         // Step 1: If selectedCell survived, force it to reproduce
         const selectedParent = survivors.find(c => c.id === selectedCellId);
         if (selectedParent) {
-            const child = selectedParent.reproduce(0.001, generateCellId());
+            const child = selectedParent.reproduce(mutationRate, generateCellId());
             let position;
             while (true) {
                 const x = Math.floor(Math.random() * this.gridWidth);
@@ -131,7 +131,7 @@ export class NCASimulation {
         // Step 2: Fill in the rest of the population
         while (nextGen.length < this.populationSize && survivors.length > 0) {
             const parent = survivors[Math.floor(Math.random() * survivors.length)];
-            const child = parent.reproduce(0.001, generateCellId());
+            const child = parent.reproduce(mutationRate, generateCellId());
 
             let position;
             while (true) {

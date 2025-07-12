@@ -19,6 +19,7 @@ export class Simulation {
         this.gridWidth = config.gridWidth;
         this.gridHeight = config.gridHeight;
         this.genomeLength = config.genomeLength;
+        this.mutationRate = config.mutationRate;
         this.populationSize = config.populationSize;
         this.ticksPerGeneration = config.ticksPerGeneration;
         this.spawnOutside = config.spawnOutside;
@@ -56,7 +57,7 @@ export class Simulation {
             const survivors = this.sim.getSurvivors(this.survivalMask);
             this.lastSurvivalRate = (survivors.length / this.populationSize) * 100;
 
-            const newSelectedId = this.sim.evolve(this.survivalMask, this.spawnOutside, survivors, selectedCellId);
+            const newSelectedId = this.sim.evolve(this.survivalMask, this.spawnOutside, survivors, selectedCellId, this.mutationRate);
             
             this.tickCount = 0;
             this.generation++;
@@ -104,58 +105,75 @@ export class Simulation {
 function createSurvivalMask(width, height, template = "edge") {
     const mask = Array.from({ length: height }, () => Array(width).fill(false));
 
-    const marginX = Math.floor(width * 0.1);
-    const marginY = Math.floor(height * 0.1);
-
     switch (template) {
         case "edge":
-            // Everything is survival, carve out center
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    mask[y][x] = true;
-                }
-            }
-            for (let y = marginY; y < height - marginY; y++) {
-                for (let x = marginX; x < width - marginX; x++) {
-                    mask[y][x] = false;
-                }
-            }
+            applyEdgeMask(mask, width, height);
             break;
-
         case "corners":
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    const inCorner =
-                        (x < marginX && y < marginY) ||
-                        (x >= width - marginX && y < marginY) ||
-                        (x < marginX && y >= height - marginY) ||
-                        (x >= width - marginX && y >= height - marginY);
-                    if (inCorner) mask[y][x] = true;
-                }
-            }
+            applyCornerMask(mask, width, height);
             break;
-
         case "center":
-            for (let y = marginY; y < height - marginY; y++) {
-                for (let x = marginX; x < width - marginX; x++) {
-                    mask[y][x] = true;
-                }
-            }
+            applyCenterMask(mask, width, height);
             break;
-
         case "right":
-            for (let y = 0; y < height; y++) {
-                for (let x = Math.floor(width / 2); x < width; x++) {
-                    mask[y][x] = true;
-                }
-            }
+            applyRightHalfMask(mask, width, height);
             break;
-
         case "custom":
-            // Placeholder: everything is dead for now
-            // Will be editable by the user in future UI
+            // leave as all false for now
             break;
     }
 
     return mask;
+}
+
+function applyEdgeMask(mask, width, height) {
+    const marginX = Math.floor(width * 0.1);
+    const marginY = Math.floor(height * 0.1);
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            mask[y][x] = true;
+        }
+    }
+    for (let y = marginY; y < height - marginY; y++) {
+        for (let x = marginX; x < width - marginX; x++) {
+            mask[y][x] = false;
+        }
+    }
+}
+
+function applyCornerMask(mask, width, height) {
+    const cornerSizeX = Math.floor(width * 0.2);
+    const cornerSizeY = Math.floor(height * 0.2);
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const inCorner =
+                (x < cornerSizeX && y < cornerSizeY) ||
+                (x >= width - cornerSizeX && y < cornerSizeY) ||
+                (x < cornerSizeX && y >= height - cornerSizeY) ||
+                (x >= width - cornerSizeX && y >= height - cornerSizeY);
+            if (inCorner) mask[y][x] = true;
+        }
+    }
+}
+
+function applyCenterMask(mask, width, height) {
+    const centerW = Math.floor(width * 0.3);
+    const centerH = Math.floor(height * 0.3);
+    const startX = Math.floor((width - centerW) / 2);
+    const startY = Math.floor((height - centerH) / 2);
+
+    for (let y = startY; y < startY + centerH; y++) {
+        for (let x = startX; x < startX + centerW; x++) {
+            mask[y][x] = true;
+        }
+    }
+}
+
+function applyRightHalfMask(mask, width, height) {
+    const mid = Math.floor(width / 2);
+    for (let y = 0; y < height; y++) {
+        for (let x = mid; x < width; x++) {
+            mask[y][x] = true;
+        }
+    }
 }
