@@ -3,6 +3,7 @@ import { initializeUI, resizeSimulationCanvas } from './UI/ui.js';
 window.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('sim-canvas');
     let sim = null;
+    
 
     initializeUI(canvas, s => {
         sim = s;
@@ -13,13 +14,15 @@ window.addEventListener('DOMContentLoaded', () => {
                 resizeSimulationCanvas(sim, canvas);
             }
         });
+        
     });
 
     function loop() {
         if (sim) {
-            sim.tick();
-            sim.draw();
-
+            if (!sim.isPaused()) {
+                sim.tick();
+                sim.draw();
+            }
             const stats = sim.getStats();
             if (stats) {
                 document.getElementById('stat-generation').textContent = stats.generation;

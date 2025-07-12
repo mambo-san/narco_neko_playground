@@ -1,15 +1,17 @@
 import { DEFAULT_CONFIG } from '../model/defaults.js';
-import { Simulation, setSelectedCellId } from '../sim/simulation.js';
+import { Simulation, setSelectedCellId} from '../sim/simulation.js';
 import { renderBrainGraph } from './render_brain_graph.js';
 
 export function initializeUI(canvas, onStart) {
+    let sim = null;
     // Set defaults
     const entries = {
         gridWidth: DEFAULT_CONFIG.gridSize,
         populationSize: DEFAULT_CONFIG.populationSize,
         genomeLength: DEFAULT_CONFIG.genomeLength,
         ticksPerGeneration: DEFAULT_CONFIG.ticksPerGeneration,
-        spawnOutside: DEFAULT_CONFIG.spawnOutside
+        spawnOutside: DEFAULT_CONFIG.spawnOutside,
+        survivalZone: DEFAULT_CONFIG.zoneTemplate
     };
 
     for (const [id, value] of Object.entries(entries)) {
@@ -31,7 +33,7 @@ export function initializeUI(canvas, onStart) {
         const genomeLength = parseInt(document.getElementById('genomeLength').value) || DEFAULT_CONFIG.genomeLength;
         const ticksPerGeneration = parseInt(document.getElementById('ticksPerGeneration').value) || DEFAULT_CONFIG.ticksPerGeneration;
         const spawnOutside = document.getElementById('spawnOutside').checked || DEFAULT_CONFIG.spawnOutside;
-
+        const zoneTemplate = document.querySelector('input[name="survivalZone"]:checked')?.value || DEFAULT_CONFIG.zoneTemplate;
         // Resize canvas square based on sim-container
         const availableWidth = container.clientWidth;
         const availableHeight = window.innerHeight; // or container.clientHeight if reliable
@@ -45,18 +47,36 @@ export function initializeUI(canvas, onStart) {
 
         const cellSize = Math.floor(size / gridSize); 
 
-        const sim = new Simulation(canvas, {
+        sim = new Simulation(canvas, {
             gridWidth: gridSize,
             gridHeight: gridSize,
             populationSize,
             genomeLength,
             cellSize,
             ticksPerGeneration,
-            spawnOutside
+            spawnOutside,
+            zoneTemplate
         });
 
         setUpCellClick({ canvas, simulation: sim });
         onStart(sim);
+        //Reset the Resume/Pause
+        document.getElementById('pauseBtn').textContent = "Pause";
+
+    });
+    //Toggle button for stop/resume
+    const pauseBtn = document.getElementById('pauseBtn');
+    pauseBtn.addEventListener('click', () => {
+        if (sim){
+            const simIsRunning = !sim.isPaused();
+            if (simIsRunning){
+                sim.setPaused(true);
+                pauseBtn.textContent = "Resume";
+            }else{
+                sim.setPaused(false);
+                pauseBtn.textContent = "Pause";
+            }
+        }
     });
 }
 

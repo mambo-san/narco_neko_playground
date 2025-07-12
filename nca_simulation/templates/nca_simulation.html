@@ -24,11 +24,22 @@
       <label for="ticksPerGeneration">Ticks per generation</label>
       <input type="number" id="ticksPerGeneration" min="10" max="1000">
       
-      <input type="checkbox" id="spawnOutside" />
-      <label for="spawnOutside">Spawn outside survival zone</label>
+      <div class="param-field">
+        <label for="spawnOutside">Spawn outside survival zone</label>
+        <input type="checkbox" id="spawnOutside" class="checkbox-field">
+      </div>
       
+      <fieldset id="zoneTemplates" class="param-field">
+        <legend>Survival Zone</legend>
+        <label><input type="radio" name="survivalZone" value="edge" checked> Edge</label>
+        <label><input type="radio" name="survivalZone" value="corners"> Corners</label>
+        <label><input type="radio" name="survivalZone" value="center"> Center</label>
+        <label><input type="radio" name="survivalZone" value="right"> Right Half</label>
+        <label><input type="radio" name="survivalZone" value="custom"> Custom</label>
+      </fieldset>
 
       <button id="startBtn">Start Simulation</button>
+      <button id="pauseBtn">Pause Simulation</button>
     </div>
     <div id="sim-container">
       <canvas id="sim-canvas"></canvas>

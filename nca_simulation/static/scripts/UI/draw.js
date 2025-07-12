@@ -19,11 +19,8 @@ export function drawSimulation(sim, ctx, cellSize, survivalZone) {
     for (const cell of sim.cells) {
         if (!cell.alive) continue;
         const { x, y } = cell.position;
-        const hash = hashString(cell.genome.rawDNA.join(''));
-        const r = (hash >> 16) & 0xFF;
-        const g = (hash >> 8) & 0xFF;
-        const b = hash & 0xFF;
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        const { r, g, b } = colorFromDNA(cell.genome.rawDNA);
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
         if (cell.id === selectedCellId) {
@@ -54,4 +51,20 @@ function hashString(str) {
         hash |= 0;
     }
     return Math.abs(hash);
+}
+
+function colorFromDNA(dna) {
+    const values = dna.map(hex => parseInt(hex, 16)); // 32-bit int
+    const maxVal = Math.max(...values);
+    const minVal = Math.min(...values);
+
+    // Avoid division by zero
+    const range = maxVal === minVal ? 1 : (maxVal - minVal);
+
+    // Pick 3 different stats to derive RGB:
+    const r = Math.floor(((values[0] - minVal) / range) * 255);
+    const g = Math.floor(((values[Math.floor(values.length / 2)] - minVal) / range) * 255);
+    const b = Math.floor(((values[values.length - 1] - minVal) / range) * 255);
+
+    return { r, g, b };
 }

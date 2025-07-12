@@ -3,5 +3,6 @@ export const DEFAULT_CONFIG = {
     populationSize: 500,
     genomeLength: 5,
     ticksPerGeneration: 150,
-    spawnOutside: true
+    spawnOutside: true,
+    zoneTemplate:"edge"
 };

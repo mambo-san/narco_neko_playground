@@ -2,12 +2,13 @@ import { NCASimulation } from '../sim/engine.js';
 import { drawSimulation } from '../UI/draw.js';
 import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
 
-export let selectedCellId = null;
 
+export let selectedCellId = null;
 
 export function setSelectedCellId(id) {
     selectedCellId = id;
 }
+
 
 export class Simulation {
     constructor(canvas, config) {
@@ -21,16 +22,19 @@ export class Simulation {
         this.populationSize = config.populationSize;
         this.ticksPerGeneration = config.ticksPerGeneration;
         this.spawnOutside = config.spawnOutside;
+        this.zoneTemplate = config.zoneTemplate;
 
         this.inputCount = SENSOR_TYPES.length; //Number of sensor (e.g. am I close to wall)
         this.innerCount = 3; //Number of hidden nodes
         this.outputCount = ACTION_TYPES.length; //Number of actions (e.g. move right)
 
+        this._paused = false;
+
         this.generation = 0;
         this.tickCount = 0;
         this.lastSurvivalRate = 0;
 
-        this.survivalMask = createSurvivalMask(this.gridWidth, this.gridHeight);
+        this.survivalMask = createSurvivalMask(this.gridWidth, this.gridHeight, this.zoneTemplate);
 
         this.sim = new NCASimulation({
             gridWidth: this.gridWidth,
@@ -82,31 +86,71 @@ export class Simulation {
     setCellSize(newSize) {
         this.cellSize = newSize;
     }
+
+    setPaused(p) {
+        this._paused = p;
+    }
+
+    isPaused() {
+        return this._paused;
+    }
 }
 
 
-function createSurvivalMask(width, height) {
+function createSurvivalMask(width, height, template = "edge") {
     const mask = Array.from({ length: height }, () => Array(width).fill(false));
-
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            mask[y][x] = true; // initially mark everything as survival
-        }
-    }
 
     const marginX = Math.floor(width * 0.1);
     const marginY = Math.floor(height * 0.1);
-    const innerX0 = marginX;
-    const innerY0 = marginY;
-    const innerW = width - 2 * marginX;
-    const innerH = height - 2 * marginY;
 
-    for (let y = innerY0; y < innerY0 + innerH; y++) {
-        for (let x = innerX0; x < innerX0 + innerW; x++) {
-            if (x >= 0 && x < width && y >= 0 && y < height) {
-                mask[y][x] = false; // carve out center dead zone
+    switch (template) {
+        case "edge":
+            // Everything is survival, carve out center
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    mask[y][x] = true;
+                }
             }
-        }
+            for (let y = marginY; y < height - marginY; y++) {
+                for (let x = marginX; x < width - marginX; x++) {
+                    mask[y][x] = false;
+                }
+            }
+            break;
+
+        case "corners":
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const inCorner =
+                        (x < marginX && y < marginY) ||
+                        (x >= width - marginX && y < marginY) ||
+                        (x < marginX && y >= height - marginY) ||
+                        (x >= width - marginX && y >= height - marginY);
+                    if (inCorner) mask[y][x] = true;
+                }
+            }
+            break;
+
+        case "center":
+            for (let y = marginY; y < height - marginY; y++) {
+                for (let x = marginX; x < width - marginX; x++) {
+                    mask[y][x] = true;
+                }
+            }
+            break;
+
+        case "right":
+            for (let y = 0; y < height; y++) {
+                for (let x = Math.floor(width / 2); x < width; x++) {
+                    mask[y][x] = true;
+                }
+            }
+            break;
+
+        case "custom":
+            // Placeholder: everything is dead for now
+            // Will be editable by the user in future UI
+            break;
     }
 
     return mask;
