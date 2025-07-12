@@ -56,9 +56,13 @@ export class Simulation {
             const survivors = this.sim.getSurvivors(this.survivalMask);
             this.lastSurvivalRate = (survivors.length / this.populationSize) * 100;
 
-            this.sim.evolve(this.survivalMask, this.spawnOutside, survivors);
+            const newSelectedId = this.sim.evolve(this.survivalMask, this.spawnOutside, survivors, selectedCellId);
+            
             this.tickCount = 0;
             this.generation++;
+            if (selectedCellId && newSelectedId){
+                setSelectedCellId(newSelectedId);
+            }
         }
     }
 

@@ -105,21 +105,39 @@ export class NCASimulation {
         });
     }
 
-    evolve(survivalMask, spawnOutside, survivors) {
-        
-
+    evolve(survivalMask, spawnOutside, survivors, selectedCellId) {
+        let newSelectedId = null;
         const nextGen = [];
-        while (nextGen.length < this.populationSize && survivors.length > 0) {
-            const parent = survivors[Math.floor(Math.random() * survivors.length)];
-            const child = parent.reproduce(0.001);
 
-            // Reuse same placement logic
+        // Step 1: If selectedCell survived, force it to reproduce
+        const selectedParent = survivors.find(c => c.id === selectedCellId);
+        if (selectedParent) {
+            const child = selectedParent.reproduce(0.001, generateCellId());
             let position;
             while (true) {
                 const x = Math.floor(Math.random() * this.gridWidth);
                 const y = Math.floor(Math.random() * this.gridHeight);
                 const inSurvival = survivalMask?.[y]?.[x];
+                if ((spawnOutside && !inSurvival) || (!spawnOutside && inSurvival)) {
+                    position = { x, y };
+                    break;
+                }
+            }
+            child.position = position;
+            newSelectedId = child.id;
+            nextGen.push(child);
+        }
 
+        // Step 2: Fill in the rest of the population
+        while (nextGen.length < this.populationSize && survivors.length > 0) {
+            const parent = survivors[Math.floor(Math.random() * survivors.length)];
+            const child = parent.reproduce(0.001, generateCellId());
+
+            let position;
+            while (true) {
+                const x = Math.floor(Math.random() * this.gridWidth);
+                const y = Math.floor(Math.random() * this.gridHeight);
+                const inSurvival = survivalMask?.[y]?.[x];
                 if ((spawnOutside && !inSurvival) || (!spawnOutside && inSurvival)) {
                     position = { x, y };
                     break;
@@ -132,6 +150,8 @@ export class NCASimulation {
 
         this.setPopulation(nextGen);
         this.generation++;
+
+        return newSelectedId;
     }
 
     runTick() {

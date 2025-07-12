@@ -29,10 +29,11 @@ export class Cell {
         return outputs;
     }
 
-    reproduce(mutationRate = 0.01) {
+    reproduce(mutationRate, new_id) {
         const childDNA = this.genome.cloneWithMutation(mutationRate).rawDNA;
 
         return new Cell({
+            id: new_id,
             rawDNA: childDNA,
             inputCount: this.brain.inputCount,
             innerCount: this.brain.innerCount,
