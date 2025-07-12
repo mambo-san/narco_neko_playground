@@ -1,7 +1,6 @@
-import { DEFAULT_CONFIG } from './defaults.js';
-import { Simulation, setSelectedCellId } from './simulation.js';
-import { renderBrainGraph } from './UI/render_brain_graph.js';
-import { drawSimulation } from './draw.js';
+import { DEFAULT_CONFIG } from '../model/defaults.js';
+import { Simulation, setSelectedCellId } from '../sim/simulation.js';
+import { renderBrainGraph } from './render_brain_graph.js';
 
 export function initializeUI(canvas, onStart) {
     // Set defaults
@@ -9,12 +8,19 @@ export function initializeUI(canvas, onStart) {
         gridWidth: DEFAULT_CONFIG.gridSize,
         populationSize: DEFAULT_CONFIG.populationSize,
         genomeLength: DEFAULT_CONFIG.genomeLength,
-        ticksPerGeneration: DEFAULT_CONFIG.ticksPerGeneration
+        ticksPerGeneration: DEFAULT_CONFIG.ticksPerGeneration,
+        spawnOutside: DEFAULT_CONFIG.spawnOutside
     };
 
     for (const [id, value] of Object.entries(entries)) {
         const input = document.getElementById(id);
-        if (input) input.value = value;
+        if (input) {
+            if (input.type === "checkbox") {
+                input.checked = value;
+            }else {
+                input.value = value;
+            }
+        }
     }
     
     // Wire start button
@@ -24,6 +30,7 @@ export function initializeUI(canvas, onStart) {
         const populationSize = parseInt(document.getElementById('populationSize').value) || DEFAULT_CONFIG.populationSize;
         const genomeLength = parseInt(document.getElementById('genomeLength').value) || DEFAULT_CONFIG.genomeLength;
         const ticksPerGeneration = parseInt(document.getElementById('ticksPerGeneration').value) || DEFAULT_CONFIG.ticksPerGeneration;
+        const spawnOutside = document.getElementById('spawnOutside').checked || DEFAULT_CONFIG.spawnOutside;
 
         // Resize canvas square based on sim-container
         const availableWidth = container.clientWidth;
@@ -44,7 +51,8 @@ export function initializeUI(canvas, onStart) {
             populationSize,
             genomeLength,
             cellSize,
-            ticksPerGeneration
+            ticksPerGeneration,
+            spawnOutside
         });
 
         setUpCellClick({ canvas, simulation: sim });

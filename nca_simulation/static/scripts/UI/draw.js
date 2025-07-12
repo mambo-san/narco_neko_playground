@@ -1,4 +1,4 @@
-import { selectedCellId } from './simulation.js';
+import { selectedCellId } from '../sim/simulation.js';
 
 
 export function drawSimulation(sim, ctx, cellSize, survivalZone) {
@@ -7,7 +7,13 @@ export function drawSimulation(sim, ctx, cellSize, survivalZone) {
     // Survival zone
     if (survivalZone) {
         ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
-        ctx.fillRect(survivalZone.x * cellSize, survivalZone.y * cellSize, survivalZone.w * cellSize, survivalZone.h * cellSize);
+        for (let y = 0; y < survivalZone.length; y++) {
+            for (let x = 0; x < survivalZone[y].length; x++) {
+                if (survivalZone[y][x]) {
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
     }
 
     for (const cell of sim.cells) {

@@ -1,6 +1,6 @@
-import { NCASimulation } from './engine.js';
-import { drawSimulation } from './draw.js';
-import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js';
+import { NCASimulation } from '../sim/engine.js';
+import { drawSimulation } from '../UI/draw.js';
+import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
 
 export let selectedCellId = null;
 
@@ -20,6 +20,7 @@ export class Simulation {
         this.genomeLength = config.genomeLength;
         this.populationSize = config.populationSize;
         this.ticksPerGeneration = config.ticksPerGeneration;
+        this.spawnOutside = config.spawnOutside;
 
         this.inputCount = SENSOR_TYPES.length; //Number of sensor (e.g. am I close to wall)
         this.innerCount = 3; //Number of hidden nodes
@@ -29,12 +30,7 @@ export class Simulation {
         this.tickCount = 0;
         this.lastSurvivalRate = 0;
 
-        this.survivalZone = {
-            x: Math.floor(this.gridWidth * 0.4),
-            y: Math.floor(this.gridHeight * 0.4),
-            w: Math.floor(this.gridWidth * 0.2),
-            h: Math.floor(this.gridHeight * 0.2)
-        };
+        this.survivalMask = createSurvivalMask(this.gridWidth, this.gridHeight);
 
         this.sim = new NCASimulation({
             gridWidth: this.gridWidth,
@@ -43,7 +39,9 @@ export class Simulation {
             innerCount: this.innerCount,
             outputCount: this.outputCount,
             genomeLength: this.genomeLength,
-            populationSize: this.populationSize
+            populationSize: this.populationSize,
+            survivalMask: this.survivalMask,
+            spawnOutside: this.spawnOutside
         });
     }
 
@@ -51,37 +49,19 @@ export class Simulation {
         this.sim.runTick();
         this.tickCount++;
         if (this.tickCount >= this.ticksPerGeneration) {
-            this.evolve();
+            const survivors = this.sim.getSurvivors(this.survivalMask);
+            this.lastSurvivalRate = (survivors.length / this.populationSize) * 100;
+
+            this.sim.evolve(this.survivalMask, this.spawnOutside, survivors);
+            this.tickCount = 0;
+            this.generation++;
         }
     }
 
-    evolve() {
-        const survivors = this.sim.cells.filter(c => {
-            const { x, y } = c.position;
-            const sz = this.survivalZone;
-            return c.alive && x >= sz.x && x < sz.x + sz.w && y >= sz.y && y < sz.y + sz.h;
-        });
-
-        this.lastSurvivalRate = (survivors.length / this.populationSize) * 100;
-
-        const nextGen = [];
-        while (nextGen.length < this.populationSize && survivors.length > 0) {
-            const parent = survivors[Math.floor(Math.random() * survivors.length)];
-            const child = parent.reproduce(0.01);
-            child.position = {
-                x: Math.floor(Math.random() * this.gridWidth),
-                y: Math.floor(Math.random() * this.gridHeight)
-            };
-            nextGen.push(child);
-        }
-
-        this.sim.setPopulation(nextGen);
-        this.tickCount = 0;
-        this.generation++;
-    }
+    
 
     draw() {
-        drawSimulation(this.sim, this.ctx, this.cellSize, this.survivalZone);
+        drawSimulation(this.sim, this.ctx, this.cellSize, this.survivalMask);
     }
 
     getCellAt(px, py) {
@@ -105,3 +85,29 @@ export class Simulation {
 }
 
 
+function createSurvivalMask(width, height) {
+    const mask = Array.from({ length: height }, () => Array(width).fill(false));
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            mask[y][x] = true; // initially mark everything as survival
+        }
+    }
+
+    const marginX = Math.floor(width * 0.1);
+    const marginY = Math.floor(height * 0.1);
+    const innerX0 = marginX;
+    const innerY0 = marginY;
+    const innerW = width - 2 * marginX;
+    const innerH = height - 2 * marginY;
+
+    for (let y = innerY0; y < innerY0 + innerH; y++) {
+        for (let x = innerX0; x < innerX0 + innerW; x++) {
+            if (x >= 0 && x < width && y >= 0 && y < height) {
+                mask[y][x] = false; // carve out center dead zone
+            }
+        }
+    }
+
+    return mask;
+}

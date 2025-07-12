@@ -18,7 +18,19 @@ body {
 }
 
 /* Left + Right Panels */
-#sidebar,
+#sidebar{
+    width: 200px;
+    height: 100vh;
+    background-color: #222;
+    color: white;
+    padding: 1em;
+    box-sizing: border-box;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #444;
+}
+
 #info-panel {
     width: 200px;
     height: 100vh;
@@ -29,6 +41,7 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    border-left: 1px solid #444;
 }
 
 #sim-container {

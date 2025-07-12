@@ -1,7 +1,7 @@
 // render_brain_graph.js using Cytoscape.js
-import { SENSOR_TYPES, ACTION_TYPES } from '../neuron_types.js';
-import { describeGenome } from '../cell.js'
-import { setSelectedCellId } from '../simulation.js';
+import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
+import { describeGenome } from '../model/cell.js'
+import { setSelectedCellId } from '../sim/simulation.js';
 //import cytoscape from 'https://cdn.jsdelivr.net/npm/cytoscape@3.24.0/dist/cytoscape.esm.min.js';
 
 export function renderBrainGraph(cell) {

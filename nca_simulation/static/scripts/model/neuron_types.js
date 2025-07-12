@@ -70,7 +70,7 @@ export const ACTION_TYPES = [
         shortName: "ML",
         delta: { x: -1, y: 0 } },
     { 
-        id: 3, 
+        id: 4, 
         name: "Do nothing", 
         shortName: "Dn",
         delta: { x: 0, y: 0 } }

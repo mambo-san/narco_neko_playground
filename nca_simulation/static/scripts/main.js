@@ -1,4 +1,4 @@
-import { initializeUI, resizeSimulationCanvas } from './ui.js';
+import { initializeUI, resizeSimulationCanvas } from './UI/ui.js';
 
 window.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('sim-canvas');

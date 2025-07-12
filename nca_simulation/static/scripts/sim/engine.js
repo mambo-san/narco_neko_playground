@@ -1,5 +1,5 @@
-import { Cell } from './cell.js';
-import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js';
+import { Cell } from '../model/cell.js';
+import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
 
 let nextCellId = 1;
 
@@ -7,7 +7,7 @@ export function generateCellId() {
     return nextCellId++;
 }
 
-export function getGeneratedCellCount(){
+export function getGeneratedCellCount() {
     return nextCellId;
 }
 
@@ -19,7 +19,9 @@ export class NCASimulation {
         innerCount,
         outputCount,
         genomeLength,
-        populationSize
+        populationSize,
+        survivalMask,
+        spawnOutside
     }) {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
@@ -28,6 +30,8 @@ export class NCASimulation {
         this.outputCount = outputCount;
         this.genomeLength = genomeLength;
         this.populationSize = populationSize;
+        this.survivalMask = survivalMask;
+        this.spawnOutside = spawnOutside;
 
         this.cells = [];
         this.generation = 0;
@@ -36,21 +40,18 @@ export class NCASimulation {
     }
 
     randomGeneValid(inputCount, hiddenCount, outputCount) {
-        // Valid source type: 0 (IN), 1 (HID)
         const sourceType = Math.random() < 0.5 ? 0 : 1;
         const sourceID = (sourceType === 0)
             ? Math.floor(Math.random() * inputCount)
             : Math.floor(Math.random() * hiddenCount);
 
-        // Valid target type: 0 (HID), 1 (OUT)
-        const targetType = Math.random() < 0.7 ? 0 : 1; // Bias toward HID
+        const targetType = Math.random() < 0.7 ? 0 : 1;
         const targetID = (targetType === 0)
             ? Math.floor(Math.random() * hiddenCount)
             : Math.floor(Math.random() * outputCount);
 
-        const weightRaw = Math.floor(Math.random() * 65536); // Unsigned 16-bit
+        const weightRaw = Math.floor(Math.random() * 65536);
 
-        // Build binary string
         const bin =
             sourceType.toString(2).padStart(4, '0') +
             sourceID.toString(2).padStart(4, '0') +
@@ -69,20 +70,68 @@ export class NCASimulation {
 
     spawnInitialPopulation() {
         this.cells = [];
+        const { survivalMask, spawnOutside } = this;
+
         for (let i = 0; i < this.populationSize; i++) {
+            let position;
+            while (true) {
+                const x = Math.floor(Math.random() * this.gridWidth);
+                const y = Math.floor(Math.random() * this.gridHeight);
+                const inSurvival = survivalMask?.[y]?.[x];
+
+                if ((spawnOutside && !inSurvival) || (!spawnOutside && inSurvival)) {
+                    position = { x, y };
+                    break;
+                }
+            }
+
             const cell = new Cell({
                 id: generateCellId(),
                 rawDNA: this.randomDNA(),
                 inputCount: this.inputCount,
                 innerCount: this.innerCount,
                 outputCount: this.outputCount,
-                position: {
-                    x: Math.floor(Math.random() * this.gridWidth),
-                    y: Math.floor(Math.random() * this.gridHeight)
-                }
+                position
             });
+
             this.cells.push(cell);
         }
+    }
+
+    getSurvivors(survivalMask) {
+        return this.cells.filter(c => {
+            const { x, y } = c.position;
+            return c.alive && survivalMask?.[y]?.[x];
+        });
+    }
+
+    evolve(survivalMask, spawnOutside, survivors) {
+        
+
+        const nextGen = [];
+        while (nextGen.length < this.populationSize && survivors.length > 0) {
+            const parent = survivors[Math.floor(Math.random() * survivors.length)];
+            const child = parent.reproduce(0.001);
+
+            // Reuse same placement logic
+            let position;
+            while (true) {
+                const x = Math.floor(Math.random() * this.gridWidth);
+                const y = Math.floor(Math.random() * this.gridHeight);
+                const inSurvival = survivalMask?.[y]?.[x];
+
+                if ((spawnOutside && !inSurvival) || (!spawnOutside && inSurvival)) {
+                    position = { x, y };
+                    break;
+                }
+            }
+
+            child.position = position;
+            nextGen.push(child);
+        }
+
+        this.setPopulation(nextGen);
+        this.generation++;
     }
 
     runTick() {
@@ -95,29 +144,27 @@ export class NCASimulation {
         for (const cell of this.cells) {
             if (!cell.alive) continue;
 
-            // Gather sensory inputs
-            const inputs = SENSOR_TYPES.map(sensor => {
-                try {
-                    return sensor.compute(cell, this);
-                } catch {
-                    return 0;
-                }
-            });
-
+            const inputs = computeUsedInputs(cell, this);
             const outputs = cell.step(inputs);
+            if (!outputs) continue;
 
-            // Apply softmax to outputs
-            const exp = outputs.map(x => Math.exp(x));
-            const sumExp = exp.reduce((a, b) => a + b, 0);
-            const probs = sumExp > 0 ? exp.map(e => e / sumExp) : Array(outputs.length).fill(1 / outputs.length);
 
-            // Optional threshold: only move if one output is significantly dominant
             const maxOutput = Math.max(...outputs);
-            if (maxOutput < 0.3) continue; // no movement this tick
+            if (maxOutput < 0.3) continue;
 
-            const dir = sampleIndex(probs);
-            const delta = ACTION_TYPES[dir]?.delta;
-            if (!delta) continue;
+            const activeActions = getActiveActions(cell, outputs);
+            if (activeActions.length === 0) continue;
+
+            const exp = activeActions.map(a => Math.exp(a.value));
+            const sumExp = exp.reduce((a, b) => a + b, 0);
+            const probs = exp.map(e => e / sumExp);
+
+            const chosenIndex = sampleIndex(probs);
+            const chosen = activeActions[chosenIndex];
+            
+            if (!chosen || !chosen.action || !chosen.action.delta) continue;
+
+            const delta = chosen.action.delta;
 
             const targetX = cell.position.x + delta.x;
             const targetY = cell.position.y + delta.y;
@@ -135,9 +182,6 @@ export class NCASimulation {
             }
         }
     }
-    
-
-    
 
     setPopulation(newCells) {
         this.cells = newCells;
@@ -150,7 +194,7 @@ export class NCASimulation {
 
         while (nextGen.length < this.populationSize) {
             const parent = survivors[Math.floor(Math.random() * survivors.length)];
-            const child = parent.reproduce(0.01); // 1% mutation rate
+            const child = parent.reproduce(0.01);
             child.position = {
                 x: Math.floor(Math.random() * this.gridWidth),
                 y: Math.floor(Math.random() * this.gridHeight)
@@ -164,7 +208,6 @@ export class NCASimulation {
     }
 }
 
-
 function sampleIndex(probabilities) {
     const r = Math.random();
     let total = 0;
@@ -173,4 +216,41 @@ function sampleIndex(probabilities) {
         if (r < total) return i;
     }
     return probabilities.length - 1;
+}
+
+function computeUsedInputs(cell, sim) {
+    const inputUsed = new Set(
+        cell.genome.connections
+            .filter(conn => conn.source.type === 0)
+            .map(conn => conn.source.id)
+    );
+
+    return Array.from({ length: cell.brain.inputCount }, (_, i) => {
+        if (!inputUsed.has(i)) return 0;
+        const sensor = SENSOR_TYPES[i];
+        if (!sensor) return 0;
+        try {
+            return sensor.compute(cell, sim);
+        } catch {
+            return 0;
+        }
+    });
+}
+
+
+function getActiveActions(cell, outputs) {
+    const outputUsed = new Set(
+        cell.genome.connections
+            .filter(conn => conn.target.type === 1) // OUT
+            .map(conn => conn.target.id)
+    );
+
+    const active = [];
+    for (let i = 0; i < outputs.length; i++) {
+        if (outputUsed.has(i) && ACTION_TYPES[i]) {
+            active.push({ index: i, value: outputs[i], action: ACTION_TYPES[i] });
+        }
+    }
+
+    return active;
 }
