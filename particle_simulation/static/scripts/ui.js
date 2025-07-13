@@ -9,12 +9,21 @@ export function initUI(engine) {
     //WTF icon
     const wtfIcon = document.getElementById('wtf-icon');
     const wtfWindow = document.getElementById('wtf-window');
+    const wtfContent = document.getElementById('wtf-content');
     const wtfClose = document.getElementById('close-wtf');
 
     wtfIcon.addEventListener('click', () => {
-        const wtfContent = document.getElementById('wtf-content');
-        wtfContent.innerHTML = marked.parse(WTF_MARKDOWN);
+        if (!wtfContent.innerHTML.trim()) {
+            wtfContent.innerHTML = marked.parse(WTF_MARKDOWN);
+        }
+
+        wtfWindow.style.visibility = 'hidden';
         wtfWindow.style.display = 'block';
+
+        // Let layout finish, then show cleanly
+        requestAnimationFrame(() => {
+            wtfWindow.style.visibility = 'visible';
+        });
     });
 
     wtfClose.addEventListener('click', () => {

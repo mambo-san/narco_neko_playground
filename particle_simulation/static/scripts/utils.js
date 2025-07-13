@@ -150,6 +150,7 @@ export const WTF_MARKDOWN = `
 Welcome to the **Particle Interaction Simulator** — a playful space where simple rules give rise to lifelike behavior!
 
 This simulation is inspired by the principles of **emergent behavior** and **artificial life**. 
+
 Think of it as a digital ant farm... except the ants might *repel each other*, *attract each other*, or just bounce around mindlessly.
 
 ---
