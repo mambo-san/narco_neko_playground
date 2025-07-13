@@ -1,7 +1,8 @@
 // population_ui.js
 import { TYPES, TYPE_COLORS, populationDistribution, rules } from './rules.js';
-import { normalizePopulation, redistributePopulation, createColorBox, getDefaultInteractionValue } from './utils.js';
+import { normalizePopulation, redistributePopulation, createColorBox } from './utils.js';
 import { onTypesChanged } from './change_notifier.js'
+import { addType, deleteType } from './rules.js';
 
 export function renderPopulationEditor(engine) {
     const editor = document.getElementById('population-editor');
@@ -12,30 +13,14 @@ export function renderPopulationEditor(engine) {
     addBtn.className = 'add-btn';
 
     addBtn.addEventListener('click', () => {
-        if (TYPES.length >= 26) return alert("Max type limit reached (Z)");
-        //Asign properteis for the next particle type
-        const nextChar = String.fromCharCode(65 + TYPES.length);
-        const randomColor = Math.floor(Math.random() * 0xffffff);
-
-        TYPE_COLORS[nextChar] = randomColor;
-        rules[nextChar] = {};
-        // Set relationship with other particle types
-        TYPES.forEach(existing => {
-            rules[existing][nextChar] = getDefaultInteractionValue();
-            rules[nextChar][existing] = getDefaultInteractionValue();
-        });
-        rules[nextChar][nextChar] = getDefaultInteractionValue();
-        // Commit and reflect changes
-        TYPES.push(nextChar);
-        populationDistribution[nextChar] = 1;
-        normalizePopulation(populationDistribution);
-        onTypesChanged(engine);
-        engine.rebalance();
+        addType(engine);
     });
 
     editor.appendChild(addBtn);
 
-    Object.entries(populationDistribution).forEach(([type, percent]) => {
+    const currentTypes = [...TYPES]; 
+
+    currentTypes.forEach(type => {
         const container = document.createElement('div');
         container.className = 'pop-row';
 
@@ -44,7 +29,7 @@ export function renderPopulationEditor(engine) {
             engine.updateColors();
         });
         
-    
+        const percent = populationDistribution[type];
 
         const slider = document.createElement('input');
         slider.type = 'range';
@@ -76,20 +61,7 @@ export function renderPopulationEditor(engine) {
 
         deleteBtn.addEventListener('click', () => {
             if (TYPES.length <= 2) return alert("At least two types are required.");
-
-            delete populationDistribution[type];
-            delete TYPE_COLORS[type];
-            delete rules[type];
-            TYPES.splice(TYPES.indexOf(type), 1);
-            for (const t of TYPES) delete rules[t][type];
-
-            engine.reassignType(type);
-            engine.rebalance();
-
-            normalizePopulation(populationDistribution);
-            onTypesChanged(engine);
-            engine.reassignType(type);
-            engine.rebalance();
+            deleteType(engine, type);
         });
 
         container.appendChild(label);

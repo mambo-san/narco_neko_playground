@@ -139,3 +139,83 @@ export function getDefaultInteractionValue() {
     // To be adjusted later. Let's do 0 to 1 for now.
     return (Math.random() * 2 - 1).toFixed(2);
 }
+
+
+
+
+
+export const WTF_MARKDOWN = `
+# WTF is this?
+
+Welcome to the **Particle Interaction Simulator** — a playful space where simple rules give rise to lifelike behavior!
+
+This simulation is inspired by the principles of **emergent behavior** and **artificial life**. 
+Think of it as a digital ant farm... except the ants might *repel each other*, *attract each other*, or just bounce around mindlessly.
+
+---
+
+## 🔧 How to Use
+
+### 🟢 Particles
+Set how many particles should be flying around using the \`Particles\` input. More particles = more chaos.
+
+> ⚠️ **Warning**: There's no hard limit on particle count, but performance may drop if you go over ~1000. Your CPU has feelings too.
+
+### 🟡 Interaction Radius
+Controls how far particles can “see” each other. A smaller radius means local behavior; a larger one leads to more global influence.
+
+### 📊 Population %
+Adjust the population share of each particle **type** (A, B, C...) using sliders. You can add or remove types — just keep at least 2.
+
+### ⚙️ Rules
+Define how each type **interacts** with others:
+- **Positive numbers** = attraction
+- **Negative numbers** = repulsion
+- \`0\` = indifference
+
+E.g. 
+\`\`\`md
+From ↓ / To → | 🟥 A | 🟩 B
+--------------|-------|-------
+🟥 A         |   0   |   1
+🟩 B         |  -1   |  0.5
+\`\`\`
+- A ignore their own kind
+- A is drawn to B
+- B avoids A
+- B is slightly drawn to their own kind
+
+
+### 🔄 Restart
+Want to watch it all again? Click the big green **Restart** button to reinitialize the simulation using the current settings.
+
+---
+
+## 🧪 Try This
+- Set A→B interaction to 1, and B→A to - 1. What happens?
+\`\`\`md
+      | 🟥A | 🟩B
+------|-----|------
+🟥 A  |  0  |  1
+🟩 B  | -1  |  0
+\`\`\`
+
+- Make one type very rare, but highly attractive to others.
+
+🟥 A: 95%
+
+🟩 B: 5%
+
+- Try a "rock-paper-scissors" loop: A repels B, B repels C, C repels A.
+
+\`\`\`md
+     |  🟥A |  🟩B | 🟦C
+-----|------|-------|------
+🟥 A |  0.5 | -0.5 |   1
+🟩 B |   1  |  0.5 | -0.5
+🟦 C | -0.5 |   1  |  0.5
+\`\`\`
+---
+
+Enjoy the beautiful chaos — or just leave it running as a screen saver.
+`;

@@ -1,7 +1,6 @@
-// rule_ui.js
 import { onTypesChanged } from './change_notifier.js';
-import { TYPE_COLORS, TYPES, rules, populationDistribution } from './rules.js';
-import { getTextColor, createColorBox, getDefaultInteractionValue } from './utils.js';
+import { TYPE_COLORS, TYPES, rules, addType, deleteType, populationDistribution } from './rules.js';
+import { getTextColor, createColorBox } from './utils.js';
 
 export function renderRuleTable(engine) {
     const table = document.getElementById('rule-table');
@@ -15,28 +14,14 @@ export function renderRuleTable(engine) {
     addBtn.title = 'Add Type';
     addBtn.classList.add('add-btn');
     addBtn.addEventListener('click', () => {
-        if (TYPES.length >= 26) return alert("Max type limit reached (Z)");
-        //Asign properteis for the next particle type
-        const nextChar = String.fromCharCode(65 + TYPES.length);
-        const randomColor = Math.floor(Math.random() * 0xffffff);
-        TYPE_COLORS[nextChar] = randomColor;
-        rules[nextChar] = {};
-        // Set relationship with other particle types
-        TYPES.forEach(existing => {
-            rules[existing][nextChar] = getDefaultInteractionValue();
-            rules[nextChar][existing] = getDefaultInteractionValue();
-        });
-        rules[nextChar][nextChar] = getDefaultInteractionValue();
-        // Commit and reflect changes
-        TYPES.push(nextChar);
-        populationDistribution[nextChar] = 1; 
-        onTypesChanged(engine);
-        engine.rebalance();
+        addType(engine);
     });
-    addTh.appendChild(addBtn);
+    addTh.appendChild(addBtn);2
     header.appendChild(addTh);
 
-    TYPES.forEach(type => {
+    const currentTypes = [...TYPES]; 
+
+    currentTypes.forEach(type => {
         const th = document.createElement('th');
         const colorBox = document.createElement('div');
         colorBox.className = 'color-box';
@@ -74,10 +59,10 @@ export function renderRuleTable(engine) {
     });
     table.appendChild(header);
 
-    TYPES.forEach(rowType => {
+    currentTypes.forEach(type => {
         const row = document.createElement('tr');
         const labelCell = document.createElement('td');
-        const rowColorBox = createColorBox(rowType, TYPE_COLORS, () => {
+        const rowColorBox = createColorBox(type, TYPE_COLORS, () => {
             onTypesChanged(engine);
             engine.updateColors();
         });
@@ -88,7 +73,7 @@ export function renderRuleTable(engine) {
 
         TYPES.forEach(colType => {
             
-            const input = createRuleInput(rowType, colType);
+            const input = createRuleInput(type, colType);
             const cell = document.createElement('td');
             cell.appendChild(input);
             row.appendChild(cell);
@@ -101,22 +86,7 @@ export function renderRuleTable(engine) {
 
         deleteBtn.addEventListener('click', () => {
             if (TYPES.length <= 2) return alert("At least two types are required.");
-
-            // Remove from rules
-            delete rules[rowType];
-            for (const type of TYPES) {
-                delete rules[type][rowType];
-            }
-
-            // Remove from color and population
-            delete TYPE_COLORS[rowType];
-            delete populationDistribution[rowType];
-            TYPES.splice(TYPES.indexOf(rowType), 1);
-
-            engine.reassignType(rowType);
-            engine.rebalance();
-
-            onTypesChanged(engine);
+            deleteType(engine, type);
         });
 
         const td = document.createElement('td');

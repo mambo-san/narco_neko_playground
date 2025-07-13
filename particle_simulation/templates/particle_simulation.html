@@ -7,11 +7,13 @@
   <link rel="stylesheet" href="{{ url_for('particle_simulation.static', filename='style.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.2.4/dist/pixi.min.js"></script>
   <script type="module" src="{{ url_for('particle_simulation.static', filename='scripts/main.js') }}" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
   <button id="fullscreen-btn">⛶ Fullscreen</button>
   <div id="floating-panel">
+    <span id="wtf-icon" title="WTF is this?" style="cursor: pointer; margin-left: 0px;">❓</span>
     <h3>Simulation Info</h3>
     <div id="panel-content">
       <p><strong>Particles:</strong>
@@ -33,10 +35,18 @@
         </div>
       </div>
     </div>
+
+    <button id="restart-btn">Restart</button>
+
   </div>
   <div id="explanation-window" style="display: none;">
     <button id="close-explanation">❌</button>
     <div id="explanation-content"></div>
+  </div>
+
+  <div id="wtf-window" style="display: none;">
+    <button id="close-wtf">❌</button>
+    <div id="wtf-content">hello</div>
   </div>
 </body>
 

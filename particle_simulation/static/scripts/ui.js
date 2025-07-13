@@ -2,8 +2,27 @@
 import { rules } from './rules.js';
 import { renderPopulationEditor } from './population_ui.js';
 import { makeDraggable } from './draggable_ui.js';
+import { WTF_MARKDOWN } from './utils.js';
 
 export function initUI(engine) {
+
+    //WTF icon
+    const wtfIcon = document.getElementById('wtf-icon');
+    const wtfWindow = document.getElementById('wtf-window');
+    const wtfClose = document.getElementById('close-wtf');
+
+    wtfIcon.addEventListener('click', () => {
+        const wtfContent = document.getElementById('wtf-content');
+        wtfContent.innerHTML = marked.parse(WTF_MARKDOWN);
+        wtfWindow.style.display = 'block';
+    });
+
+    wtfClose.addEventListener('click', () => {
+        wtfWindow.style.display = 'none';
+    });
+    makeDraggable(wtfWindow);
+
+
     // Particle count input
     const particleInput = document.getElementById('particle-count-input');
     particleInput.value = engine.count;
@@ -18,7 +37,7 @@ export function initUI(engine) {
     // Interaction radius input
     const radiusInput = document.getElementById('interaction-radius-input');
     radiusInput.value = engine.radius;
-    radiusInput.addEventListener('change', () => {
+    radiusInput.addEventListener('input', () => {
         const value = parseFloat(radiusInput.value);
         if (!isNaN(value) && value >= 0) {
             engine.setRadius(value);
@@ -134,6 +153,11 @@ export function initUI(engine) {
 
     closeExplain.addEventListener('click', () => {
         explainBox.style.display = 'none';
+    });
+    //Restart button
+    const restartBtn = document.getElementById('restart-btn');
+    restartBtn.addEventListener('click', () => {
+        engine.reset();
     });
 
     makeDraggable(explainBox);

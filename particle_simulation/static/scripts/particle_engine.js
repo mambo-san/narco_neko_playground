@@ -175,21 +175,27 @@ export class ParticleEngine {
     }
 
     showRadiusEffect() {
-        if (this._radiusEffectGraphics) {
-            this.app.ticker.remove(this._radiusEffectUpdater);
-            this._radiusEffectGraphics.destroy();
+        // If already active, just redraw with new radius
+        if (this._radiusEffectGraphics && this._radiusEffectUpdater) {
+            // Redraw with new radius using the same particles
+            this._radiusEffectUpdater();
             clearTimeout(this._radiusEffectTimeout);
+            this._radiusEffectTimeout = setTimeout(() => this._endRadiusEffect(), 8000);
+            return;
         }
 
-        const selected = [...this.particles].sort(() => 0.5 - Math.random()).slice(0, 10);
+        const selected = [...this.particles]
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 10);
 
         const g = new PIXI.Graphics();
         this._radiusEffectGraphics = g;
+        this._radiusEffectSelected = selected;
 
         const updateCircles = () => {
             g.clear();
             g.lineStyle(2, 0xffffff, 0.5);
-            for (const p of selected) {
+            for (const p of this._radiusEffectSelected) {
                 g.drawCircle(p.x, p.y, this.radius);
             }
         };
@@ -198,13 +204,33 @@ export class ParticleEngine {
         this.app.ticker.add(updateCircles);
         this.app.stage.addChild(g);
 
-        this._radiusEffectTimeout = setTimeout(() => {
-            this.app.ticker.remove(updateCircles);
-            g.destroy();
+        this._radiusEffectTimeout = setTimeout(() => this._endRadiusEffect(), 8000);
+    }
+
+    _endRadiusEffect() {
+        if (this._radiusEffectGraphics && this._radiusEffectUpdater) {
+            this.app.ticker.remove(this._radiusEffectUpdater);
+            this._radiusEffectGraphics.destroy();
             this._radiusEffectGraphics = null;
+            this._radiusEffectSelected = null;
             this._radiusEffectUpdater = null;
-            this._radiusEffectTimeout = null;
-        }, 8000);
+        }
+
+        clearTimeout(this._radiusEffectTimeout);
+        this._radiusEffectTimeout = null;
     }
     
+    reset() {
+        // Remove old sprites from stage
+        for (const p of this.particles) {
+            this.app.stage.removeChild(p);
+        }
+
+        // Nuke it, and repopulate
+        this.particles = [];
+        this.initParticles();
+
+        //Reapply balance and visual indicators
+        this.rebalance();
+    }
 }
