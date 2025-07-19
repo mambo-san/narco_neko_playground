@@ -230,26 +230,6 @@ export class NCASimulation {
     setPopulation(newCells) {
         this.cells = newCells;
     }
-
-    nextGeneration() {
-        return;
-        const survivors = this.cells.filter(c => c.alive && this.isInSurvivalZone(c));
-        const nextGen = [];
-
-        while (nextGen.length < this.populationSize) {
-            const parent = survivors[Math.floor(Math.random() * survivors.length)];
-            const child = parent.reproduce(0.01);
-            child.position = {
-                x: Math.floor(Math.random() * this.gridWidth),
-                y: Math.floor(Math.random() * this.gridHeight)
-            };
-            nextGen.push(child);
-        }
-
-        this.cells = nextGen;
-        this.tickCount = 0;
-        this.generation++;
-    }
 }
 
 function sampleIndex(probabilities) {

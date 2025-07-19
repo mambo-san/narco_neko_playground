@@ -9,7 +9,7 @@ export class Brain {
     constructor(genome) {
         // Precompute neuron count based on max seen index
         const maxInput = Math.max(...genome.rawDNA.map(decodeGene).map(g => g.source.type === 0 ? g.source.id : -1), 0);
-        const maxOutput = Math.max(...genome.rawDNA.map(decodeGene).map(g => g.target.type === 1 ? g.target.id : -1), 0);
+        const maxOutput = Math.max(...genome.rawDNA.map(decodeGene).map(g => g.target.type === 2 ? g.target.id : -1), 0);
 
         this.inputCount = maxInput + 1;
         this.innerCount = genome.innerCount;
@@ -32,6 +32,11 @@ export class Brain {
             this.neuronOutputs[i] = inputs[i] ?? 0;
         }
 
+        // Step 2.5: Initialize hidden neurons with small "internal urge"
+        for (let i = this.inputCount; i < outputStart; i++) {
+            this.neuronOutputs[i] = 0.1; // Tunable: internal default
+        }
+
         // Step 3: Accumulate signals into hidden and output neurons
         for (const conn of this.connections) {
             const fromIndex = this.getNeuronIndex(conn.source.type, conn.source.id);
@@ -42,7 +47,7 @@ export class Brain {
             this.neuronOutputs[toIndex] += this.neuronOutputs[fromIndex] * conn.weight;
         }
 
-        // Step 4: Activate hidden neurons (only these are recursive)
+        // Step 4: Activate hidden neurons (recursive)
         for (let i = this.inputCount; i < outputStart; i++) {
             this.neuronOutputs[i] = tanh(this.neuronOutputs[i]);
         }
@@ -52,7 +57,7 @@ export class Brain {
             this.neuronOutputs[i] = tanh(this.neuronOutputs[i]);
         }
 
-        // Step 6: Slice out only the output neuron values
+        // Step 6: Return just the output slice
         return this.neuronOutputs.slice(outputStart);
     }
 

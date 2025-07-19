@@ -1,6 +1,5 @@
-
 function scaleWeight(rawInt) {
-    return (rawInt / 32767) * 5.0;
+    return ((rawInt / 32767) - 1) * 2.5; // output in [-2.5, +2.5]
 }
 
 export class Genome {
@@ -24,19 +23,35 @@ export class Genome {
 
         const mutated = this.rawDNA.map(hex => {
             const gene = decodeGene(hex);
+
+            const mutatedSourceType = mutateField(gene.source.type, 1, mutationRate);
+            const mutatedTargetType = mutateField(gene.target.type, 2, mutationRate);
+
+            const originalRawWeight = Math.floor(((gene.weight + 2.5) / 5.0) * 65535);
+            const mutatedRawWeight = mutateField(originalRawWeight, 65535, mutationRate);
+
+            if (!isValidConnection(mutatedSourceType, mutatedTargetType)) {
+                console.log('Invalid mutation detected, returning original gene:', hex);
+                return hex;
+            }
+
             const mutatedGene = {
-                sourceType: mutateField(gene.source.type, 1, mutationRate),
+                sourceType: mutatedSourceType,
                 sourceID: mutateField(gene.source.id, 15, mutationRate),
-                targetType: mutateField(gene.target.type, 2, mutationRate),
+                targetType: mutatedTargetType,
                 targetID: mutateField(gene.target.id, 15, mutationRate),
-                weightRaw: Math.floor((mutateField(gene.weight, 1, mutationRate) / 5.0) * 32767)
+                weightRaw: mutatedRawWeight
             };
             return encodeGene(mutatedGene);
         });
 
-        return new Genome(mutated);
-    }
-  }
+        return new Genome(mutated, this.innerCount);  
+    };
+}
+
+export function isValidConnection(srcType, tgtType) {
+    return !(srcType === 2 || tgtType === 0);
+}
 
 export function decodeGene(hex) {
     const bin = parseInt(hex, 16).toString(2).padStart(32, '0');

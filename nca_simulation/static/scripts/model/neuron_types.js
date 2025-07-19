@@ -3,7 +3,7 @@ export const SENSOR_TYPES = [
         id: 0, 
         name: "Bias", 
         shortName: "B",
-        compute: () => 1 },
+        compute: () => 0.2 },
     {
         id: 1, 
         name: "Crowded Area", 
@@ -46,7 +46,7 @@ export const SENSOR_TYPES = [
         id: 4, 
         name: "Random Signal", 
         shortName: "RN",
-        compute: () => Math.random() * 2 - 1 
+        compute: () => Math.random() * 0.4 - 0.2
     },
     {
         id: 5,
