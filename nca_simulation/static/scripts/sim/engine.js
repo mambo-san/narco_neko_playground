@@ -1,7 +1,10 @@
 import { Cell } from '../model/cell.js';
 import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
+import { encodeGene, decodeGene } from '../model/genome.js';
 
 let nextCellId = 1;
+
+// Use module-level INPUT_TYPE, HIDDEN_TYPE, OUTPUT_TYPE
 
 export function generateCellId() {
     return nextCellId++;
@@ -15,19 +18,15 @@ export class NCASimulation {
     constructor({
         gridWidth,
         gridHeight,
-        inputCount,
-        innerCount,
-        outputCount,
         genomeLength,
+        innerCount,
         populationSize,
         survivalMask,
         spawnOutside
     }) {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
-        this.inputCount = inputCount;
         this.innerCount = innerCount;
-        this.outputCount = outputCount;
         this.genomeLength = genomeLength;
         this.populationSize = populationSize;
         this.survivalMask = survivalMask;
@@ -39,33 +38,58 @@ export class NCASimulation {
         this.spawnInitialPopulation();
     }
 
-    randomGeneValid(inputCount, hiddenCount, outputCount) {
-        const sourceType = Math.random() < 0.5 ? 0 : 1;
-        const sourceID = (sourceType === 0)
-            ? Math.floor(Math.random() * inputCount)
-            : Math.floor(Math.random() * hiddenCount);
+    randomDNA() {
+        const used = new Set();
+        const dna = [];
 
-        const targetType = Math.random() < 0.7 ? 0 : 1;
-        const targetID = (targetType === 0)
-            ? Math.floor(Math.random() * hiddenCount)
-            : Math.floor(Math.random() * outputCount);
+        while (dna.length < this.genomeLength) {
+            const gene = this.randomGeneValid(used);
+            
+            if (gene) {
+                dna.push(gene);
+            }
+        }
 
-        const weightRaw = Math.floor(Math.random() * 65536);
-
-        const bin =
-            sourceType.toString(2).padStart(4, '0') +
-            sourceID.toString(2).padStart(4, '0') +
-            targetType.toString(2).padStart(4, '0') +
-            targetID.toString(2).padStart(4, '0') +
-            weightRaw.toString(2).padStart(16, '0');
-
-        return parseInt(bin, 2).toString(16).padStart(8, '0');
+        return dna;
     }
 
-    randomDNA() {
-        return Array.from({ length: this.genomeLength }, () =>
-            this.randomGeneValid(this.inputCount, this.innerCount, this.outputCount)
-        );
+    randomGeneValid(usedEdges) {
+        const INPUT_TYPE = 0;
+        const HIDDEN_TYPE = 1;
+        const OUTPUT_TYPE = 2;
+
+        let sourceType = Math.random();
+        let sourceID;
+
+        if (Math.random() < 0.5) {
+            sourceType = INPUT_TYPE;
+            sourceID = Math.floor(Math.random() * SENSOR_TYPES.length);
+        } else {
+            sourceType = HIDDEN_TYPE;
+            sourceID = Math.floor(Math.random() * this.innerCount);
+        }
+
+        let targetType ;
+        let targetID;
+
+        if (Math.random() < 0.7) {
+            targetType = HIDDEN_TYPE;
+            targetID = Math.floor(Math.random() * this.innerCount);
+        } else {
+            targetType = OUTPUT_TYPE;
+            targetID = Math.floor(Math.random() * ACTION_TYPES.length);
+        }
+
+        // Reject invalid paths (e.g. OUTPUT as source, SENSOR→SENSOR)
+        if (sourceType === OUTPUT_TYPE || targetType === INPUT_TYPE) return null;
+
+        const edgeKey = `${sourceType}-${sourceID}-${targetType}-${targetID}`;
+        if (usedEdges.has(edgeKey)) return null;
+
+        const weightRaw = Math.floor(Math.random() * 65536);
+        usedEdges.add(edgeKey);
+        
+        return encodeGene({ sourceType, sourceID, targetType, targetID, weightRaw });
     }
 
     spawnInitialPopulation() {
@@ -88,9 +112,7 @@ export class NCASimulation {
             const cell = new Cell({
                 id: generateCellId(),
                 rawDNA: this.randomDNA(),
-                inputCount: this.inputCount,
                 innerCount: this.innerCount,
-                outputCount: this.outputCount,
                 position
             });
 
@@ -155,6 +177,8 @@ export class NCASimulation {
     }
 
     runTick() {
+
+    
         const occupied = new Set();
         for (const cell of this.cells) {
             if (!cell.alive) continue;
@@ -168,7 +192,6 @@ export class NCASimulation {
             const outputs = cell.step(inputs);
             if (!outputs) continue;
 
-
             const maxOutput = Math.max(...outputs);
             if (maxOutput < 0.3) continue;
 
@@ -181,7 +204,8 @@ export class NCASimulation {
 
             const chosenIndex = sampleIndex(probs);
             const chosen = activeActions[chosenIndex];
-            
+
+
             if (!chosen || !chosen.action || !chosen.action.delta) continue;
 
             const delta = chosen.action.delta;
@@ -240,7 +264,7 @@ function sampleIndex(probabilities) {
 
 function computeUsedInputs(cell, sim) {
     const inputUsed = new Set(
-        cell.genome.connections
+        cell.brain.connections
             .filter(conn => conn.source.type === 0)
             .map(conn => conn.source.id)
     );
@@ -260,8 +284,8 @@ function computeUsedInputs(cell, sim) {
 
 function getActiveActions(cell, outputs) {
     const outputUsed = new Set(
-        cell.genome.connections
-            .filter(conn => conn.target.type === 1) // OUT
+        cell.brain.connections
+            .filter(conn => conn.target.type === 2) // OUT
             .map(conn => conn.target.id)
     );
 

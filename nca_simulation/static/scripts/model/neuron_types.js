@@ -109,7 +109,8 @@ export const ACTION_TYPES = [
         shortName: "MD", 
         delta: { x: 0, y: 1 } },
     { 
-        id: 3, name: "Move Left", 
+        id: 3, 
+        name: "Move Left", 
         shortName: "ML",
         delta: { x: -1, y: 0 } },
     { 

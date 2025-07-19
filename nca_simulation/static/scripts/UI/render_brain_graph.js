@@ -52,12 +52,11 @@ export function renderBrainGraph(cell) {
 
     const inputCount = brain.inputCount;
     const hiddenCount = brain.innerCount;
-    const outputCount = brain.outputCount;
 
     const usedNodes = new Set();
     for (const conn of brain.connections) {
-        usedNodes.add(conn.from);
-        usedNodes.add(conn.to);
+        usedNodes.add(brain.getNeuronIndex(conn.source.type, conn.source.id));
+        usedNodes.add(brain.getNeuronIndex(conn.target.type, conn.target.id));
     }
 
     const elements = [];
@@ -96,11 +95,15 @@ export function renderBrainGraph(cell) {
 
     // Edges
     for (const conn of brain.connections) {
+        const from = brain.getNeuronIndex(conn.source.type, conn.source.id);
+        const to = brain.getNeuronIndex(conn.target.type, conn.target.id);
+        if (typeof from !== 'number' || typeof to !== 'number') continue;
+
         elements.push({
             data: {
-                id: `${conn.from}->${conn.to}`,
-                source: `${conn.from}`,
-                target: `${conn.to}`,
+                id: `${from}->${to}`,
+                source: `${from}`,
+                target: `${to}`,
                 weight: conn.weight.toFixed(2),
                 label: conn.weight.toFixed(2)
             }

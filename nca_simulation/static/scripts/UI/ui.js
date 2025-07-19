@@ -9,6 +9,7 @@ export function initializeUI(canvas, onStart) {
         gridWidth: DEFAULT_CONFIG.gridSize,
         populationSize: DEFAULT_CONFIG.populationSize,
         genomeLength: DEFAULT_CONFIG.genomeLength,
+        innerCount: DEFAULT_CONFIG.innerNeurons,
         mutationRate: DEFAULT_CONFIG.mutationRate,
         ticksPerGeneration: DEFAULT_CONFIG.ticksPerGeneration,
         spawnOutside: DEFAULT_CONFIG.spawnOutside,
@@ -32,6 +33,7 @@ export function initializeUI(canvas, onStart) {
         const gridSize = parseInt(document.getElementById('gridWidth').value) || DEFAULT_CONFIG.gridSize;
         const populationSize = parseInt(document.getElementById('populationSize').value) || DEFAULT_CONFIG.populationSize;
         const genomeLength = parseInt(document.getElementById('genomeLength').value) || DEFAULT_CONFIG.genomeLength;
+        const innerCount = parseInt(document.getElementById('innerCount').value) || DEFAULT_CONFIG.innerCount;
         const ticksPerGeneration = parseInt(document.getElementById('ticksPerGeneration').value) || DEFAULT_CONFIG.ticksPerGeneration;
         const mutationRate = parseFloat(document.getElementById('mutationRate').value)/100;
         const spawnOutside = document.getElementById('spawnOutside').checked || DEFAULT_CONFIG.spawnOutside;
@@ -54,6 +56,7 @@ export function initializeUI(canvas, onStart) {
             gridHeight: gridSize,
             populationSize,
             genomeLength,
+            innerCount,
             mutationRate,
             cellSize,
             ticksPerGeneration,
@@ -100,6 +103,7 @@ function setUpCellClick({ canvas, simulation }) {
             renderBrainGraph(cell, () => {
                 setSelectedCellId(null);
             });
+            simulation.draw();
         } else {
             console.log('No cell found at this position.');
         }

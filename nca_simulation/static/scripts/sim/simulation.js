@@ -19,15 +19,14 @@ export class Simulation {
         this.gridWidth = config.gridWidth;
         this.gridHeight = config.gridHeight;
         this.genomeLength = config.genomeLength;
+        this.innerCount = config.innerCount;
         this.mutationRate = config.mutationRate;
         this.populationSize = config.populationSize;
         this.ticksPerGeneration = config.ticksPerGeneration;
         this.spawnOutside = config.spawnOutside;
         this.zoneTemplate = config.zoneTemplate;
 
-        this.inputCount = SENSOR_TYPES.length; //Number of sensor (e.g. am I close to wall)
-        this.innerCount = 3; //Number of hidden nodes
-        this.outputCount = ACTION_TYPES.length; //Number of actions (e.g. move right)
+        
 
         this._paused = false;
 
@@ -40,10 +39,8 @@ export class Simulation {
         this.sim = new NCASimulation({
             gridWidth: this.gridWidth,
             gridHeight: this.gridHeight,
-            inputCount: this.inputCount,
-            innerCount: this.innerCount,
-            outputCount: this.outputCount,
             genomeLength: this.genomeLength,
+            innerCount: this.innerCount,
             populationSize: this.populationSize,
             survivalMask: this.survivalMask,
             spawnOutside: this.spawnOutside

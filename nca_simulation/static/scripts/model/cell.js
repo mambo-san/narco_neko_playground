@@ -1,20 +1,19 @@
 import { Genome } from './genome.js';
 import { Brain } from './brain.js';
-import { describeNeuron } from './brain.js';
+import { decodeGene } from './genome.js';
+import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js';
 
 export class Cell {
     constructor({
         id,
         rawDNA,
-        inputCount,
         innerCount,
-        outputCount,
         position = { x: 0, y: 0 }
     }) {
         this.id = id
         this.rawDNA = rawDNA
-        this.genome = new Genome(rawDNA);
-        this.brain = new Brain(this.genome.connections, inputCount, innerCount, outputCount);
+        this.genome = new Genome(rawDNA, innerCount);
+        this.brain = new Brain(this.genome, innerCount);
         this.position = { ...position };
         this.age = 0;
         this.alive = true;
@@ -50,32 +49,31 @@ export class Cell {
 }
 
 export function describeGenome(cell) {
-    const rawDNA = cell.rawDNA ?? [];
-    const decoded = new Genome(rawDNA).decode(); // decode manually
-    const brain = cell.brain;
-    const inputCount = brain.inputCount;
-    const innerCount = brain.innerCount;
-    const outputCount = brain.outputCount;
+    const raw = cell.genome.rawDNA;
 
-    const lines = [];
+    const hexLines = raw.map((hex, i) => `  [${i}] ${hex}`).join('\n');
 
-    lines.push(`Raw DNA:`);
-    rawDNA.forEach((gene, i) => {
-        lines.push(`  [${i}] ${gene}`);
-      });
+    const decodedLines = raw.map((hex, i) => {
+        const gene = decodeGene(hex);
 
-    lines.push(`\nDecoded DNA:`);
+        const from =
+            gene.source.type === 0
+                ? SENSOR_TYPES[gene.source.id]?.name ?? `Sensor(${gene.source.id})`
+                : gene.source.type === 1
+                    ? `Inner Neuron (${gene.source.id})`
+                    : `Type ${gene.source.type} (${gene.source.id})`;
 
-    decoded.forEach((conn, i) => {
-        const fromIndex = (conn.source.type === 0) ? conn.source.id
-            : inputCount + conn.source.id;
-        const toIndex = (conn.target.type === 0) ? inputCount + conn.target.id
-            : inputCount + innerCount + conn.target.id;
+        const to =
+            gene.target.type === 1
+                ? `Inner Neuron (${gene.target.id})`
+                : gene.target.type === 2
+                    ? `Action (${ACTION_TYPES[gene.target.id]?.name ?? `#${gene.target.id}`})`
+                    : `Type ${gene.target.type} (${gene.target.id})`;
 
-        const fromLabel = describeNeuron(fromIndex, brain);
-        const toLabel = describeNeuron(toIndex, brain);
-        lines.push(`  [${i}] ${fromLabel} --(${conn.weight.toFixed(2)})--> ${toLabel}`);
-    });
+        const w = gene.weight.toFixed(2);
 
-    return lines.join("\n");
+        return `  [${i}] ${from} --(${w})--> ${to}`;
+    }).join('\n');
+
+    return `Raw DNA:\n${hexLines}\n\nDecoded DNA:\n${decodedLines}`;
 }

@@ -4,44 +4,64 @@ import { selectedCellId } from '../sim/simulation.js';
 export function drawSimulation(sim, ctx, cellSize, survivalZone) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    // Survival zone
-    if (survivalZone) {
-        ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
-        for (let y = 0; y < survivalZone.length; y++) {
-            for (let x = 0; x < survivalZone[y].length; x++) {
-                if (survivalZone[y][x]) {
-                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-                }
+    drawSurvivalZone(ctx, survivalZone, cellSize);
+    drawCells(ctx, sim.cells, cellSize);
+}
+
+function drawSurvivalZone(ctx, survivalZone, cellSize) {
+    if (!survivalZone) return;
+
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+    for (let y = 0; y < survivalZone.length; y++) {
+        for (let x = 0; x < survivalZone[y].length; x++) {
+            if (survivalZone[y][x]) {
+                ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
             }
         }
     }
+}
 
-    for (const cell of sim.cells) {
+function drawCells(ctx, cells, cellSize) {
+    for (const cell of cells) {
         if (!cell.alive) continue;
+
         const { x, y } = cell.position;
         const { r, g, b } = colorFromDNA(cell.genome.rawDNA);
         ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
         if (cell.id === selectedCellId) {
-            // Compute contrasting color
-            const invert = (value) => 255 - value;
-            const contrastR = invert(r);
-            const contrastG = invert(g);
-            const contrastB = invert(b);
-            const contrastColor = `rgb(${contrastR},${contrastG},${contrastB})`;
-
-            // Outer bright border (contrasting color)
-            ctx.lineWidth = 10;
-            ctx.strokeStyle = contrastColor;
-            ctx.strokeRect(x * cellSize - 1, y * cellSize - 1, cellSize + 2, cellSize + 2);
-
-            // Inner black border for clean visual break
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = "#000";
-            ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+            drawCellHighlight(ctx, x, y, cellSize, r, g, b);
         }
     }
+}
+
+function drawCellHighlight(ctx, x, y, cellSize, r, g, b) {
+    const invert = value => 255 - value;
+    const contrastColor = `rgb(${invert(r)}, ${invert(g)}, ${invert(b)})`;
+
+    const px = x * cellSize;
+    const py = y * cellSize;
+
+    // Outer bright border
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = contrastColor;
+    ctx.strokeRect(px - 1, py - 1, cellSize + 2, cellSize + 2);
+
+    // Inner black border
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#000';
+    ctx.strokeRect(px, py, cellSize, cellSize);
+
+    // Crosshair
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = contrastColor;
+    ctx.beginPath();
+    ctx.moveTo(px + cellSize / 2, 0);
+    ctx.lineTo(px + cellSize / 2, ctx.canvas.height);
+    ctx.moveTo(0, py + cellSize / 2);
+    ctx.lineTo(ctx.canvas.width, py + cellSize / 2);
+    ctx.stroke();
 }
 
 function hashString(str) {
