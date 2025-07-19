@@ -17,15 +17,23 @@ export class Cell {
         this.position = { ...position };
         this.age = 0;
         this.alive = true;
+        this.ticksInSurvivalZone = 0;
     }
 
-    step(inputs) {
+    step(inputs, isInSurvivalZone) {
         if (!this.alive) return null;
+
+        if (isInSurvivalZone) {
+            this.ticksInSurvivalZone++;
+        }
 
         const outputs = this.brain.activate(inputs);
         this.age++;
-
         return outputs;
+    }
+
+    getFitness() {
+        return this.ticksInSurvivalZone;
     }
 
     reproduce(mutationRate, new_id) {

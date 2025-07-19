@@ -1,10 +1,10 @@
 export const DEFAULT_CONFIG = {
     gridSize: 100,
     populationSize: 500,
-    genomeLength: 5,
-    innerNeurons: 2,
-    mutationRate: 0.01,
-    ticksPerGeneration: 150,
+    genomeLength: 10,
+    innerNeurons: 3,
+    mutationRate: 1,
+    ticksPerGeneration: 300,
     spawnOutside: true,
     zoneTemplate:"edge"
 };

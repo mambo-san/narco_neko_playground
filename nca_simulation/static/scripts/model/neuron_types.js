@@ -1,63 +1,55 @@
 export const SENSOR_TYPES = [
-    { 
-        id: 0, 
-        name: "Bias", 
-        shortName: "B",
-        compute: () => 0.2 },
+    { id: 0, name: "Bias", shortName: "B", compute: () => 0.2 },
+
     {
-        id: 1, 
-        name: "Crowded Area", 
-        shortName: "CA",
+        id: 1, name: "Crowded Area", shortName: "CA",
         compute: (cell, sim) => {
-            const { x, y } = cell.position;
             let count = 0;
+            const { x, y } = cell.position;
             for (const other of sim.cells) {
                 if (other === cell || !other.alive) continue;
                 const dx = other.position.x - x;
                 const dy = other.position.y - y;
                 if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) count++;
             }
-            return count / 8; // normalize to [0, 1]
+            return (count / 4) - 1;  // range [-1, 1]
         }
     },
+
     {
-        id: 2, 
-        name: "Touching Wall", 
-        shortName: "Tw",
+        id: 2, name: "Touching Wall", shortName: "Tw",
         compute: (cell, sim) => {
             const { x, y } = cell.position;
-            return (x === 0 || y === 0 || x === sim.gridWidth - 1 || y === sim.gridHeight - 1) ? 1 : 0;
+            const touching = x === 0 || y === 0 || x === sim.gridWidth - 1 || y === sim.gridHeight - 1;
+            return touching ? 1 : -1;
         }
     },
+
     {
-        id: 3,
-        name: "Wall Proximity",
-        shortName: "Wp",
+        id: 3, name: "Wall Proximity", shortName: "Wp",
         compute: (cell, sim) => {
             const { x, y } = cell.position;
             const dx = Math.min(x, sim.gridWidth - 1 - x);
             const dy = Math.min(y, sim.gridHeight - 1 - y);
             const minDistToEdge = Math.min(dx, dy);
-            const maxPossible = Math.floor(Math.min(sim.gridWidth, sim.gridHeight) / 2);
-            return minDistToEdge / maxPossible; // normalized to [0, 1]: returns 0 when hugging edge and ~1 in the center.
+            const maxDist = Math.floor(Math.min(sim.gridWidth, sim.gridHeight) / 2);
+            const proximity = minDistToEdge / maxDist;
+            return proximity * 2 - 1; // normalized to [-1, 1]
         }
-      },
-    { 
-        id: 4, 
-        name: "Random Signal", 
-        shortName: "RN",
-        compute: () => Math.random() * 0.4 - 0.2
     },
+
     {
-        id: 5,
-        name: "Forward Density",
-        shortName: "FD",
+        id: 4, name: "Random Signal", shortName: "RN",
+        compute: () => Math.random() * 2 - 1
+    },
+
+    {
+        id: 5, name: "Forward Density", shortName: "FD",
         compute: (cell, sim) => {
             const { x, y } = cell.position;
             const dx = cell.lastDelta?.x ?? 0;
             const dy = cell.lastDelta?.y ?? 0;
-
-            if (dx === 0 && dy === 0) return 0; // no direction
+            if (dx === 0 && dy === 0) return -1;
 
             let count = 0;
             for (const other of sim.cells) {
@@ -68,29 +60,44 @@ export const SENSOR_TYPES = [
                     if (Math.abs(ox) <= 2 && Math.abs(oy) <= 2) count++;
                 }
             }
-            return count / 8; // normalize
+            return (count / 4) - 1; // normalized to [-1, 1]
         }
-      },
-    {
-        id: 6,
-        name: "Center Pull",
-        shortName: "CP",
-        compute: (cell, sim) => {
-            const dx = sim.gridWidth / 2 - cell.position.x;
-            const dy = sim.gridHeight / 2 - cell.position.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const maxDist = Math.sqrt(Math.pow(sim.gridWidth / 2, 2) + Math.pow(sim.gridHeight / 2, 2));
-            return 1 - (dist / maxDist);
-        }
-      },
-    {
-        id: 7,
-        name: "Age",
-        shortName: "A",
-        compute: (cell, sim) => Math.tanh(cell.age / sim.ticksPerGeneration)
-      }
+    },
 
+    {
+        id: 6, name: "DistNorth", shortName: "DN",
+        compute: (cell, sim) => {
+            const mid = sim.gridHeight / 2;
+            return ((mid - cell.position.y) / mid);  // top = +1, bottom = -1
+        }
+    },
+    {
+        id: 7, name: "DistSouth", shortName: "DS",
+        compute: (cell, sim) => {
+            const mid = sim.gridHeight / 2;
+            return ((cell.position.y - mid) / mid);  // bottom = +1, top = -1
+        }
+    },
+    {
+        id: 8, name: "DistWest", shortName: "DW",
+        compute: (cell, sim) => {
+            const mid = sim.gridWidth / 2;
+            return ((mid - cell.position.x) / mid);  // left = +1, right = -1
+        }
+    },
+    {
+        id: 9, name: "DistEast", shortName: "DE",
+        compute: (cell, sim) => {
+            const mid = sim.gridWidth / 2;
+            return ((cell.position.x - mid) / mid);  // right = +1, left = -1
+        }
+    },
+    {
+        id: 10, name: "Age", shortName: "A",
+        compute: (cell, sim) => Math.tanh((cell.age / sim.ticksPerGeneration) * 2 - 1)
+    }
 ];
+
 
 export const ACTION_TYPES = [
     { 

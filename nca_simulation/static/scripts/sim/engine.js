@@ -119,22 +119,31 @@ export class NCASimulation {
             this.cells.push(cell);
         }
     }
-
     getSurvivors(survivalMask) {
         return this.cells.filter(c => {
             const { x, y } = c.position;
             return c.alive && survivalMask?.[y]?.[x];
         });
     }
-
     evolve(survivalMask, spawnOutside, survivors, selectedCellId, mutationRate) {
         let newSelectedId = null;
         const nextGen = [];
 
-        // Step 1: If selectedCell survived, force it to reproduce
-        const selectedParent = survivors.find(c => c.id === selectedCellId);
+        const aliveCells = this.cells.filter(c => c.alive);
+        const maxTicks = Math.max(...aliveCells.map(c => c.ticksInSurvivalZone), 1); // avoid /0
+
+        const weightedPool = aliveCells.flatMap(cell => {
+            const normalized = cell.ticksInSurvivalZone / maxTicks;
+            const weight = Math.floor(normalized * 10); // scale factor (tweak if needed)
+            return Array(weight || 1).fill(cell);
+        });
+
+        // Step 1: Guarantee selected cell reproduction if still alive
+        const selectedParent = aliveCells.find(c => c.id === selectedCellId);
         if (selectedParent) {
             const child = selectedParent.reproduce(mutationRate, generateCellId());
+            child.ticksInSurvivalZone = 0;
+
             let position;
             while (true) {
                 const x = Math.floor(Math.random() * this.gridWidth);
@@ -145,15 +154,17 @@ export class NCASimulation {
                     break;
                 }
             }
+
             child.position = position;
             newSelectedId = child.id;
             nextGen.push(child);
         }
 
         // Step 2: Fill in the rest of the population
-        while (nextGen.length < this.populationSize && survivors.length > 0) {
-            const parent = survivors[Math.floor(Math.random() * survivors.length)];
+        while (nextGen.length < this.populationSize && weightedPool.length > 0) {
+            const parent = weightedPool[Math.floor(Math.random() * weightedPool.length)];
             const child = parent.reproduce(mutationRate, generateCellId());
+            child.ticksInSurvivalZone = 0;
 
             let position;
             while (true) {
@@ -189,7 +200,8 @@ export class NCASimulation {
             if (!cell.alive) continue;
 
             const inputs = computeUsedInputs(cell, this);
-            const outputs = cell.step(inputs);
+            const isInSurvival = this.survivalMask[cell.position.y]?.[cell.position.x];
+            const outputs = cell.step(inputs, isInSurvival);
             if (!outputs) continue;
 
             const maxOutput = Math.max(...outputs);

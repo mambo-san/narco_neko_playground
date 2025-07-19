@@ -1,3 +1,5 @@
+import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js'; 
+
 function scaleWeight(rawInt) {
     return ((rawInt / 32767) - 1) * 2.5; // output in [-2.5, +2.5]
 }
@@ -24,29 +26,54 @@ export class Genome {
         const mutated = this.rawDNA.map(hex => {
             const gene = decodeGene(hex);
 
-            const mutatedSourceType = mutateField(gene.source.type, 1, mutationRate);
-            const mutatedTargetType = mutateField(gene.target.type, 2, mutationRate);
+            let mutatedGene = null;
 
             const originalRawWeight = Math.floor(((gene.weight + 2.5) / 5.0) * 65535);
-            const mutatedRawWeight = mutateField(originalRawWeight, 65535, mutationRate);
 
-            if (!isValidConnection(mutatedSourceType, mutatedTargetType)) {
-                console.log('Invalid mutation detected, returning original gene:', hex);
+            const maxRetries = 10;
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                const mutatedSourceType = mutateField(gene.source.type, 1, mutationRate);
+                const mutatedTargetType = mutateField(gene.target.type, 2, mutationRate);
+
+                if (!isValidConnection(mutatedSourceType, mutatedTargetType)) continue;
+
+                const sourceIDLimit =
+                    mutatedSourceType === 0 ? SENSOR_TYPES.length - 1 :
+                        mutatedSourceType === 1 ? this.innerCount - 1 : 0;
+
+                const targetIDLimit =
+                    mutatedTargetType === 2 ? ACTION_TYPES.length - 1 :
+                        mutatedTargetType === 1 ? this.innerCount - 1 : 0;
+
+                mutatedGene = {
+                    sourceType: mutatedSourceType,
+                    sourceID: mutateField(
+                        Math.min(gene.source.id, sourceIDLimit),
+                        sourceIDLimit,
+                        mutationRate
+                    ),
+                    targetType: mutatedTargetType,
+                    targetID: mutateField(
+                        Math.min(gene.target.id, targetIDLimit),
+                        targetIDLimit,
+                        mutationRate
+                    ),
+                    weightRaw: mutateField(originalRawWeight, 65535, mutationRate)
+                };
+
+                break;
+            }
+
+            if (!mutatedGene) {
+                console.warn("⚠️ Failed to mutate gene after retries, using original:", hex);
                 return hex;
             }
 
-            const mutatedGene = {
-                sourceType: mutatedSourceType,
-                sourceID: mutateField(gene.source.id, 15, mutationRate),
-                targetType: mutatedTargetType,
-                targetID: mutateField(gene.target.id, 15, mutationRate),
-                weightRaw: mutatedRawWeight
-            };
             return encodeGene(mutatedGene);
         });
 
-        return new Genome(mutated, this.innerCount);  
-    };
+        return new Genome(mutated, this.innerCount);
+    }
 }
 
 export function isValidConnection(srcType, tgtType) {
