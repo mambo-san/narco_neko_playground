@@ -6,6 +6,9 @@ import { selectedGenomes } from '../sim/simulation.js';
 //import cytoscape from 'https://cdn.jsdelivr.net/npm/cytoscape@3.24.0/dist/cytoscape.esm.min.js';
 
 let currentDrawContext = null;
+//For throttling line redraws
+let lastDrawTime = 0; 
+const LINE_REDRAW_INTERVAL = 16; // ≈ 60fps
 
 export function renderBrainGraph(cell, drawContext = null, options = {}) {
     if (drawContext) {
@@ -239,7 +242,11 @@ export function renderBrainGraph(cell, drawContext = null, options = {}) {
         container.style.top = `${e.clientY - offsetY}px`;
 
         if (currentDrawContext) {
-            drawConnectionLines(currentDrawContext.sim, currentDrawContext.canvas, currentDrawContext.cellSize);
+            tryDrawLinesThrottled(
+                currentDrawContext.sim,
+                currentDrawContext.canvas,
+                currentDrawContext.cellSize
+            );
         }
     });
 
@@ -287,8 +294,8 @@ export function drawConnectionLines(sim, canvas, cellSize) {
 
         // Let top of the floating window
         const winRect = win.getBoundingClientRect();
-        const winX = (winRect.left - canvasRect.left) + 5;
-        const winY = (winRect.top - canvasRect.top) + 5;
+        const winX = (winRect.left - canvasRect.left) + 15;
+        const winY = (winRect.top - canvasRect.top) + 15;
 
         // Draw the connection line
         ctx.beginPath();
@@ -303,5 +310,13 @@ export function drawConnectionLines(sim, canvas, cellSize) {
         // Optional: draw a square at the origin
         ctx.fillStyle = '#04df9b';
         ctx.fillRect(cellX - 2, cellY - 2, 4, 4);
+    }
+}
+
+function tryDrawLinesThrottled(sim, canvas, cellSize) {
+    const now = performance.now();
+    if (now - lastDrawTime > LINE_REDRAW_INTERVAL) {
+        drawConnectionLines(sim, canvas, cellSize);
+        lastDrawTime = now;
     }
 }
