@@ -264,20 +264,15 @@ export function renderBrainGraph(cell, drawContext = null, options = {}) {
 
 export function drawConnectionLines(sim, canvas, cellSize) {
     const overlay = document.getElementById("connection-lines");
-    const simCanvas = document.getElementById("sim-canvas");
 
-    // Step 1: Match pixel dimensions
-    overlay.width = simCanvas.width;
-    overlay.height = simCanvas.height;
+    // Fullscreen canvas
+    overlay.width = window.innerWidth;
+    overlay.height = window.innerHeight;
 
-    // Step 2: Match on-screen size
-    overlay.style.width = simCanvas.style.width;
-    overlay.style.height = simCanvas.style.height;
     const ctx = overlay.getContext("2d");
-
     ctx.clearRect(0, 0, overlay.width, overlay.height);
 
-    const canvasRect = canvas.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect(); // sim-canvas position on screen
 
     for (const cell of sim.cells) {
         if (!cell.alive) continue;
@@ -288,28 +283,27 @@ export function drawConnectionLines(sim, canvas, cellSize) {
         const win = document.getElementById(`nn-graph-${sig}`);
         if (!win) continue;
 
-        // Get screen position of the cell (center of cell in screen space)
-        const cellX = (cell.position.x + 0.5) * cellSize;
-        const cellY = (cell.position.y + 0.5) * cellSize;
+        // Cell position in screen coordinates
+        const cellScreenX = canvasRect.left + (cell.position.x + 0.5) * cellSize;
+        const cellScreenY = canvasRect.top + (cell.position.y + 0.5) * cellSize;
 
-        // Let top of the floating window
+        // Window position in screen coordinates
         const winRect = win.getBoundingClientRect();
-        const winX = (winRect.left - canvasRect.left) + 15;
-        const winY = (winRect.top - canvasRect.top) + 15;
+        const winX = winRect.left + 15;
+        const winY = winRect.top  + 15;
 
         // Draw the connection line
         ctx.beginPath();
-        ctx.moveTo(cellX, cellY);
+        ctx.moveTo(cellScreenX, cellScreenY);
         ctx.lineTo(winX, winY);
-        const { r, g, b } = cell.rgb
+        const { r, g, b } = cell.rgb;
         ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.5)`;
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-
-        // Optional: draw a square at the origin
+        // Optional: mark origin point on the grid
         ctx.fillStyle = '#04df9b';
-        ctx.fillRect(cellX - 2, cellY - 2, 4, 4);
+        ctx.fillRect(cellScreenX - 2, cellScreenY - 2, 4, 4);
     }
 }
 

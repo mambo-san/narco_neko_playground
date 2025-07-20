@@ -165,6 +165,13 @@ export function resizeSimulationCanvas(sim, canvas) {
     sim.setCellSize(cellSize); 
 }
 
+function resizeConnectionCanvas() {
+    const overlay = document.getElementById("connection-lines");
+    overlay.width = window.innerWidth;
+    overlay.height = window.innerHeight;
+}
 
+resizeConnectionCanvas();
+window.addEventListener("resize", resizeConnectionCanvas);
 window.addEventListener('load', resizeCanvasHandler);
 window.addEventListener('resize', resizeCanvasHandler);
