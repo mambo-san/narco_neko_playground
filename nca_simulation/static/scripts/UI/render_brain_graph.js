@@ -65,7 +65,7 @@ export function renderBrainGraph(cell, drawContext = null, options = {}) {
     const header = document.createElement("div");
     header.id = "nn-header";
     header.innerHTML = `
-        <span> ● </span>
+        <span class="nn-status-indicator"> ● </span>
         <div>
             <button id="nn-toggle">View DNA as text</button>
             <button id="nn-close">✕</button>
@@ -316,4 +316,21 @@ function tryDrawLinesThrottled(sim, canvas, cellSize) {
         drawConnectionLines(sim, canvas, cellSize);
         lastDrawTime = now;
     }
+}
+
+export function markAsExtinct(sig) {
+    const headerEl = document.getElementById(`nn-graph-${sig}`);
+    if (!headerEl) return;
+
+    const statusEl = headerEl.querySelector('.nn-status-indicator');
+    if (statusEl) {
+        statusEl.textContent = ' ●  💀 Deseased 💀';
+        statusEl.style.color = 'red';
+    }
+
+    headerEl.classList.add('extinct');
+}
+
+export function closeAllFloatingWindows() {
+    document.querySelectorAll('.nn-graph').forEach(el => el.remove());
 }

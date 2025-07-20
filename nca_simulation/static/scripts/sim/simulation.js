@@ -1,6 +1,6 @@
 import { NCASimulation } from '../sim/engine.js';
 import { drawSimulation } from '../UI/draw.js';
-import { renderBrainGraph, drawConnectionLines } from '../UI/render_brain_graph.js';
+import { renderBrainGraph, drawConnectionLines, markAsExtinct, closeAllFloatingWindows } from '../UI/render_brain_graph.js';
 
 
 export const selectedGenomes = new Set();
@@ -58,6 +58,8 @@ export class Simulation {
         });
 
         this.initialGenomeVariety = this.countUniqueSignatures(this.sim.cells);
+
+        closeAllFloatingWindows();
     }
 
     tick() {
@@ -87,6 +89,10 @@ export class Simulation {
                         canvas: this.canvas,
                         cellSize: this.cellSize
                     }, { updateOnly: true });
+                }else{
+                    // Let user know if selected genomes (group of cell with signiture DNA) are extinct
+                    selectedGenomes.delete(sig);
+                    markAsExtinct(sig);
                 }
             }
 

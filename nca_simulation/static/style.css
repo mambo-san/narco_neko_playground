@@ -138,6 +138,11 @@ body {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
 }
 
+.nn-graph.extinct {
+    opacity: 0.8;
+    filter: grayscale(0.6);
+}
+
 #nn-header {
     background-color: #222;
     color: white;
