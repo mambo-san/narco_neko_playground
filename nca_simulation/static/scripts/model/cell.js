@@ -14,6 +14,7 @@ export class Cell {
         this.rawDNA = rawDNA
         this.genome = new Genome(rawDNA, innerCount);
         this.brain = new Brain(this.genome, innerCount);
+        this.abstractSignature = this.genome.abstractSignature();
         this.position = { ...position };
         this.age = 0;
         this.alive = true;

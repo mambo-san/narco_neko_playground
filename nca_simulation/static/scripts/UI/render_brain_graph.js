@@ -1,25 +1,43 @@
 // render_brain_graph.js using Cytoscape.js
 import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
 import { describeGenome } from '../model/cell.js'
-import { toggleSelectedCellId, clearSelectedCells } from '../sim/simulation.js';
+import { selectedGenomes, clearSelectedCells } from '../sim/simulation.js';
 import { colorFromDNA } from './draw.js';
+
 //import cytoscape from 'https://cdn.jsdelivr.net/npm/cytoscape@3.24.0/dist/cytoscape.esm.min.js';
 
-export function renderBrainGraph(cell) {
-    
-    const containerId = `nn-graph-${cell.id}`;
+let currentDrawContext = null;
+
+export function renderBrainGraph(cell, drawContext = null, options = {}) {
+    if (drawContext) {
+        currentDrawContext = drawContext;
+    }
+    if (!cell || !cell.genome) return;
+
+    const sig = cell.genome.abstractSignature();
+    const containerId = `nn-graph-${sig}`;
     let container = document.getElementById(containerId);
 
-    // If already open → close it
+    // If already open → close it or remove it
     if (container) {
-        container.remove();
-        toggleSelectedCellId(cell.id);
-        return;
+        if (options.updateOnly) {
+            // Just redraw the connection line
+            if (currentDrawContext) {
+                drawConnectionLines(currentDrawContext.sim, currentDrawContext.canvas, currentDrawContext.cellSize);
+            }
+            return;
+        } else {
+            // This is a toggle request — close it
+            container.remove();
+            selectedGenomes.delete(sig);
+            return;
+        }
     }
+    selectedGenomes.add(sig);
     // Create a new floating window container
     container = document.createElement("div");
     container.id = containerId;
-    container.className = "nn-graph"; // We'll define this class
+    container.className = "nn-graph";
 
     // Position with slight offset based on ID
     const sidebar = document.getElementById('sidebar');
@@ -74,7 +92,8 @@ export function renderBrainGraph(cell) {
     // Close logic
     header.querySelector("#nn-close").onclick = () => {
         container.style.display = "none";
-        clearSelectedCells();
+        container.remove();
+        selectedGenomes.delete(sig);
     };
     
     const brain = cell.brain;
@@ -219,6 +238,10 @@ export function renderBrainGraph(cell) {
         if (!isDragging) return;
         container.style.left = `${e.clientX - offsetX}px`;
         container.style.top = `${e.clientY - offsetY}px`;
+
+        if (currentDrawContext) {
+            drawConnectionLines(currentDrawContext.sim, currentDrawContext.canvas, currentDrawContext.cellSize);
+        }
     });
 
     document.addEventListener("mouseup", () => {
@@ -233,3 +256,53 @@ export function renderBrainGraph(cell) {
 }  
 
 
+export function drawConnectionLines(sim, canvas, cellSize) {
+    const overlay = document.getElementById("connection-lines");
+    const simCanvas = document.getElementById("sim-canvas");
+
+    // Step 1: Match pixel dimensions
+    overlay.width = simCanvas.width;
+    overlay.height = simCanvas.height;
+
+    // Step 2: Match on-screen size
+    overlay.style.width = simCanvas.style.width;
+    overlay.style.height = simCanvas.style.height;
+    const ctx = overlay.getContext("2d");
+
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+    const canvasRect = canvas.getBoundingClientRect();
+
+    for (const cell of sim.cells) {
+        if (!cell.alive) continue;
+
+        const sig = cell.genome.abstractSignature();
+        if (!selectedGenomes.has(sig)) continue;
+
+        const win = document.getElementById(`nn-graph-${sig}`);
+        if (!win) continue;
+
+        // Get screen position of the cell (center of cell in screen space)
+        const cellX = (cell.position.x + 0.5) * cellSize;
+        const cellY = (cell.position.y + 0.5) * cellSize;
+
+        // Let top of the floating window
+        const winRect = win.getBoundingClientRect();
+        const winX = (winRect.left - canvasRect.left) + 5;
+        const winY = (winRect.top - canvasRect.top) + 5;
+
+        // Draw the connection line
+        ctx.beginPath();
+        ctx.moveTo(cellX, cellY);
+        ctx.lineTo(winX, winY);
+        const { r, g, b } = colorFromDNA(cell.genome.rawDNA);
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.5)`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+
+        // Optional: draw a square at the origin
+        ctx.fillStyle = '#04df9b';
+        ctx.fillRect(cellX - 2, cellY - 2, 4, 4);
+    }
+}

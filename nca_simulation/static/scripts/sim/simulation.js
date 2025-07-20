@@ -1,20 +1,20 @@
 import { NCASimulation } from '../sim/engine.js';
 import { drawSimulation } from '../UI/draw.js';
-import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
+import { renderBrainGraph, drawConnectionLines } from '../UI/render_brain_graph.js';
 
 
-export const selectedCellIds = new Set();
+export const selectedGenomes = new Set();
 
-export function toggleSelectedCellId(id) {
-    if (selectedCellIds.has(id)) {
-        selectedCellIds.delete(id);
+export function toggleSelectedCellId(sig) {
+    if (selectedGenomes.has(sig)) {
+        selectedGenomes.delete(sig);
     } else {
-        selectedCellIds.add(id);
+        selectedGenomes.add(sig);
     }
 }
 
 export function clearSelectedCells() {
-    selectedCellIds.clear();
+    selectedGenomes.clear();
 }
 
 export class Simulation {
@@ -66,28 +66,43 @@ export class Simulation {
         if (this.tickCount >= this.ticksPerGeneration) {
             this.survivors = this.sim.getSurvivors(this.survivalMask);
             this.lastSurvivalRate = (this.survivors.length / this.populationSize) * 100;
-
-            const newSelectedIds = this.sim.evolve(
+            //Generate new cells based on reproduction score
+            this.sim.evolve(
                        this.survivalMask, 
                        this.spawnOutside, 
                        this.survivors, 
-                       Array.from(selectedCellIds),
+                        Array.from(selectedGenomes),
                        this.mutationRate
             );
+            // Find replacement Cell based on abstractSignature 
+            console.log("Selected genomes for replacement:", Array.from(selectedGenomes));
+            for (const sig of Array.from(selectedGenomes)) {
+                const replacement = this.sim.cells.find(c =>
+                    c.alive && c.genome.abstractSignature() === sig
+                );
+
+                if (replacement) {
+                    console.log("Found replacement cell for signature:", sig);
+                    // Redraw floating window for new cell
+                    renderBrainGraph(replacement, {
+                        sim: this.sim,
+                        canvas: this.canvas,
+                        cellSize: this.cellSize
+                    }, { updateOnly: true });
+                }
+            }
 
             // Gather stats to be displayed to users
             this.computeGenerationStats();
             
             this.tickCount = 0;
-            clearSelectedCells();
-            newSelectedIds.forEach(id => selectedCellIds.add(id));
         }
     }
     
     countUniqueSignatures(cells) {
         const unique = new Set();
         for (const cell of cells) {
-            unique.add(cell.genome.abstractSignature());
+            unique.add(cell.abstractSignature);
         }
         return unique.size;
     }
@@ -106,6 +121,7 @@ export class Simulation {
 
     draw() {
         drawSimulation(this.sim, this.ctx, this.cellSize, this.survivalMask);
+        drawConnectionLines(this.sim, this.canvas, this.cellSize);
     }
 
     getCellAt(px, py) {

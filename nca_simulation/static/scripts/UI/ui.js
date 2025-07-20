@@ -121,7 +121,11 @@ function setUpCellClick({ canvas, simulation }) {
         const cell = simulation.getCellAt(x, y);
         if (cell) {
             toggleSelectedCellId(cell.id);
-            renderBrainGraph(cell);
+            renderBrainGraph(cell, {
+                sim: simulation.sim,
+                canvas,
+                cellSize: simulation.cellSize
+            });
             simulation.draw();
         } else {
             console.log('No cell found at this position.');
@@ -157,7 +161,7 @@ export function resizeSimulationCanvas(sim, canvas) {
     canvas.width = size;
     canvas.height = size;
 
-    const cellSize = Math.floor(size / gridSize);
+    const cellSize = size / gridSize;
     sim.setCellSize(cellSize); 
 }
 

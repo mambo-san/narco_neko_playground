@@ -95,7 +95,6 @@ export class NCASimulation {
     spawnInitialPopulation() {
         this.cells = [];
         const { survivalMask, spawnOutside } = this;
-        console.log("Spawning initial population with spawnOutside:", this.spawnOutside);
         for (let i = 0; i < this.populationSize; i++) {
             let position;
             // Randomly choose a spawn position.
