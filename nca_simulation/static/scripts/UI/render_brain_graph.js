@@ -9,6 +9,8 @@ let currentDrawContext = null;
 //For throttling line redraws
 let lastDrawTime = 0; 
 const LINE_REDRAW_INTERVAL = 16; // ≈ 60fps
+// For managing z-index of floating windows
+let topZIndex = 1000;
 
 export function renderBrainGraph(cell, drawContext = null, options = {}) {
     if (drawContext) {
@@ -63,7 +65,7 @@ export function renderBrainGraph(cell, drawContext = null, options = {}) {
     const header = document.createElement("div");
     header.id = "nn-header";
     header.innerHTML = `
-        <span>Neural Network</span>
+        <span> ● </span>
         <div>
             <button id="nn-toggle">View DNA as text</button>
             <button id="nn-close">✕</button>
@@ -230,6 +232,7 @@ export function renderBrainGraph(cell, drawContext = null, options = {}) {
     let offsetY = 0;
 
     header.addEventListener("mousedown", (e) => {
+        container.style.zIndex = ++topZIndex;
         isDragging = true;
         offsetX = e.clientX - container.offsetLeft;
         offsetY = e.clientY - container.offsetTop;
@@ -289,8 +292,8 @@ export function drawConnectionLines(sim, canvas, cellSize) {
 
         // Window position in screen coordinates
         const winRect = win.getBoundingClientRect();
-        const winX = winRect.left + 15;
-        const winY = winRect.top  + 15;
+        const winX = winRect.left + 18;
+        const winY = winRect.top  + 22;
 
         // Draw the connection line
         ctx.beginPath();
