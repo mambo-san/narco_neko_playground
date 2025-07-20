@@ -1,15 +1,42 @@
 // render_brain_graph.js using Cytoscape.js
 import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
 import { describeGenome } from '../model/cell.js'
-import { setSelectedCellId } from '../sim/simulation.js';
+import { toggleSelectedCellId, clearSelectedCells } from '../sim/simulation.js';
+import { colorFromDNA } from './draw.js';
 //import cytoscape from 'https://cdn.jsdelivr.net/npm/cytoscape@3.24.0/dist/cytoscape.esm.min.js';
 
 export function renderBrainGraph(cell) {
-    const brain = cell.brain;
-    const container = document.getElementById("nn-graph");
-    if (!container) return;
+    
+    const containerId = `nn-graph-${cell.id}`;
+    let container = document.getElementById(containerId);
+
+    // If already open → close it
+    if (container) {
+        container.remove();
+        toggleSelectedCellId(cell.id);
+        return;
+    }
+    // Create a new floating window container
+    container = document.createElement("div");
+    container.id = containerId;
+    container.className = "nn-graph"; // We'll define this class
+
+    // Position with slight offset based on ID
+    const sidebar = document.getElementById('sidebar');
+    const simContainer = document.getElementById('sim-canvas');
+
+    const baseX = simContainer.offsetWidth + sidebar.offsetWidth;
+    const baseY = 100;
+    const offset = (cell.id % 10) * 20;
+
+    container.style.left = `${baseX}px`;
+    container.style.top = `${baseY + offset}px`;
+
+    document.body.appendChild(container);
 
     container.style.display = "block";
+    const { r, g, b } = colorFromDNA(cell.genome.rawDNA);
+    container.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
     container.innerHTML = "";
 
     // Create header for floating window
@@ -47,9 +74,10 @@ export function renderBrainGraph(cell) {
     // Close logic
     header.querySelector("#nn-close").onclick = () => {
         container.style.display = "none";
-        setSelectedCellId(null);
+        clearSelectedCells();
     };
-
+    
+    const brain = cell.brain;
     const inputCount = brain.inputCount;
     const hiddenCount = brain.innerCount;
 
@@ -59,9 +87,9 @@ export function renderBrainGraph(cell) {
         usedNodes.add(brain.getNeuronIndex(conn.target.type, conn.target.id));
     }
 
+    //Draw the Brain Graph
     const elements = [];
 
-    // Nodes
     Array.from(usedNodes).forEach(i => {
         let type = "hidden";
         let label = "";
@@ -195,6 +223,12 @@ export function renderBrainGraph(cell) {
 
     document.addEventListener("mouseup", () => {
         isDragging = false;
+        //Need to re-render the graph to make cycontainer know the actual click positions
+        const showingGraph = cyContainer.style.display !== "none";
+        if (showingGraph){
+            cyContainer.style.display = "none";
+            cyContainer.style.display = "block";
+        }       
     });
 }  
 

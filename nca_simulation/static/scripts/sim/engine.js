@@ -95,15 +95,17 @@ export class NCASimulation {
     spawnInitialPopulation() {
         this.cells = [];
         const { survivalMask, spawnOutside } = this;
-
+        console.log("Spawning initial population with spawnOutside:", this.spawnOutside);
         for (let i = 0; i < this.populationSize; i++) {
             let position;
+            // Randomly choose a spawn position.
+            // If the spawnOutside flag is true, the new position must be outside the survival zone.
             while (true) {
                 const x = Math.floor(Math.random() * this.gridWidth);
                 const y = Math.floor(Math.random() * this.gridHeight);
                 const inSurvival = survivalMask?.[y]?.[x];
 
-                if ((spawnOutside && !inSurvival) || (!spawnOutside && inSurvival)) {
+                if (!spawnOutside || !inSurvival) {
                     position = { x, y };
                     break;
                 }
@@ -125,8 +127,8 @@ export class NCASimulation {
             return c.alive && survivalMask?.[y]?.[x];
         });
     }
-    evolve(survivalMask, spawnOutside, survivors, selectedCellId, mutationRate) {
-        let newSelectedId = null;
+    evolve(survivalMask, spawnOutside, survivors, selectedCellIds, mutationRate) {
+        let newSelectedIds = [];
         const nextGen = [];
 
         const aliveCells = this.cells.filter(c => c.alive);
@@ -134,29 +136,32 @@ export class NCASimulation {
 
         const weightedPool = aliveCells.flatMap(cell => {
             const normalized = cell.ticksInSurvivalZone / maxTicks;
-            const weight = Math.floor(normalized * 10); // scale factor (tweak if needed)
+            const weight = Math.floor(normalized * 20); // scale factor (tweak if needed)
             return Array(weight || 1).fill(cell);
         });
 
         // Step 1: Guarantee selected cell reproduction if still alive
-        const selectedParent = aliveCells.find(c => c.id === selectedCellId);
-        if (selectedParent) {
-            const child = selectedParent.reproduce(mutationRate, generateCellId());
+        for (const selectedId of selectedCellIds) {
+            const parent = aliveCells.find(c => c.id === selectedId);
+            if (!parent) continue;
+
+            const child = parent.reproduce(mutationRate, generateCellId());
             child.ticksInSurvivalZone = 0;
 
+            // Place child
             let position;
             while (true) {
                 const x = Math.floor(Math.random() * this.gridWidth);
                 const y = Math.floor(Math.random() * this.gridHeight);
                 const inSurvival = survivalMask?.[y]?.[x];
-                if ((spawnOutside && !inSurvival) || (!spawnOutside && inSurvival)) {
+                if (!spawnOutside || !inSurvival) {
                     position = { x, y };
                     break;
                 }
             }
 
             child.position = position;
-            newSelectedId = child.id;
+            newSelectedIds.push(child.id);
             nextGen.push(child);
         }
 
@@ -171,10 +176,11 @@ export class NCASimulation {
                 const x = Math.floor(Math.random() * this.gridWidth);
                 const y = Math.floor(Math.random() * this.gridHeight);
                 const inSurvival = survivalMask?.[y]?.[x];
-                if ((spawnOutside && !inSurvival) || (!spawnOutside && inSurvival)) {
+                if (!spawnOutside || !inSurvival) {
                     position = { x, y };
                     break;
                 }
+
             }
 
             child.position = position;
@@ -184,7 +190,7 @@ export class NCASimulation {
         this.setPopulation(nextGen);
         this.generation++;
 
-        return newSelectedId;
+        return newSelectedIds;
     }
 
     runTick() {

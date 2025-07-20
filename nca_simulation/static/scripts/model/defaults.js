@@ -6,5 +6,5 @@ export const DEFAULT_CONFIG = {
     mutationRate: 1,
     ticksPerGeneration: 300,
     spawnOutside: true,
-    zoneTemplate:"edge"
+    zoneTemplate:"right"
 };

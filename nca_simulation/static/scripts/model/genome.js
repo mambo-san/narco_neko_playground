@@ -65,7 +65,6 @@ export class Genome {
             }
 
             if (!mutatedGene) {
-                console.warn("⚠️ Failed to mutate gene after retries, using original:", hex);
                 return hex;
             }
 
@@ -73,6 +72,21 @@ export class Genome {
         });
 
         return new Genome(mutated, this.innerCount);
+    }
+
+    abstractSignature() {
+        const structureStrings = this.rawDNA.map(hex => {
+            const g = decodeGene(hex);
+            return [
+                g.source.type.toString().padStart(2, '0'),
+                g.source.id.toString().padStart(2, '0'),
+                g.target.type.toString().padStart(2, '0'),
+                g.target.id.toString().padStart(2, '0'),
+            ].join('');
+        });
+
+        structureStrings.sort(); 
+        return structureStrings.join('|');
     }
 }
 

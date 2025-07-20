@@ -44,11 +44,11 @@
       
       <fieldset id="zoneTemplates" class="param-field">
         <legend>Reproduction Zone</legend>
+        <label><input type="radio" name="survivalZone" value="right"> Right side</label>
         <label><input type="radio" name="survivalZone" value="edge" checked> Edge</label>
-        <label><input type="radio" name="survivalZone" value="corners"> Corners</label>
         <label><input type="radio" name="survivalZone" value="center"> Center</label>
-        <label><input type="radio" name="survivalZone" value="right"> Right Half</label>
-        <label><input type="radio" name="survivalZone" value="custom"> Custom</label>
+        <label><input type="radio" name="survivalZone" value="corners"> Corners</label>
+        <label><input type="radio" name="survivalZone" value="donut"> Donut</label>
       </fieldset>
 
       <button id="startBtn">Start Simulation</button>
@@ -64,6 +64,10 @@
         <p><strong>Tick:</strong> <span id="stat-tick">0</span></p>
         <p><strong>Survivors:</strong> <span id="stat-survivors">0</span></p>
         <p><strong>Survival Rate:</strong> <span id="stat-survival-rate">0%</span></p>
+        <p>
+          <strong title="Calculated as: (Unique abstract DNA count now) ÷ (Unique count in Gen 0). Reflects how much genetic variety remains.">Diversity:</strong> 
+          <span id="stat-entropy">1.000</span>
+        </p>
       </div>
     </div>
   </div>

@@ -3,12 +3,19 @@ import { drawSimulation } from '../UI/draw.js';
 import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
 
 
-export let selectedCellId = null;
+export const selectedCellIds = new Set();
 
-export function setSelectedCellId(id) {
-    selectedCellId = id;
+export function toggleSelectedCellId(id) {
+    if (selectedCellIds.has(id)) {
+        selectedCellIds.delete(id);
+    } else {
+        selectedCellIds.add(id);
+    }
 }
 
+export function clearSelectedCells() {
+    selectedCellIds.clear();
+}
 
 export class Simulation {
     constructor(canvas, config) {
@@ -25,13 +32,17 @@ export class Simulation {
         this.ticksPerGeneration = config.ticksPerGeneration;
         this.spawnOutside = config.spawnOutside;
         this.zoneTemplate = config.zoneTemplate;
-
-        
-
+    
         this._paused = false;
 
-        this.generation = 0;
+        this.cachedGenerationStats = {
+            generation: 0,
+            survivors: 0,
+            survivalRate: 0,
+            geneticEntropy: 1.000
+        };
         this.tickCount = 0;
+        this.survivors = [];
         this.lastSurvivalRate = 0;
 
         this.survivalMask = createSurvivalMask(this.gridWidth, this.gridHeight, this.zoneTemplate);
@@ -45,23 +56,50 @@ export class Simulation {
             survivalMask: this.survivalMask,
             spawnOutside: this.spawnOutside
         });
+
+        this.initialGenomeVariety = this.countUniqueSignatures(this.sim.cells);
     }
 
     tick() {
         this.sim.runTick();
         this.tickCount++;
         if (this.tickCount >= this.ticksPerGeneration) {
-            const survivors = this.sim.getSurvivors(this.survivalMask);
-            this.lastSurvivalRate = (survivors.length / this.populationSize) * 100;
+            this.survivors = this.sim.getSurvivors(this.survivalMask);
+            this.lastSurvivalRate = (this.survivors.length / this.populationSize) * 100;
 
-            const newSelectedId = this.sim.evolve(this.survivalMask, this.spawnOutside, survivors, selectedCellId, this.mutationRate);
+            const newSelectedIds = this.sim.evolve(
+                       this.survivalMask, 
+                       this.spawnOutside, 
+                       this.survivors, 
+                       Array.from(selectedCellIds),
+                       this.mutationRate
+            );
+
+            // Gather stats to be displayed to users
+            this.computeGenerationStats();
             
             this.tickCount = 0;
-            this.generation++;
-            if (selectedCellId && newSelectedId){
-                setSelectedCellId(newSelectedId);
-            }
+            clearSelectedCells();
+            newSelectedIds.forEach(id => selectedCellIds.add(id));
         }
+    }
+    
+    countUniqueSignatures(cells) {
+        const unique = new Set();
+        for (const cell of cells) {
+            unique.add(cell.genome.abstractSignature());
+        }
+        return unique.size;
+    }
+
+    computeGenerationStats() {
+        const currentUnique = this.countUniqueSignatures(this.sim.cells);
+        const relativeDiversity = currentUnique / this.initialGenomeVariety;
+
+        this.cachedGenerationStats.generation = this.cachedGenerationStats.generation + 1;
+        this.cachedGenerationStats.survivors = this.survivors.length;
+        this.cachedGenerationStats.survivalRate = parseFloat(this.lastSurvivalRate.toFixed(1));
+        this.cachedGenerationStats.geneticEntropy = parseFloat(relativeDiversity.toFixed(3));
     }
 
     
@@ -76,12 +114,10 @@ export class Simulation {
         return this.sim.cells.find(c => c.position.x === x && c.position.y === y && c.alive);
     }
 
-    getStats() {
+    getRealtimeStats() {
         return {
             generation: this.generation,
-            tick: this.tickCount,
-            survivors: this.sim.cells.filter(c => c.alive).length,
-            survivalRate: this.lastSurvivalRate.toFixed(1)
+            tick: this.tickCount
         };
     }
 
@@ -113,10 +149,10 @@ function createSurvivalMask(width, height, template = "edge") {
             applyCenterMask(mask, width, height);
             break;
         case "right":
-            applyRightHalfMask(mask, width, height);
+            applyRightEdgeMask(mask, width, height);
             break;
-        case "custom":
-            // leave as all false for now
+        case "donut":
+            applyDonutMask(mask, width, height);
             break;
     }
 
@@ -166,11 +202,30 @@ function applyCenterMask(mask, width, height) {
     }
 }
 
-function applyRightHalfMask(mask, width, height) {
-    const mid = Math.floor(width / 2);
+function applyRightEdgeMask(mask, width, height) {
+    const startX = Math.floor(width * 0.9); // rightmost 10%
+
     for (let y = 0; y < height; y++) {
-        for (let x = mid; x < width; x++) {
+        for (let x = startX; x < width; x++) {
             mask[y][x] = true;
+        }
+    }
+}
+
+function applyDonutMask(mask, width, height) {
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const maxRadius = Math.min(width, height) * 0.3; // outer radius (~80% diameter)
+    const minRadius = maxRadius * 0.5;               // inner radius (~40% of outer)
+
+    for (let y = 1; y < height - 1; y++) { // avoid edges
+        for (let x = 1; x < width - 1; x++) {
+            const dx = x - centerX;
+            const dy = y - centerY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            mask[y][x] = dist >= minRadius && dist <= maxRadius;
         }
     }
 }

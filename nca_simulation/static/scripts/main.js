@@ -23,12 +23,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 sim.tick();
                 sim.draw();
             }
-            const stats = sim.getStats();
-            if (stats) {
-                document.getElementById('stat-generation').textContent = stats.generation;
-                document.getElementById('stat-tick').textContent = stats.tick;
-                document.getElementById('stat-survivors').textContent = stats.survivors;
-                document.getElementById('stat-survival-rate').textContent = `${stats.survivalRate}%`;
+            const realtime = sim.getRealtimeStats();
+           
+            document.getElementById('stat-tick').textContent = realtime.tick;
+
+            if (sim.cachedGenerationStats) {
+                const gen = sim.cachedGenerationStats;
+                document.getElementById('stat-generation').textContent = gen.generation;
+                document.getElementById('stat-survivors').textContent = gen.survivors;
+                document.getElementById('stat-survival-rate').textContent = `${gen.survivalRate}%`;
+                document.getElementById('stat-entropy').textContent = gen.geneticEntropy;
             }
         }
 

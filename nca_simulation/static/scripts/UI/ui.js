@@ -1,5 +1,5 @@
 import { DEFAULT_CONFIG } from '../model/defaults.js';
-import { Simulation, setSelectedCellId} from '../sim/simulation.js';
+import { Simulation, toggleSelectedCellId, clearSelectedCells} from '../sim/simulation.js';
 import { renderBrainGraph } from './render_brain_graph.js';
 
 export function initializeUI(canvas, onStart) {
@@ -18,10 +18,19 @@ export function initializeUI(canvas, onStart) {
 
     for (const [id, value] of Object.entries(entries)) {
         const input = document.getElementById(id);
+
+        if (id === "survivalZone") {
+            const radios = document.querySelectorAll(`input[name="survivalZone"]`);
+            radios.forEach(radio => {
+                radio.checked = radio.value === value;
+            });
+            continue; // skip to next entry
+        }
+
         if (input) {
             if (input.type === "checkbox") {
                 input.checked = value;
-            }else {
+            } else {
                 input.value = value;
             }
         }
@@ -30,14 +39,24 @@ export function initializeUI(canvas, onStart) {
     // Wire start button
     const startBtn = document.getElementById('startBtn');
     startBtn.addEventListener('click', () => {
-        const gridSize = parseInt(document.getElementById('gridWidth').value) || DEFAULT_CONFIG.gridSize;
-        const populationSize = parseInt(document.getElementById('populationSize').value) || DEFAULT_CONFIG.populationSize;
-        const genomeLength = parseInt(document.getElementById('genomeLength').value) || DEFAULT_CONFIG.genomeLength;
-        const innerCount = parseInt(document.getElementById('innerCount').value) || DEFAULT_CONFIG.innerCount;
-        const ticksPerGeneration = parseInt(document.getElementById('ticksPerGeneration').value) || DEFAULT_CONFIG.ticksPerGeneration;
+        //Clear out the previous simulation if it exists
+        clearSelectedCells(); // clear selection
+        if (sim) {
+            // Clear canvas
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            sim.setPaused(true);
+            sim = null;
+        }
+
+        const gridSize = parseInt(document.getElementById('gridWidth').value);
+        const populationSize = parseInt(document.getElementById('populationSize').value);
+        const genomeLength = parseInt(document.getElementById('genomeLength').value);
+        const innerCount = parseInt(document.getElementById('innerCount').value);
+        const ticksPerGeneration = parseInt(document.getElementById('ticksPerGeneration').value);
         const mutationRate = parseFloat(document.getElementById('mutationRate').value)/100;
-        const spawnOutside = document.getElementById('spawnOutside').checked || DEFAULT_CONFIG.spawnOutside;
-        const zoneTemplate = document.querySelector('input[name="survivalZone"]:checked')?.value || DEFAULT_CONFIG.zoneTemplate;
+        const spawnOutside = document.getElementById('spawnOutside').checked;
+        const zoneTemplate = document.querySelector('input[name="survivalZone"]:checked')?.value;
         // Resize canvas square based on sim-container
         const availableWidth = container.clientWidth;
         const availableHeight = window.innerHeight; // or container.clientHeight if reliable
@@ -49,8 +68,10 @@ export function initializeUI(canvas, onStart) {
         canvas.height = size;
         canvas.style.visibility = 'visible';
 
-        const cellSize = Math.floor(size / gridSize); 
+        const cellSize = size / gridSize; 
 
+
+        
         sim = new Simulation(canvas, {
             gridWidth: gridSize,
             gridHeight: gridSize,
@@ -87,7 +108,7 @@ export function initializeUI(canvas, onStart) {
 }
 
 function setUpCellClick({ canvas, simulation }) {
-    canvas.addEventListener('click', (event) => {
+    canvas.onclick = (event) => {
         const rect = canvas.getBoundingClientRect();
 
         // Adjust click coordinates to canvas scale
@@ -99,15 +120,13 @@ function setUpCellClick({ canvas, simulation }) {
 
         const cell = simulation.getCellAt(x, y);
         if (cell) {
-            setSelectedCellId(cell.id);
-            renderBrainGraph(cell, () => {
-                setSelectedCellId(null);
-            });
+            toggleSelectedCellId(cell.id);
+            renderBrainGraph(cell);
             simulation.draw();
         } else {
             console.log('No cell found at this position.');
         }
-    });
+    };
 }
 
 function setResponsiveCanvas(canvas) {

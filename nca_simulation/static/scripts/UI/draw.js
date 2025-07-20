@@ -1,5 +1,4 @@
-import { selectedCellId } from '../sim/simulation.js';
-
+import { selectedCellIds } from '../sim/simulation.js';
 
 export function drawSimulation(sim, ctx, cellSize, survivalZone) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -11,7 +10,7 @@ export function drawSimulation(sim, ctx, cellSize, survivalZone) {
 function drawSurvivalZone(ctx, survivalZone, cellSize) {
     if (!survivalZone) return;
 
-    ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+    ctx.fillStyle = 'rgba(1, 245, 151, 0.8)';
     for (let y = 0; y < survivalZone.length; y++) {
         for (let x = 0; x < survivalZone[y].length; x++) {
             if (survivalZone[y][x]) {
@@ -27,18 +26,20 @@ function drawCells(ctx, cells, cellSize) {
 
         const { x, y } = cell.position;
         const { r, g, b } = colorFromDNA(cell.genome.rawDNA);
+        //Draw crosshair first
+        if (selectedCellIds.has(cell.id)) {
+            drawCellHighlight(ctx, x, y, cellSize);
+        }
+        // Draw the cell
         ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
-        if (cell.id === selectedCellId) {
-            drawCellHighlight(ctx, x, y, cellSize, r, g, b);
-        }
+       
     }
 }
 
-function drawCellHighlight(ctx, x, y, cellSize, r, g, b) {
-    const invert = value => 255 - value;
-    const contrastColor = `rgb(${invert(r)}, ${invert(g)}, ${invert(b)})`;
+function drawCellHighlight(ctx, x, y, cellSize) {
+    const contrastColor = '#04df9b';
 
     const px = x * cellSize;
     const py = y * cellSize;
@@ -73,7 +74,7 @@ function hashString(str) {
     return Math.abs(hash);
 }
 
-function colorFromDNA(dna) {
+export function colorFromDNA(dna) {
     const values = dna.map(hex => parseInt(hex, 16)); // 32-bit int
     const maxVal = Math.max(...values);
     const minVal = Math.min(...values);
