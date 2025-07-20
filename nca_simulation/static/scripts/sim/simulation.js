@@ -75,14 +75,12 @@ export class Simulation {
                        this.mutationRate
             );
             // Find replacement Cell based on abstractSignature 
-            console.log("Selected genomes for replacement:", Array.from(selectedGenomes));
             for (const sig of Array.from(selectedGenomes)) {
                 const replacement = this.sim.cells.find(c =>
                     c.alive && c.genome.abstractSignature() === sig
                 );
 
                 if (replacement) {
-                    console.log("Found replacement cell for signature:", sig);
                     // Redraw floating window for new cell
                     renderBrainGraph(replacement, {
                         sim: this.sim,

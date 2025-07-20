@@ -25,13 +25,12 @@ function drawCells(ctx, cells, cellSize) {
         if (!cell.alive) continue;
 
         const { x, y } = cell.position;
-        const { r, g, b } = colorFromDNA(cell.genome.rawDNA);
         //Draw crosshair first
         if (selectedGenomes.has(cell.abstractSignature)) {
             drawCellHighlight(ctx, x, y, cellSize);
         }
         // Draw the cell
-        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        ctx.fillStyle = `rgb(${cell.rgb.r}, ${cell.rgb.g}, ${cell.rgb.b})`;
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
        
@@ -56,28 +55,20 @@ function drawCellHighlight(ctx, x, y, cellSize) {
 
 }
 
-function hashString(str) {
+
+export function colorFromAbstractDNA(abstractDNA) {
+    // Hash the abstractDNA string
     let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = (hash << 5) - hash + str.charCodeAt(i);
-        hash |= 0;
+    for (let i = 0; i < abstractDNA.length; i++) {
+        const char = abstractDNA.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0; // Convert to 32bit integer
     }
-    return Math.abs(hash);
-}
 
-export function colorFromDNA(dna) {
-    const values = dna.map(hex => parseInt(hex, 16)); // 32-bit int
-    const maxVal = Math.max(...values);
-    const minVal = Math.min(...values);
-
-    // Avoid division by zero
-    const range = maxVal === minVal ? 1 : (maxVal - minVal);
-
-    // Pick 3 different stats to derive RGB:
-    const r = Math.floor(((values[0] - minVal) / range) * 255);
-    const g = Math.floor(((values[Math.floor(values.length / 2)] - minVal) / range) * 255);
-    const b = Math.floor(((values[values.length - 1] - minVal) / range) * 255);
+    // Use parts of the hash to generate RGB values
+    const r = (hash >> 16) & 0xFF;
+    const g = (hash >> 8) & 0xFF;
+    const b = hash & 0xFF;
 
     return { r, g, b };
 }
-

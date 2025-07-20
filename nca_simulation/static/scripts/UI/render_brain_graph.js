@@ -1,8 +1,7 @@
 // render_brain_graph.js using Cytoscape.js
 import { SENSOR_TYPES, ACTION_TYPES } from '../model/neuron_types.js';
 import { describeGenome } from '../model/cell.js'
-import { selectedGenomes, clearSelectedCells } from '../sim/simulation.js';
-import { colorFromDNA } from './draw.js';
+import { selectedGenomes } from '../sim/simulation.js';
 
 //import cytoscape from 'https://cdn.jsdelivr.net/npm/cytoscape@3.24.0/dist/cytoscape.esm.min.js';
 
@@ -53,7 +52,7 @@ export function renderBrainGraph(cell, drawContext = null, options = {}) {
     document.body.appendChild(container);
 
     container.style.display = "block";
-    const { r, g, b } = colorFromDNA(cell.genome.rawDNA);
+    const { r, g, b } = cell.rgb;
     container.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
     container.innerHTML = "";
 
@@ -295,7 +294,7 @@ export function drawConnectionLines(sim, canvas, cellSize) {
         ctx.beginPath();
         ctx.moveTo(cellX, cellY);
         ctx.lineTo(winX, winY);
-        const { r, g, b } = colorFromDNA(cell.genome.rawDNA);
+        const { r, g, b } = cell.rgb
         ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.5)`;
         ctx.lineWidth = 1.5;
         ctx.stroke();

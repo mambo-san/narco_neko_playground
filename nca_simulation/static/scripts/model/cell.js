@@ -2,6 +2,7 @@ import { Genome } from './genome.js';
 import { Brain } from './brain.js';
 import { decodeGene } from './genome.js';
 import { SENSOR_TYPES, ACTION_TYPES } from './neuron_types.js';
+import { colorFromAbstractDNA } from '../UI/draw.js';
 
 export class Cell {
     constructor({
@@ -15,6 +16,7 @@ export class Cell {
         this.genome = new Genome(rawDNA, innerCount);
         this.brain = new Brain(this.genome, innerCount);
         this.abstractSignature = this.genome.abstractSignature();
+        this.rgb = colorFromAbstractDNA(this.abstractSignature);
         this.position = { ...position };
         this.age = 0;
         this.alive = true;
