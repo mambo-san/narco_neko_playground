@@ -70,11 +70,10 @@ export class Simulation {
             this.lastSurvivalRate = (this.survivors.length / this.populationSize) * 100;
             //Generate new cells based on reproduction score
             this.sim.evolve(
-                       this.survivalMask, 
-                       this.spawnOutside, 
-                       this.survivors, 
-                        Array.from(selectedGenomes),
-                       this.mutationRate
+                this.ticksPerGeneration,
+                this.survivalMask, 
+                this.spawnOutside, 
+                this.mutationRate
             );
             // Find replacement Cell based on abstractSignature 
             for (const sig of Array.from(selectedGenomes)) {
