@@ -2,7 +2,9 @@ import { DEFAULT_CONFIG } from '../model/defaults.js';
 import { Simulation, toggleSelectedCellId, clearSelectedCells} from '../sim/simulation.js';
 import { renderBrainGraph } from './render_brain_graph.js';
 
+
 export function initializeUI(canvas, onStart) {
+
     let sim = null;
     // Set defaults
     const entries = {
@@ -15,6 +17,14 @@ export function initializeUI(canvas, onStart) {
         spawnOutside: DEFAULT_CONFIG.spawnOutside,
         survivalZone: DEFAULT_CONFIG.zoneTemplate
     };
+
+    addClampingListener('gridWidth', 10, 1000);
+    addClampingListener('populationSize', 1, 1000);
+    addClampingListener('genomeLength', 2, 25);
+    addClampingListener('innerCount', 0, 25);
+    addClampingListener('ticksPerGeneration', 100, 10000);
+    addClampingListener('mutationRate', 0, 100);
+
 
     for (const [id, value] of Object.entries(entries)) {
         const input = document.getElementById(id);
@@ -38,6 +48,7 @@ export function initializeUI(canvas, onStart) {
     
     // Wire start button
     const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
     startBtn.addEventListener('click', () => {
         //Clear out the previous simulation if it exists
         clearSelectedCells(); // clear selection
@@ -87,24 +98,31 @@ export function initializeUI(canvas, onStart) {
 
         setUpCellClick({ canvas, simulation: sim });
         onStart(sim);
+        // Toggle button text and colors
+        startBtn.textContent = "Restart";
+        startBtn.classList.add("restart");
         //Reset the Resume/Pause
-        document.getElementById('pauseBtn').textContent = "Pause";
+        pauseBtn.textContent = "Pause";
+        pauseBtn.classList.remove("resume");
 
     });
     //Toggle button for stop/resume
-    const pauseBtn = document.getElementById('pauseBtn');
     pauseBtn.addEventListener('click', () => {
         if (sim){
             const simIsRunning = !sim.isPaused();
             if (simIsRunning){
                 sim.setPaused(true);
                 pauseBtn.textContent = "Resume";
+                pauseBtn.classList.add("resume");
             }else{
                 sim.setPaused(false);
                 pauseBtn.textContent = "Pause";
+                pauseBtn.classList.remove("resume");
             }
         }
     });
+
+    
 }
 
 function setUpCellClick({ canvas, simulation }) {
@@ -175,3 +193,22 @@ resizeConnectionCanvas();
 window.addEventListener("resize", resizeConnectionCanvas);
 window.addEventListener('load', resizeCanvasHandler);
 window.addEventListener('resize', resizeCanvasHandler);
+
+
+function clampValue(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
+
+function addClampingListener(id, min, max) {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    input.addEventListener('change', () => {
+        const val = parseFloat(input.value);
+        if (isNaN(val)) return;
+        const clamped = clampValue(val, min, max);
+        if (val !== clamped) {
+            input.value = clamped;
+        }
+    });
+}

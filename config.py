@@ -20,15 +20,23 @@ class Config:
 	#New project to be added here to display as card on the home page
 	MINI_PROJECTS = [
         {
-			'name': '🎮 Game Generator', 
-			'endpoint': 'game_generator.game_generator',
-			'description': 'Generate proto type HTML game with AI. Give Feed back to other people\'s creation.'}, 
-        {
+			'name': '🧬 NCA Simulator', 
+			'endpoint': 'nca_simulation.index',
+			'description': 'Cells use neural networks encoded in DNA to move, survive, and evolve on a grid.'
+		},
+		{
+			"name": "🔬 Particle Simulator", 
+			'endpoint': 'particle_simulation.index',
+			'description': 'Ponder the mechanism of life formation from chaos. '
+		},
+		{
 			"name": "🌎 World Dashbaord", 
 			'endpoint': 'world_dashboard.index',
-			'description': 'Check timzone difference and learn geography along the way. '}, 
+			'description': 'Check timzone difference and learn geography along the way. '
+		}, 
 		{
-			"name": "🧬 Particle Simulator", 
-			'endpoint': 'particle_simulation.index',
-			'description': 'Ponder the mechanism of life formation from chaos. '}
+			'name': '🎮 Game Generator', 
+			'endpoint': 'game_generator.game_generator',
+			'description': 'Generate proto type HTML game with AI. Give Feed back to other people\'s creation.'
+		}
     ]

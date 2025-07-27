@@ -118,8 +118,31 @@ body {
     cursor: pointer;
 }
 
-#sidebar button:hover {
-    background-color: #0c0;
+
+/* Start/Restart button dynamic styling */
+#sidebar button#startBtn {
+    background-color: #0f0;
+    /* Green */
+    color: #000;
+}
+
+#sidebar button#startBtn.restart {
+    background-color: #cc3333;
+    /* Red for Restart */
+    color: #fff;
+}
+
+/* Pause/Resume button */
+#sidebar button#pauseBtn {
+    background-color: #ffaa00;
+    /* Yellow for Pause */
+    color: #000;
+}
+
+/* Resume = Blue background */
+#sidebar button#pauseBtn.resume {
+    background-color: #3399ff;
+    color: #fff;
 }
 
 
@@ -225,4 +248,81 @@ body {
     gap: 0.25rem;
     margin-top: 1rem;
     color: white;     
+}
+
+.sidebar-link {
+    margin-top: auto;
+    color: #0f0;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+    padding-top: 1em;
+}
+
+#wtf-window {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vh;
+    height: 80vh;
+    background-color: #222;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 6px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    overflow: hidden;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+#wtf-window-header {
+    background-color: #333;
+    padding: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+}
+
+#wtf-window-content details {
+    margin-bottom: 1em;
+    padding: 0.5em;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #1a1a1a;
+}
+
+#wtf-window-content p {
+    color: #ccc;
+    font-size: 0.95em;
+    margin-top: 0.5em;
+}
+
+#wtf-window-content {
+    padding: 12px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+#wtf-window-content summary {
+    font-size: 1em;
+    color: #0f0;
+    cursor: pointer;
+}
+
+#wtf-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+#wtf-close:hover {
+    color: #f44;
 }

@@ -1,10 +1,15 @@
 import { initializeUI, resizeSimulationCanvas } from './UI/ui.js';
+import { setupWTFLink } from './UI/wtf_link.js';
 
 window.addEventListener('DOMContentLoaded', () => {
+
+    //The help page
+    setupWTFLink()
+    
     const canvas = document.getElementById('sim-canvas');
     let sim = null;
     
-
+    
     initializeUI(canvas, s => {
         sim = s;
 
