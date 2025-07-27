@@ -28,6 +28,9 @@ const project_description = `
       <details>
           <summary>Overview</summary>
           <p>
+              Welcome to Neural Cellular Automata (NCA) Simulation.
+        </p>
+          <p>
               This simulation evolves simple digital organisms on a grid. 
               Each cell has a neural network encoded in DNA that determines how it senses, moves, and survives. 
               Over generations, fitter cells reproduce and pass on their genes, while the system tracks survival rate and genetic diversity.
@@ -76,7 +79,10 @@ const project_description = `
           <p><strong>Ticks</strong>: Time steps passed in current generation.</p>
           <p><strong>Survivors</strong>: Number of cells alive in the reproduction zone.</p>
           <p><strong>Survival Rate</strong>: Percentage of total population that survived.</p>
-          <p><strong>Diversity</strong>: Relative uniqueness of genomes vs. initial population.</p>
+          <p><strong>Diversity</strong>: 
+          Relative uniqueness of genomes this generation compared to initial gene pool. 
+          Calculated as (Unique abstract DNA count this generation) ÷ (Unique count in Gen 0).
+          </p>
       </details>
 
   </div>
