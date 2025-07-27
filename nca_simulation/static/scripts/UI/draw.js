@@ -25,25 +25,27 @@ function drawCells(ctx, cells, cellSize) {
         if (!cell.alive) continue;
 
         const { x, y } = cell.position;
-        //Draw crosshair first
+        const { r, g, b } = cell.rgb;
+        //Draw hightlight to indicate selected cell
         if (selectedGenomes.has(cell.abstractSignature)) {
-            drawCellHighlight(ctx, x, y, cellSize);
+            drawCellHighlight(ctx, x, y, cellSize, cell.rgb);
         }
         // Draw the cell
-        ctx.fillStyle = `rgb(${cell.rgb.r}, ${cell.rgb.g}, ${cell.rgb.b})`;
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
        
     }
 }
 
-function drawCellHighlight(ctx, x, y, cellSize) {
-    const contrastColor = '#04df9b';
+function drawCellHighlight(ctx, x, y, cellSize, rgb) {
+    const { r, g, b } = rgb;
+    const contrastColor = `rgb(${r}, ${g}, ${b})`;
 
     const px = x * cellSize;
     const py = y * cellSize;
 
-    // Outer bright border
+    // Outer colored border
     ctx.lineWidth = 10;
     ctx.strokeStyle = contrastColor;
     ctx.strokeRect(px - 1, py - 1, cellSize + 2, cellSize + 2);
@@ -52,9 +54,7 @@ function drawCellHighlight(ctx, x, y, cellSize) {
     ctx.lineWidth = 1.5;
     ctx.strokeStyle = '#000';
     ctx.strokeRect(px, py, cellSize, cellSize);
-
 }
-
 
 export function colorFromAbstractDNA(abstractDNA) {
     // Hash the abstractDNA string

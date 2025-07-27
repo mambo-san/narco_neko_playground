@@ -305,7 +305,7 @@ export function drawConnectionLines(sim, canvas, cellSize) {
         ctx.stroke();
 
         // Optional: mark origin point on the grid
-        ctx.fillStyle = '#04df9b';
+        //ctx.fillStyle = '#04df9b';
         ctx.fillRect(cellScreenX - 2, cellScreenY - 2, 4, 4);
     }
 }
