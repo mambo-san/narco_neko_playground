@@ -1,6 +1,6 @@
 window.roadmapData = [
     {
-        year: 2026, title: "低負荷でウォームアップ（新業務に慣れる期間）", tasks: [
+        year: 2026, title: "低負荷でウォームアップ（引っ越し直後、日本、新しい職場に慣れる期間）", tasks: [
             { id: "2026-1", label: "固定費の棚卸し", start: "2026-01-15", end: "2026-02-15", deliverable: "家計固定費シート（家賃/保険/通信/交通）", warn: false },
             { id: "2026-2", label: "相場リサーチ（名古屋/東京）", start: "2026-03-01", end: "2026-06-30", deliverable: "坪単価レンジ表・気になる物件URL10件", warn: false },
             { id: "2026-3", label: "参考施設の視察", start: "2026-07-01", end: "2026-12-15", deliverable: "見学レポート2件（写真/良かった点/課題）", warn: false }
