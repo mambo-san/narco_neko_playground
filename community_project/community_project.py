@@ -3,8 +3,4 @@ from . import community_project_bp
 
 @community_project_bp.route('/')
 def index():
-    return render_template("roadmap.html", landing_url=url_for("/"))
-
-@community_project_bp.route("/contact")
-def landing():
-    return render_template("index.html")
+    return render_template("roadmap.html")
