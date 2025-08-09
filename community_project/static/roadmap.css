@@ -1,0 +1,307 @@
+:root {
+    --accent: #2563eb;
+    --muted: #eef2ff;
+    --danger: #e11d48;
+    --ok: #16a34a;
+    --ink: #1f2937;
+}
+
+html,
+body {
+    height: 100%
+}
+
+body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    margin: 0;
+    color: var(--ink);
+    background: #f6f7fb
+}
+
+header {
+    padding: 20px 24px;
+    background: linear-gradient(90deg, #1e293b, #0f172a);
+    color: #fff;
+}
+
+h1 {
+    margin: 0 0 4px 0;
+    font-size: 28px
+}
+
+.sub {
+    opacity: .85;
+    font-size: 14px
+}
+
+main {
+    padding: 24px;
+    display: grid;
+    gap: 18px;
+    max-width: 1200px;
+    margin: auto
+}
+
+.panel {
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* darker border */
+.panel header {
+    background: #f8fafc;
+    color: inherit;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid #cbd5e1
+}
+
+.panel header .btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap
+}
+
+.preface {
+    padding: 14px 16px;
+    background: #fff;
+    border-top: 1px solid #cbd5e1
+}
+
+.preface p {
+    margin: .4rem 0
+}
+
+.badge {
+    border: 1px solid #c7d2fe;
+    background: #eef2ff;
+    color: #1e40af;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px
+}
+
+button {
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer
+}
+
+button:hover {
+    border-color: #94a3b8
+}
+
+/* years */
+details {
+    border-top: 1px solid #cbd5e1
+}
+
+details[open]>summary {
+    background: #f1f5f9
+}
+
+summary {
+    list-style: none;
+    padding: 14px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #cbd5e1
+}
+
+summary::marker {
+    display: none
+}
+
+.year-label {
+    display: inline-block;
+    min-width: 120px;
+    font-weight: 700;
+    color: #0f172a
+}
+
+.content {
+    padding: 14px 20px;
+    background: #fff
+}
+
+/* per-year Gantt */
+.ygantt {
+    overflow: none;
+    padding: 12px 0
+}
+
+.ygantt .grid {
+    --cols: 12;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(var(--cols), minmax(72px, 1fr));
+    /* was 48px fixed */
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.ygantt .head .cell {
+    border-left: 1px solid #cbd5e1;
+    /* solid for header */
+    min-height: 32px;
+    /* a bit shorter than rows */
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    background: #f8fafc;
+}
+
+.ygantt .body .cell {
+    border-left: 1px dashed #94a3b8;
+    /* keep dashed in body */
+}
+
+.ygantt .head .cell:first-child,
+.ygantt .body .cell:first-child {
+    border-left: 0;
+}
+
+.ygantt .bar {
+    height: 20px;
+    background: linear-gradient(90deg, #93c5fd, #3b82f6);
+    border-radius: 999px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #0f172a;
+    padding: 0 8px;
+    white-space: nowrap
+}
+
+.ygantt .bar.warn {
+    background: linear-gradient(90deg, #fecaca, #f43f5e);
+    color: #111827
+}
+
+.ygantt .bar.done {
+    background: linear-gradient(90deg, #86efac, #22c55e);
+    color: #064e3b
+}
+
+/* checklist table */
+.ytable table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    overflow: hidden
+}
+
+.ytable thead th {
+    background: #f8fafc;
+    font-weight: 600;
+    font-size: 12px;
+    color: #475569;
+    padding: 10px;
+    border-bottom: 1px solid #cbd5e1
+}
+
+.ytable tbody td {
+    padding: 10px;
+    font-size: 14px;
+    border-bottom: 1px solid #e2e8f0
+}
+
+.ytable tbody tr:nth-child(even) {
+    background: #fafbff
+}
+
+.ytable .col-check {
+    width: 48px;
+    text-align: center
+}
+
+.ytable .col-task {
+    width: 32%
+}
+
+.ytable .col-deliv {
+    width: 44%
+}
+
+.ytable .col-period {
+    width: 24%;
+    color: #475569;
+    font-size: 12px
+}
+
+footer {
+    padding: 24px;
+    text-align: center;
+    color: #64748b
+}
+
+/* sticky header */
+#yearsPanel {
+    position: relative;
+    overflow: visible
+}
+
+#yearsPanel>header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(248, 250, 252, 0.95);
+    backdrop-filter: saturate(180%) blur(8px);
+    border-bottom: 1px solid #cbd5e1
+}
+
+#yearsPanel>header.stuck {
+    box-shadow: 0 6px 12px rgba(2, 6, 23, .06)
+}
+
+/* feedback */
+.feedback {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #334155;
+    border-top: 1px solid #cbd5e1
+}
+
+.legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: #475569;
+    padding: 8px 16px 16px
+}
+
+.legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px
+}
+
+.chip {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px
+}
+
+.chip.done {
+    background: #22c55e
+}
+
+.chip.warn {
+    background: #f43f5e
+}

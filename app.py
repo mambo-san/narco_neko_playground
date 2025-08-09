@@ -13,6 +13,7 @@ from game_generator.routes import game_generator_bp
 from world_dashboard.world_dashboard import world_dashboard_bp
 from particle_simulation.particle_simulation import particle_simulation_bp
 from nca_simulation.nca_simulation import nca_simulation_bp
+from community_project import community_project_bp
 
 #For testing 
 import webbrowser #for dev only
@@ -71,6 +72,7 @@ def create_app():
     app.register_blueprint(world_dashboard_bp, url_prefix='/world_dashboard')
     app.register_blueprint(particle_simulation_bp, url_prefix='/particle_simulation')
     app.register_blueprint(nca_simulation_bp, url_prefix='/nca_simulation')
+    app.register_blueprint(community_project_bp, url_prefix='/community_project')
     #Handle printing of emojis to console (in case you are on windows)
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     return app

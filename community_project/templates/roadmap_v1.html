@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>10年ロードマップ - 個人事業開業計画（2026〜2035）</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./static/roadmap_data.js"></script>
+    <link rel="stylesheet" href="{{ url_for('community_project.static', filename='roadmap.css') }}">
+</head>
+
+<body>
+    <header>
+        <h1>10年ロードマップ（2026〜2035）</h1>
+        <div class="sub">
+            ゴール：退職/休職して個人事業（10〜20人規模のカフェ＋保育＋地域交流拠点）を始められるだけの資金と準備を整える。
+            <span class="badge">※ 2026年上期は新業務に慣れるため“低負荷”</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="panel">
+            <header><strong>公開方針</strong></header>
+            <div class="preface">
+                <p><strong>この計画は全文公開です。</strong>
+                    過大/過小見積もり、見落とし、順序の誤りなどを<strong>指摘歓迎</strong>します。学びは公開し、将来の自分や他の人の参考にします。</p>
+                <p>不確実性が高い見積もりには注記を付けます（ガントの赤系バー）。完了したタスクは緑化されます。</p>
+            </div>
+            <div class="legend">
+                <span><span class="chip done"></span> 完了（チェック済み）</span>
+                <span><span class="chip warn"></span> 不確実性高（要ご指摘）</span>
+            </div>
+        </div>
+
+        <div class="panel" id="yearsPanel">
+            <header>
+                <strong>年次計画（折りたたみ）</strong>
+                <div class="btns">
+                    <button id="expandYears">すべて開く</button>
+                    <button id="collapseYears">すべて閉じる</button>
+                    <button id="resetChecks">チェックを未完に戻す</button>
+                </div>
+            </header>
+            <!-- Year sections will be injected here from roadmap_data.js -->
+        </div>
+
+        <div class="panel">
+            <header><strong>メモ</strong></header>
+            <div class="preface">
+                <ul>
+                    <li><span class="badge">非営利方針</span>：給与は相場/時間単価に基づき適正額を設定。余剰は地域活動へ再投資。</li>
+                    <li><span class="badge">地域</span>：名古屋/東京を中心に他県の優良制度は参考採用。</li>
+                    <li><span class="badge">リスク管理</span>：2026年は低負荷、以降徐々に加速。</li>
+                </ul>
+            </div>
+            <div class="feedback">
+                フィードバック方法：誤りや見積もりの甘さ/厳しさに気づいた方は、<a href="https://narco-neko-playground.onrender.com">サイト内の連絡手段から</a><strong>年とタスクID</strong>（例：2031-2）を添えてご連絡ください（リンクは設置しません）。
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        © 2025 Roadmap — Vibe coding my way
+    </footer>
+
+    
+    <script>
+        // ===== Helpers =====
+        const KEY = 'roadmap-checks-v12';
+
+        function buildYearSection(yearData) {
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.innerHTML = `<span class="year-label">${yearData.year}年</span> ${yearData.title}`;
+            details.appendChild(summary);
+
+            const content = document.createElement('div');
+            content.className = 'content';
+
+            // toolbar
+            const btns = document.createElement('div');
+            btns.className = 'btns';
+            btns.style.margin = '6px 0 10px 0';
+            const toggle = document.createElement('button');
+            toggle.className = 'toggleView';
+            toggle.dataset.year = String(yearData.year);
+            toggle.textContent = 'チャート表示';
+            btns.appendChild(toggle);
+            content.appendChild(btns);
+
+            // table & gantt wrappers
+            const ytable = document.createElement('div'); ytable.className = 'ytable'; ytable.id = `ytable-${yearData.year}`;
+            const ygantt = document.createElement('div'); ygantt.className = 'ygantt'; ygantt.id = `ygantt-${yearData.year}`; ygantt.hidden = true;
+            ygantt.innerHTML = '<div class="grid head"></div><div class="grid body"></div>';
+
+            content.appendChild(ytable);
+            content.appendChild(ygantt);
+
+            // build default view (table)
+            buildSectionTableFromData(ytable, yearData.tasks);
+
+            details.appendChild(content);
+            return details;
+        }
+
+        function buildSectionTableFromData(tableWrap, tasks) {
+            if (!tableWrap || tableWrap.dataset.built) return;
+            const tbl = document.createElement('table');
+            const thead = document.createElement('thead');
+            thead.innerHTML = '<tr><th class="col-check">✓</th><th class="col-task">タスク</th><th class="col-deliv">成果物</th><th class="col-period">期間</th></tr>';
+            const tbody = document.createElement('tbody');
+
+            const state = JSON.parse(localStorage.getItem(KEY) || '{}');
+
+            tasks.forEach(t => {
+                const tr = document.createElement('tr');
+                const tdCheck = document.createElement('td'); tdCheck.className = 'col-check';
+                const mirror = document.createElement('input'); mirror.type = 'checkbox'; mirror.checked = !!state[t.id]; mirror.title = `開始: ${t.start} / 期限: ${t.end}`;
+                mirror.addEventListener('change', () => {
+                    state[t.id] = mirror.checked; localStorage.setItem(KEY, JSON.stringify(state));
+                    // reflect in gantt if built
+                    const bar = document.querySelector(`.ygantt .bar[data-id="${t.id}"]`);
+                    if (bar) bar.classList.toggle('done', mirror.checked);
+                });
+                tdCheck.appendChild(mirror);
+
+                const tdTask = document.createElement('td'); tdTask.className = 'col-task'; tdTask.textContent = t.label;
+                const tdDeliv = document.createElement('td'); tdDeliv.className = 'col-deliv'; tdDeliv.textContent = t.deliverable || '';
+                const tdPeriod = document.createElement('td'); tdPeriod.className = 'col-period'; tdPeriod.textContent = `開始: ${t.start} / 期限: ${t.end}`;
+                tr.append(tdCheck, tdTask, tdDeliv, tdPeriod); tbody.appendChild(tr);
+            });
+            tbl.append(thead, tbody); tableWrap.appendChild(tbl); tableWrap.dataset.built = '1';
+        }
+
+        function buildSectionGanttFromData(sectionEl, tasks) {
+            const wrap = sectionEl.querySelector('.ygantt');
+            const head = wrap.querySelector('.head');
+            const body = wrap.querySelector('.body');
+            head.innerHTML = ''; body.innerHTML = '';
+            const months = Array.from({ length: 12 }, (_, i) => `${i + 1}月`);
+            months.forEach(m => {
+                const c = document.createElement('div');
+                c.className = 'cell';
+                c.textContent = m;     // show month label
+                head.appendChild(c);
+            });
+
+            const state = JSON.parse(localStorage.getItem(KEY) || '{}');
+
+            const toIndex = (dateStr) => { const [, M] = dateStr.split('-').map(Number); return Math.max(0, Math.min(11, (M || 1) - 1)); };
+            tasks.forEach(t => {
+                for (let i = 0; i < 12; i++) { const c = document.createElement('div'); c.className = 'cell'; body.appendChild(c); } // row bg
+                const s = toIndex(t.start), e = toIndex(t.end); const span = (e - s) + 1;
+                const cell = document.createElement('div'); cell.className = 'cell'; cell.style.gridColumn = `${s + 1} / span ${span}`;
+                const bar = document.createElement('div'); bar.className = 'bar' + (t.warn ? ' warn' : ''); bar.dataset.id = t.id; bar.title = `開始: ${t.start} / 期限: ${t.end}`; bar.textContent = t.label;
+                bar.classList.toggle('done', !!state[t.id]);
+                cell.appendChild(bar); body.appendChild(cell);
+            });
+            wrap.hidden = false;
+        }
+
+        // ===== Boot =====
+        (function init() {
+            const yearsPanel = document.getElementById('yearsPanel');
+            const container = document.createElement('div');
+
+            // Inject years
+            (window.roadmapData || []).forEach(y => {
+                const sec = buildYearSection(y);
+                container.appendChild(sec);
+            });
+            yearsPanel.appendChild(container);
+
+            // toggle handlers
+            yearsPanel.addEventListener('click', (e) => {
+                const btn = e.target.closest('.toggleView');
+                if (!btn) return;
+                const section = btn.closest('.content');
+                const chart = section?.querySelector('.ygantt');
+                const table = section?.querySelector('.ytable');
+                if (chart.hidden) {
+                    buildSectionGanttFromData(section, (window.roadmapData.find(y => String(y.year) === btn.dataset.year) || {}).tasks || []);
+                    chart.hidden = false; table.style.display = 'none';
+                    btn.textContent = 'チェックリスト表示';
+                } else {
+                    chart.hidden = true; table.style.display = 'block';
+                    btn.textContent = 'チャート表示';
+                }
+            });
+
+            // quick controls
+            const detailsEls = () => [...yearsPanel.querySelectorAll('details')];
+            document.getElementById('expandYears').onclick = () => detailsEls().forEach(d => d.open = true);
+            document.getElementById('collapseYears').onclick = () => detailsEls().forEach(d => d.open = false);
+
+            document.getElementById('resetChecks').onclick = () => {
+                if (!confirm('年次計画のチェックをすべて未完に戻しますか？')) return;
+                const state = {}; localStorage.setItem(KEY, JSON.stringify(state));
+                // update UI
+                yearsPanel.querySelectorAll('.ytable input[type="checkbox"]').forEach(m => m.checked = false);
+                yearsPanel.querySelectorAll('.ygantt .bar').forEach(b => b.classList.remove('done'));
+            };
+
+            // sticky shadow toggle
+            (function () {
+                const header = document.querySelector('#yearsPanel > header');
+                const panel = document.getElementById('yearsPanel');
+                if (!header || !panel) return;
+                const onScroll = () => { const stuck = window.scrollY > panel.offsetTop; header.classList.toggle('stuck', stuck); };
+                window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+            })();
+        })();
+    </script>
+</body>
+
+</html>
