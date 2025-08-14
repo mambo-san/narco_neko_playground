@@ -4,6 +4,10 @@
     --danger: #e11d48;
     --ok: #16a34a;
     --ink: #1f2937;
+    --gantt-vpad: 18px;
+    --gantt-row-gap: 8px;
+    --gantt-bar-h: 22px;
+    --gantt-head-h: 36px;
 }
 
 html,
@@ -135,8 +139,9 @@ summary::marker {
 
 /* per-year Gantt */
 .ygantt {
-    overflow: none;
-    padding: 12px 0
+    overflow: visible;
+    padding-top: var(--gantt-vpad);
+    padding-bottom: var(--gantt-vpad);
 }
 
 .ygantt .grid {
@@ -144,23 +149,25 @@ summary::marker {
     display: grid;
     width: 100%;
     grid-template-columns: repeat(var(--cols), minmax(72px, 1fr));
-    /* was 48px fixed */
+
     border: 1px solid #cbd5e1;
     border-radius: 10px;
     background: #fff;
 }
 
 .ygantt .head .cell {
-    border-left: 1px solid #cbd5e1;
-    /* solid for header */
-    min-height: 32px;
-    /* a bit shorter than rows */
+    border-left: 0px solid #cbd5e1;
+    min-height: var(--gantt-head-h);
+    /* 32px → 変数化 */
     font-size: 12px;
     font-weight: 600;
     color: #475569;
     background: #f8fafc;
 }
-
+.ygantt .body {
+    row-gap: var(--gantt-row-gap);
+    grid-auto-rows: (var(--gantt-bar-h));
+}
 .ygantt .body .cell {
     border-left: 1px dashed #94a3b8;
     /* keep dashed in body */
@@ -304,4 +311,43 @@ footer {
 
 .chip.warn {
     background: #f43f5e
+}
+
+/* --- details animation assist/fallback --- */
+#yearsPanel details>.content {
+    will-change: height, opacity, transform;
+}
+
+#yearsPanel details[open]>.content {
+    animation: ypanel-fade-in 220ms ease-out;
+}
+
+@keyframes ypanel-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Views stack for smooth crossfade without layout jump */
+#yearsPanel .content .views {
+    position: relative;
+    contain: layout paint;
+    /* becomes absolute only during JS animation */
+}
+
+#yearsPanel .content .views>.ytable,
+#yearsPanel .content .views>.ygantt {
+    will-change: opacity, transform;
+}
+
+#yearsPanel .ygantt .body::before {
+    content: none;
+    background: none;
 }
