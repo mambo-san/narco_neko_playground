@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>事業計画書（公開版） | Public Business Plan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('community_project.static', filename='businessPlan.css') }}">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="title-wrap">
+            <h1 class="lang-ja">公開型 事業計画書</h1>
+            <h1 class="lang-en">Public Business Plan</h1>
+            <p class="sub lang-ja">「人と繋がる場所」— 小規模・高密度の交流拠点</p>
+            <p class="sub lang-en">“A place to connect people” — a small, high‑density hub for human connection</p>
+        </div>
+
+        <!-- Language Toggle -->
+        <div id="lang-toggle" class="lang-toggle" role="group" aria-label="Language toggle">
+            <button class="toggle" data-lang="ja" aria-pressed="true">日本語</button>
+            <button class="toggle" data-lang="en" aria-pressed="false">English</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Vision -->
+        <section class="panel">
+            <header><strong class="lang-ja">1. ビジョン</strong><strong class="lang-en">1. Vision</strong></header>
+            <div class="preface">
+                <p class="lang-ja"><strong>人と繋がる場所。</strong> 地域の人、共通の趣味を持つ人、地域に遊びに来る人、外国人、そしてLGBTQフレンドリー。</p>
+                <p class="lang-en"><strong>A place to connect people.</strong> Locals, visitors with shared hobbies,
+                    travelers, internationals — openly LGBTQ‑friendly.</p>
+                <p class="lang-ja">誰もが自然に関わり合える、ちいさな交差点。</p>
+                <p class="lang-en">A small “crossroads” where anyone can naturally interact.</p>
+            </div>
+        </section>
+
+        <!-- Concept -->
+        <section class="panel">
+            <header><strong class="lang-ja">2. コンセプト</strong><strong class="lang-en">2. Concept</strong></header>
+            <div class="preface">
+                <ul>
+                    <li class="lang-ja"><strong>「つながり」が主役。</strong> カフェは場を彩る要素のひとつで、<u>主役ではありません</u>。</li>
+                    <li class="lang-en"><strong>Connection is the protagonist.</strong> The café aspect is supportive —
+                        <u>not the main act</u>.</li>
+                    <li class="lang-ja">保育 + 地域交流 + 多目的スペースを柔らかく融合。</li>
+                    <li class="lang-en">A gentle blend of childcare, neighborhood exchange, and multipurpose space.</li>
+                    <li class="lang-ja">小規模・高密度・顔の見える関係性。</li>
+                    <li class="lang-en">Small scale, high density, face‑to‑face relationships.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Value -->
+        <section class="panel">
+            <header><strong class="lang-ja">3. 提供価値</strong><strong class="lang-en">3. Value Proposition</strong>
+            </header>
+            <div class="preface">
+                <h3 class="lang-ja">お客様向け</h3>
+                <h3 class="lang-en">For visitors</h3>
+                <ul>
+                    <li class="lang-ja">人との関係を自然に築ける雰囲気と居場所</li>
+                    <li class="lang-en">Atmosphere and space that naturally foster relationships</li>
+                    <li class="lang-ja">偶然の会話や交流のきっかけ</li>
+                    <li class="lang-en">Serendipitous chats and connection triggers</li>
+                    <li class="lang-ja">ふらっと立ち寄っても歓迎される安心感</li>
+                    <li class="lang-en">A sense of welcome, even for a casual drop‑in</li>
+                </ul>
+
+                <h3 class="lang-ja">活動提供者向け（旧 呼称「出演者」）</h3>
+                <h3 class="lang-en">For activity hosts (formerly “performers”)</h3>
+                <p class="lang-ja">呼び方候補：<em>場を彩る人 / シェアパートナー / 企画ホスト / 活動提供者</em></p>
+                <p class="lang-en">Naming ideas: <em>Space Enricher / Share Partner / Session Host / Activity
+                        Provider</em></p>
+                <ul>
+                    <li class="lang-ja">経営者と相談しながら、自由に特技や活動を提供可能</li>
+                    <li class="lang-en">Offer your craft/activity flexibly in consultation with the owner</li>
+                    <li class="lang-ja">例：手ごねパン提供、染め物教室、英会話レッスン、自作ゲームの発表など</li>
+                    <li class="lang-en">Examples: handmade bread popup, dyeing workshop, English lessons, indie game
+                        showcases</li>
+                    <li class="lang-ja">単発・連続・イベント内など形式は柔軟</li>
+                    <li class="lang-en">Flexible formats: one‑off, series, within events, etc.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Scale -->
+        <section class="panel">
+            <header><strong class="lang-ja">4. 規模（目安）</strong><strong class="lang-en">4. Scale (guidelines)</strong>
+            </header>
+            <div class="preface">
+                <ul>
+                    <li class="lang-ja"><strong>保育スペース：</strong> 最大10名の園児</li>
+                    <li class="lang-en"><strong>Childcare space:</strong> up to 10 children</li>
+                    <li class="lang-ja"><strong>カフェ・多目的スペース：</strong> 同時収容 約10名（会話が生まれるサイズ感）</li>
+                    <li class="lang-en"><strong>Café & multipurpose space:</strong> around 10 people
+                        (conversation‑friendly size)</li>
+                    <li class="lang-ja">※ カフェは<u>主役ではありません</u>。交流を支える小さな機能です。</li>
+                    <li class="lang-en">* The café is <u>not</u> the main feature — it supports connection.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Roadmap -->
+        <section class="panel">
+            <header><strong class="lang-ja">5. ロードマップ</strong><strong class="lang-en">5. Roadmap</strong></header>
+            <div class="preface">
+                <p class="lang-ja">
+                    年次計画の詳細は下記リンクからご覧ください：
+                    <a class="btn-link"
+                        href="{{ url_for('community_project.roadmap') }}">ロードマップを見る</a>
+                </p>
+                <p class="lang-en">
+                    See the yearly plan here:
+                    <a class="btn-link" href="{{ url_for('community_project.roadmap') }}">Open
+                        Roadmap</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Status -->
+        <section class="panel">
+            <header><strong class="lang-ja">6. 活動予定・準備状況</strong><strong class="lang-en">6. Activity & Preparation
+                    Status</strong></header>
+            <div class="preface">
+                <p class="lang-ja"><span class="badge">準備中</span> 進展があり次第、写真やメモ風に更新します。</p>
+                <p class="lang-en"><span class="badge">In preparation</span> We’ll post photo/memo‑style updates as
+                    things progress.</p>
+            </div>
+        </section>
+
+        <!-- Get Involved -->
+        <section class="panel">
+            <header><strong class="lang-ja">7. 関わり方</strong><strong class="lang-en">7. Get Involved</strong></header>
+            <div class="preface">
+                <p class="lang-ja">
+                    お問い合わせや活動のご相談は
+                    <a class="btn-link" href="https://narco-neko-playground.onrender.com/">Narco Neko Playground</a>
+                    のコンタクトから。
+                </p>
+                <p class="lang-en">
+                    For inquiries or activity ideas, use the contact on
+                    <a class="btn-link" href="https://narco-neko-playground.onrender.com/">Narco Neko Playground</a>.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        © 2025 Narco Neko — Public Business Plan
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('community_project.static', filename='businessPlan.js') }}"></script>
+</body>
+
+</html>
