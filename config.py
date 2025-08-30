@@ -33,10 +33,5 @@ class Config:
 			"name": "🌎 World Dashbaord", 
 			'endpoint': 'world_dashboard.index',
 			'description': 'Check timzone difference and learn geography along the way. '
-		}, 
-		{
-			'name': '🎮 Game Generator', 
-			'endpoint': 'game_generator.game_generator',
-			'description': 'Generate proto type HTML game with AI. Give Feed back to other people\'s creation.'
 		}
     ]

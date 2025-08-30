@@ -6,7 +6,7 @@ from flask_mail import Mail
 from config import Config
 from dotenv import load_dotenv
 from extensions import limiter, mail
-from game_generator.models import game_db
+
 #Blue prints
 from routes import home_bp
 from game_generator.routes import game_generator_bp
@@ -57,14 +57,10 @@ def create_app():
             raise RuntimeError("Missing FLASK_SECRET_KEY in production!")
         app.secret_key = secret
 
-    game_db.init_app(app)
 
     ################### Set limiter... Just in case.
     limiter.init_app(app)
 
-    # Create tables
-    with app.app_context():
-        game_db.create_all()
 
     # Register Blueprints here
     app.register_blueprint(home_bp, url_prefix='/')
